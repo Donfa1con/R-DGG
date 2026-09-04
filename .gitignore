@@ -1,0 +1,31 @@
+# envs / caches
+.pixi/
+__pycache__/
+*.pyc
+.ruff_cache/
+
+# vendored upstream source + downloaded weights (fetched by setup.sh — not committed)
+extractors/*/_vendor/
+extractors/*/_weights/
+
+# downloaded data (fetched by data/download_si184.py from the official Seamless
+# Interaction release — not committed). Reference images ARE committed (data/references/).
+data/GT/
+*.mp4
+*.wav
+
+# generated model outputs + smoke scratch (produced by models/generate/*.py — not committed).
+# *.mp4/*.wav above already cover the videos; this also excludes the .jpg partner-frame
+# work dirs (out/.work_avatarforcing/) and any .partial staging.
+out/
+
+# extracted feature caches (produced by extractors/ — not committed)
+*_emoca/
+*_liveportrait/
+*_insightface/
+*_hubert/
+*_vad/
+
+# metric outputs
+_metrics/
+*.csv

@@ -1,0 +1,74 @@
+diff --git a/app.py b/app.py
+index 5836c6b..0bafc25 100644
+--- a/app.py
++++ b/app.py
+@@ -394,44 +394,44 @@ def latents_to_video_frames(motion_latents, ref_image_pil):
+     motion_latents = motion_latents.to(DEVICE).float()
+     num_frames = motion_latents.shape[0]
+ 
++    # STREAM one uint8 RGB frame at a time (generator) so peak RAM is O(1) in video length, not O(frames).
++    # Materialising the whole [T,512,512,3] float array needs ~23 GB for a 300 s / 7500-frame clip
++    # (float32). face_generator runs per frame, so streaming each frame straight out gives the same
++    # result without buffering the whole video.
+     with torch.no_grad():
+         face_feat = face_encoder(ref_img_tensor)
+-        recon_list = []
+         for i in range(num_frames):
+             tgt = flow_estimator(motion_latents[0:1], motion_latents[i:i + 1])
+-            recon_list.append(face_generator(tgt, face_feat))
+-
+-    recon = torch.cat(recon_list, dim=0)
+-    video_np = recon.permute(0, 2, 3, 1).cpu().numpy()
+-    video_np = np.clip((video_np + 1) / 2 * 255, 0, 255).astype("uint8")
+-    return video_np
++            recon = face_generator(tgt, face_feat)          # [1, 3, 512, 512]
++            frame = torch.clamp((recon[0].permute(1, 2, 0) + 1) / 2 * 255, 0, 255)
++            yield frame.to(torch.uint8).cpu().numpy()
+ 
+ 
+ def save_video_with_audio(video_frames, audio_path, output_path, fps=25):
+-    """Save video frames as mp4, optionally mux with audio."""
++    """Write frames (an iterable/generator of uint8 RGB) to an mp4 and mux the audio.
++
++    imageio.get_writer streams each frame straight to its ffmpeg subprocess, so a generator source keeps
++    peak RAM O(1). Muxing is a direct ffmpeg stream-copy (-c:v copy -c:a aac -shortest) via the bundled
++    imageio-ffmpeg binary, which does not reload the whole video into RAM. -shortest trims the audio to
++    the video length."""
+     temp_mp4 = output_path.replace(".mp4", "_temp.mp4")
+     with imageio.get_writer(temp_mp4, fps=fps) as writer:
+-        for frame in video_frames:
++        for frame in video_frames:      # generator -> lazily consumed, one frame in RAM at a time
+             writer.append_data(frame)
+ 
+     if audio_path and os.path.exists(audio_path):
+-        try:
+-            import moviepy.editor as mpe
+-            clip = mpe.VideoFileClip(temp_mp4)
+-            audio = mpe.AudioFileClip(audio_path)
+-            # Trim audio to match video length
+-            video_duration = len(video_frames) / fps
+-            if audio.duration > video_duration:
+-                audio = audio.subclip(0, video_duration)
+-            clip = clip.set_audio(audio)
+-            clip.write_videofile(output_path, codec="libx264", audio_codec="aac", logger=None)
+-            clip.close()
+-            audio.close()
++        import subprocess
++        import imageio_ffmpeg
++        ff = imageio_ffmpeg.get_ffmpeg_exe()
++        cmd = [ff, "-y", "-i", temp_mp4, "-i", audio_path,
++               "-map", "0:v:0", "-map", "1:a:0",
++               "-c:v", "copy", "-c:a", "aac", "-shortest", output_path]
++        r = subprocess.run(cmd, capture_output=True, text=True)
++        if r.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+             os.remove(temp_mp4)
+-        except Exception as e:
+-            print(f"[Warning] Failed to mux audio: {e}, saving video without audio.")
+-            if os.path.exists(temp_mp4):
+-                shutil.move(temp_mp4, output_path)
++        else:
++            print(f"[Warning] ffmpeg mux failed (rc={r.returncode}): {r.stderr[-500:]}; saving video-only.")
++            shutil.move(temp_mp4, output_path)
+     else:
+         shutil.move(temp_mp4, output_path)
+ 

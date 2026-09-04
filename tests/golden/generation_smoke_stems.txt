@@ -1,0 +1,6 @@
+# Golden stem for the generation smoke (see tests/golden/README.md).
+# The single shortest SI-184 dyad: listener P1293A <-> speaker P1292A (138.0 s, 48 kHz).
+# Pass this file as --stems_file to any models/generate/<m>.py driver to run the
+# smoke on just this stem (non-dyadic drivers use P1293A's own audio; dyadic
+# drivers pair it with P1292A via data/pairs184.txt).
+V00_S2035_I00000998_P1293A

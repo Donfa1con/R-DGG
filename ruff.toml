@@ -1,0 +1,6 @@
+# Lint only our own code — never the vendored model submodules.
+line-length = 100
+extend-exclude = ["models/"]
+
+[lint]
+select = ["E", "F", "I", "W"]

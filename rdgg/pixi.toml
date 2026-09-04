@@ -1,0 +1,22 @@
+[project]
+name = "metrics-rdgg"
+version = "0.1.0"
+description = "Shared environment for the six metrics: rdgg (R-DGG) and the five classic metrics (rpcc, tlcc, pfd, sid, variance). This manifest is the single metrics env. The extractors keep a separate env each."
+authors = ["Anonymous <anonymous@example.com>"]
+channels = ["pytorch", "nvidia", "conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.10.*"
+numpy = "1.26.*"
+pip = "*"
+pytorch      = { version = "==2.1.1",  channel = "pytorch", build = "py3.10_cuda12.1*" }
+pytorch-cuda = { version = "12.1.*",   channel = "pytorch" }
+
+[pypi-dependencies]
+scipy = "*"          # rdgg + classic (via _motion): rotation matrix -> axis-angle
+scikit-learn = "*"   # sid: k-means cluster assignment
+tqdm = "*"           # the five classic metrics: progress bars
+
+[tasks]
+help = "python compute.py --help"

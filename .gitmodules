@@ -1,0 +1,18 @@
+[submodule "models/float"]
+	path = models/float
+	url = https://github.com/deepbrainai-research/float
+[submodule "models/ditto"]
+	path = models/ditto
+	url = https://github.com/antgroup/ditto-talkinghead
+[submodule "models/soulx-flashhead"]
+	path = models/soulx-flashhead
+	url = https://github.com/Soul-AILab/SoulX-FlashHead
+[submodule "models/avatarforcing"]
+	path = models/avatarforcing
+	url = https://github.com/TaekyungKi/AvatarForcing
+[submodule "models/dystream"]
+	path = models/dystream
+	url = https://github.com/RobinWitch/DyStream
+[submodule "models/avtr-1"]
+	path = models/avtr-1
+	url = https://github.com/avaturn-live/avtr-1

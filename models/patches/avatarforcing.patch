@@ -1,0 +1,39 @@
+diff --git a/inference.py b/inference.py
+index e13a4d6..044ca65 100644
+--- a/inference.py
++++ b/inference.py
+@@ -73,8 +73,8 @@ class DataProcessor:
+ 
+ 
+     def preprocess(self, avatar_ref_path: str, avatar_audio_path: str, user_audio_path: str, user_video_path: str) -> dict:
+-        max_len    = int(30 * self.fps)            # maximum 30 seconds
+-        max_len_sr = int(30 * self.sampling_rate)  # maximum 30 seconds
++        max_len    = int(600 * self.fps)            # 600s cap for full-length SI clips
++        max_len_sr = int(600 * self.sampling_rate)  # 600s cap for full-length SI clips
+ 
+         if os.path.exists(user_audio_path):
+             user_a = self.default_aud_loader(user_audio_path)[:max_len_sr].unsqueeze(0)
+@@ -120,8 +120,8 @@ class InferenceAgent:
+         from models.avatarforcing.AvatarForcing import AvatarForcing
+ 
+         self.G = AvatarForcing(self.opt).to(self.rank)
+-        self.load_mae_ckpt(opt.mae_ckpt_path, rank=self.rank)
+-        self.load_ckpt(opt.ckpt_path, rank = self.rank)
++        self.load_mae_ckpt(self.opt.mae_ckpt_path, rank=self.rank)
++        self.load_ckpt(self.opt.ckpt_path, rank = self.rank)
+         self.G.eval()
+ 
+     def load_ckpt(self, ckpt_path, rank):
+diff --git a/models/avatarforcing/flow_transformer.py b/models/avatarforcing/flow_transformer.py
+index eddef1d..dac2cd8 100644
+--- a/models/avatarforcing/flow_transformer.py
++++ b/models/avatarforcing/flow_transformer.py
+@@ -243,7 +243,7 @@ class Attention(nn.Module):
+             num_frames_per_block  = 10,
+             attn_drop: float      = 0.,
+             proj_drop: float      = 0.,
+-            max_seq_len: int      = 1024,
++            max_seq_len: int      = 16384,   # ~350s @25fps for full-length SI clips; RoPE extrapolates beyond training length — smoke-test quality.
+             norm_layer: nn.Module = nn.LayerNorm,            
+         ) -> None:
+ 

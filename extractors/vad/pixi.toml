@@ -1,0 +1,25 @@
+[project]
+name = "extractor-vad"
+version = "0.1.0"
+description = "Silero-VAD speech timestamps + per-frame mask for downstream silence/speech-aware metrics"
+authors = ["Anonymous <anonymous@example.com>"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.10.*"
+numpy = "1.26.*"
+pip = "*"
+
+[pypi-dependencies]
+silero-vad = "*"
+# silero-vad needs torchaudio to load wavs; pin matching torch/torchaudio
+# so the abi-tagged _torchaudio.so loads correctly. CPU-only is fine —
+# silero-vad is fast on CPU (hundreds of times realtime).
+torch = "==2.4.0"
+torchaudio = "==2.4.0"
+soundfile = "*"   # torchaudio loader backend
+tqdm = "*"
+
+[tasks]
+help = "python extract.py --help"

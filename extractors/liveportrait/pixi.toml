@@ -1,0 +1,30 @@
+[project]
+name = "extractor-liveportrait"
+version = "0.1.0"
+description = "KwaiVGI/LivePortrait motion-extractor: kp/exp/R/t/scale per frame, reusing cached lm106 from extractors/insightface"
+authors = ["Anonymous <anonymous@example.com>"]
+channels = ["pytorch", "nvidia", "conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.10.*"
+numpy = "1.26.*"
+scipy = "*"
+pyyaml = "*"
+pip = "*"
+ffmpeg = "*"
+# torch + cu121 (matches the rest of the toolkit; LP code is torch-2.x compatible)
+pytorch       = { version = "==2.1.1", channel = "pytorch", build = "py3.10_cuda12.1*" }
+torchvision   = { version = "==0.16.1", channel = "pytorch", build = "py310_cu121" }
+pytorch-cuda  = { version = "12.1.*", channel = "pytorch" }
+
+[pypi-dependencies]
+opencv-python-headless = "*"
+tqdm = "*"
+rich = "*"
+roma = "*"
+# pulled lazily for crop affine + LP modules
+
+[tasks]
+help = "python extract.py --help"
+download-weights = "python _setup/download_weights.py"
