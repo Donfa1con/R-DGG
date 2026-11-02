@@ -1,0 +1,174 @@
+{
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "n_folds": 4,
+  "scoring_audio": "real GT hubert/vad (never zeroed) for ALL columns",
+  "columns": {
+    "unseeded": "AVTR-1 (cfg_other=3, no per-video seed)",
+    "seed0": "AVTR-1_seeded (cfg_other=3, SEED_BASE=0)",
+    "seed1": "AVTR-1_seeded_b1 (cfg_other=3, SEED_BASE=1, distinct seeds)",
+    "zeroother": "AVTR-1_zeroother (waveform zeroed)",
+    "cfg0": "AVTR-1_cfgother0 (cfg_other=0)"
+  },
+  "part1_three_stock_seeds": {
+    "mask": "GT reactive & unseeded & seed0 & seed1 face_ok (identical frames)",
+    "n_stems": 178,
+    "n_identities": 13,
+    "nrow_mismatch": 0,
+    "marginals": {
+      "unseeded": {
+        "g_a_m": 3.7379,
+        "g_shift": 3.1724,
+        "net": 0.5655,
+        "ci": {
+          "point": 0.5655,
+          "lo": 0.1655,
+          "hi": 0.9905,
+          "p": 0.0029,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9424
+      },
+      "seed0": {
+        "g_a_m": 3.5439,
+        "g_shift": 3.1394,
+        "net": 0.4045,
+        "ci": {
+          "point": 0.4045,
+          "lo": 0.0503,
+          "hi": 0.7241,
+          "p": 0.0123,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9416
+      },
+      "seed1": {
+        "g_a_m": 3.7847,
+        "g_shift": 3.1672,
+        "net": 0.6176,
+        "ci": {
+          "point": 0.6176,
+          "lo": 0.0866,
+          "hi": 1.0387,
+          "p": 0.0123,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9406
+      }
+    },
+    "seed_spread": {
+      "nets": {
+        "unseeded": 0.5655,
+        "seed0": 0.4045,
+        "seed1": 0.6176
+      },
+      "mean": 0.5292,
+      "sd_sample": 0.1111,
+      "sd_pop": 0.0907,
+      "min": 0.4045,
+      "max": 0.6176,
+      "range": 0.2131
+    },
+    "paired_deltas": {
+      "unseeded_minus_seed0": {
+        "delta": 0.161,
+        "lo": -0.147,
+        "hi": 0.51,
+        "p": 0.328,
+        "sig": false
+      },
+      "unseeded_minus_seed1": {
+        "delta": -0.052,
+        "lo": -0.554,
+        "hi": 0.58,
+        "p": 0.865,
+        "sig": false
+      },
+      "seed0_minus_seed1": {
+        "delta": -0.213,
+        "lo": -0.676,
+        "hi": 0.343,
+        "p": 0.424,
+        "sig": false
+      }
+    }
+  },
+  "part2_five_columns": {
+    "mask": "GT reactive & all five face_ok (identical frames)",
+    "n_stems": 178,
+    "n_identities": 13,
+    "nrow_mismatch": 0,
+    "marginals": {
+      "unseeded": {
+        "g_a_m": 3.7372,
+        "g_shift": 3.1724,
+        "net": 0.5648,
+        "ci": {
+          "point": 0.5648,
+          "lo": 0.1643,
+          "hi": 0.9905,
+          "p": 0.0029,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9424
+      },
+      "seed0": {
+        "g_a_m": 3.5421,
+        "g_shift": 3.1394,
+        "net": 0.4027,
+        "ci": {
+          "point": 0.4027,
+          "lo": 0.0478,
+          "hi": 0.723,
+          "p": 0.0129,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9416
+      },
+      "seed1": {
+        "g_a_m": 3.7858,
+        "g_shift": 3.1671,
+        "net": 0.6187,
+        "ci": {
+          "point": 0.6187,
+          "lo": 0.0879,
+          "hi": 1.0393,
+          "p": 0.0122,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9406
+      },
+      "zeroother": {
+        "g_a_m": 3.7048,
+        "g_shift": 3.207,
+        "net": 0.4978,
+        "ci": {
+          "point": 0.4978,
+          "lo": -0.0087,
+          "hi": 0.9398,
+          "p": 0.0272,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9418
+      },
+      "cfg0": {
+        "g_a_m": 3.4163,
+        "g_shift": 3.1584,
+        "net": 0.2579,
+        "ci": {
+          "point": 0.2579,
+          "lo": -0.1993,
+          "hi": 0.7247,
+          "p": 0.1407,
+          "n_clusters": 13
+        },
+        "own_r2": 0.9374
+      }
+    }
+  },
+  "reference_marginals": {
+    "GT": 0.695,
+    "non_dyad_floor": "~0 (FLOAT +0.03, Ditto 0.00, SoulX-L -0.21)"
+  }
+}

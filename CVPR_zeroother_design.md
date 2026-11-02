@@ -402,11 +402,43 @@ single-run value carries ~0.11 of seed noise the reported CI does not include.
 
 Outputs: `data/GT/_metrics/seeded_4way__LS_AL.json`.
 
-Open options (await direction): quantify seed variance with multi-seed runs and
-fold it into the CI; within-video temporal dosing for within-subject power; or
-report the honest "underpowered, no significant directed-audio dependence"
-framing. New files to date: `rdgg/{dose_curve,cfg0_compare,seeded_4way}.py`;
-nothing committed; no existing metric code edited.
+### 11.2 Metric-internal seed sweep (`rdgg/metric_seed_sweep.py`)
+
+Does the metric's OWN randomness move the result? Measured at the SOURCE (the
+fitted object), not only the final net, on GT / seeded-stock / zeroother.
+
+- **PCA projections are NOT bitwise-deterministic.** The dominant subspace is
+  shared (mean cos² overlap ≈ 0.92–0.97) but the low-variance tail of the k=64/32
+  components rotates/sign-flips between subsamples, so the worst principal angle
+  reaches ~88°. `‖ΔB‖_F` and the projection delta read >100%, but those are NOT
+  rotation-invariant (they live in the wobbling coordinate frame) and overstate
+  functional change — anchor the claim on the overlap and the net SD.
+- **Timeshift floor and bootstrap ARE effectively deterministic** (floor SD across
+  bases ≈ 0.01–0.02 ≈ its own within-draw SE; bootstrap point SD = 0, CI-bound SD
+  ≈ 0.003–0.005).
+- **Net wobble from metric randomness:** combined SD ≈ 0.05–0.08 per column
+  (biggest mover: the PCA stem-subsample seed). Smaller than the generation-seed SD
+  (0.11) but the same order.
+- **Combined nuisance** (generation + metric) ≈ √(0.11² + 0.08²) ≈ 0.13 for the
+  stock column — comparable to the ablation effects (0.07–0.31). This independently
+  reinforces the underpower finding: the point estimate itself carries seed/metric
+  noise on the order of the effects.
+
+Validated: an independent audit confirmed the sweep code (faithful seeded variants,
+correct knob isolation, rotation-robust subspace measure, no existing-module edits).
+
+### 11.3 Paper-ready results
+
+`results/` (committed) holds the durable paper assets: `tables/*.csv` (tidy, CIs as
+lo/hi), `metrics/*.json` (authoritative copies), `make_tables.py` / `make_figures.py`
+(rebuild the CSVs / the `figures/*.pdf` with no GPU), and a `README.md`. Quote the
+CSVs; rebuild or restyle figures from them.
+
+Open options (await direction): within-video temporal dosing for within-subject
+power; fold the ~0.13 nuisance SD into the reported CI; or report the honest
+"underpowered, no significant directed-audio dependence" framing as is.
+New files: `rdgg/{dose_curve,cfg0_compare,seeded_4way,common4way,seed_variance,metric_seed_sweep}.py`,
+`results/*`; no existing metric code edited.
 
 ---
 

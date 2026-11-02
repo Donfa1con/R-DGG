@@ -1,0 +1,6 @@
+source,net_SD_GT_x1e4,net_SD_seeded_x1e4,net_SD_zero_x1e4
+knob1,0.0449,0.0563,0.0613
+knob2,0.0269,0.0472,0.0076
+knob4_floor_SD,0.0105,0.0248,0.0143
+combined_metric_seed,0.0534,0.0775,0.0634
+generation_seed (ref),0.111,0.111,0.111

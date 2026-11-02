@@ -32,3 +32,6 @@ _metrics/
 
 # local secrets (HF_TOKEN etc.) — never commit
 .env
+
+# paper-ready result tables ARE committed (override the *.csv rule above)
+!results/tables/*.csv
