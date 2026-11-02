@@ -19,6 +19,7 @@ is a repo default (align-to-longer track, noise_alpha=2.0, noise_trunc_z=1.2, st
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import sys
 import time
@@ -43,6 +44,7 @@ import imageio_ffmpeg  # noqa: E402
 import numpy as np  # noqa: E402
 import soundfile as sf  # noqa: E402
 import soxr  # noqa: E402
+import torch  # noqa: E402
 
 from avtr1_renderer.avatar_loader import AvatarLoader  # noqa: E402
 from avtr1_renderer.avtr1_artifact_manager import get_artifact_manager  # noqa: E402
@@ -58,6 +60,19 @@ MAX_CONSECUTIVE_FAIL = 3            # a systemic error hits every stem; abort ra
 # I/O paths are argparse-populated in main() (defaults point at the repo's data/).
 REFDIR = WAVDIR = PAIRS = OUTDIR = PARTIAL = ""
 LIMIT: int | None = None
+# Ablation / reproducibility knobs (argparse-populated; defaults keep the stock run intact).
+ZERO_OTHER = False          # zero the listen track (speaker audio); isolate self-speech-only motion
+SEED_PER_VIDEO = False      # reseed torch RNG per stem so each video has distinct, reproducible noise
+SEED_BASE = 0               # mixed into every per-stem seed; change it for a whole fresh random set
+
+
+def stem_seed(stem: str) -> int:
+    """Deterministic 32-bit seed for one stem: same stem -> same noise, every stem different.
+
+    Mixes SEED_BASE so a reviewer can regenerate a whole fresh random set by changing one number.
+    """
+    digest = hashlib.sha256(f"{SEED_BASE}:{stem}".encode()).digest()
+    return int.from_bytes(digest[:4], "big")
 
 
 def load_mono_16k(path: str) -> np.ndarray:
@@ -96,7 +111,7 @@ def read_pairs() -> dict[str, str]:
 
 
 def main() -> None:
-    global REFDIR, WAVDIR, PAIRS, OUTDIR, PARTIAL, LIMIT
+    global REFDIR, WAVDIR, PAIRS, OUTDIR, PARTIAL, LIMIT, ZERO_OTHER, SEED_PER_VIDEO, SEED_BASE
     ap = argparse.ArgumentParser(
         description="Batch AVTR-1 (CFG 3/3/3) dyadic listener generation")
     ap.add_argument("--references", default=os.path.join(_DATA, "references"),
@@ -112,10 +127,21 @@ def main() -> None:
                     help="pairing list (col1 = listener stems); falls back to all --pairs keys if absent")
     ap.add_argument("--limit", type=int, default=int(os.environ.get("AVTR1_LIMIT", "0")),
                     help="smoke: first N stems only (0 = all)")
+    ap.add_argument("--zero_other_audio", action="store_true",
+                    help="ablation: zero the listen track (speaker audio); drive only by self speech")
+    ap.add_argument("--seed_per_video", action="store_true",
+                    help="reseed torch RNG per stem -> distinct, reproducible noise per video")
+    ap.add_argument("--seed_base", type=int, default=0,
+                    help="offset mixed into each per-stem seed (change for a fresh random set)")
+    ap.add_argument("--cfg_other_audio", type=float, default=CFG["cfg_other_audio"],
+                    help="CFG guidance scale for the speaker (other) audio; 0 disables speaker-audio "
+                         "steering while still feeding the real audio (ablates the reaction pathway)")
     args = ap.parse_args()
     REFDIR, WAVDIR, PAIRS, OUTDIR = args.references, args.wav_dir, args.pairs, args.out_dir
     PARTIAL = f"{OUTDIR}/.partial"
     LIMIT = args.limit or None
+    ZERO_OTHER, SEED_PER_VIDEO, SEED_BASE = args.zero_other_audio, args.seed_per_video, args.seed_base
+    CFG["cfg_other_audio"] = args.cfg_other_audio   # 0 => no speaker-audio guidance (reaction-pathway ablation)
 
     os.makedirs(OUTDIR, exist_ok=True)
     os.makedirs(PARTIAL, exist_ok=True)
@@ -140,6 +166,9 @@ def main() -> None:
     if LIMIT:
         stems = stems[:LIMIT]
 
+    mode = "zero_other_audio" if ZERO_OTHER else "stock"
+    seed_mode = f"per-video seed (base={SEED_BASE})" if SEED_PER_VIDEO else "no seed (repo default)"
+    print(f"Mode: {mode}; CFG={CFG}; {seed_mode}; {len(stems)} stems -> {OUTDIR}", flush=True)
     print(f"Loading AVTR-1 pipeline (out_size={OUT_H}x{OUT_W}, CFG={CFG}) ...", flush=True)
     pipeline, _ = Pipeline.from_artifacts(
         avatar_ids=[], portraits_dir=REFDIR, background_paths={}, out_size=(OUT_H, OUT_W)
@@ -180,6 +209,10 @@ def main() -> None:
             other_wav = f"{WAVDIR}/{spk}.wav"
             speech = load_mono_16k(self_wav)
             listen = load_mono_16k(other_wav)
+            if ZERO_OTHER:
+                # Ablation: silence the speaker track but keep its length, so n (and thus the
+                # frame count / video duration) stays identical to the stock AVTR-1 run.
+                listen = np.zeros_like(listen)
             n = max(len(speech), len(listen))
             speech, listen = fit(speech, n), fit(listen, n)
             sp_chunks = slice_chunks(speech, window, step)
@@ -195,6 +228,13 @@ def main() -> None:
                 audio_path=self_wav, audio_codec="aac",
             )
             writer.send(None)
+
+            sd = stem_seed(stem) if SEED_PER_VIDEO else None
+            if sd is not None:
+                # Reseed the global torch RNG that _progressive_noise draws from (it calls
+                # torch.rand without an explicit generator), so this video's noise is fixed by sd.
+                torch.manual_seed(sd)
+                torch.cuda.manual_seed_all(sd)
 
             state = None
             produced = 0
@@ -216,8 +256,9 @@ def main() -> None:
             consecutive_fail = 0
             dt = time.perf_counter() - t0
             eta = (time.perf_counter() - t_start) / max(done, 1) * (len(stems) - skipped - done)
+            seed_tag = f" seed={sd}" if sd is not None else ""
             print(f"[{idx + 1}/{len(stems)}] {stem}: {produced}f "
-                  f"({produced / FPS:.1f}s) in {dt:.1f}s -> {out_path}  ETA {eta / 60:.0f}m",
+                  f"({produced / FPS:.1f}s) in {dt:.1f}s{seed_tag} -> {out_path}  ETA {eta / 60:.0f}m",
                   flush=True)
         except Exception as exc:  # noqa: BLE001 - collect per-stem, abort only if systemic
             if writer is not None:

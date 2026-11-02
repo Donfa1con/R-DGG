@@ -169,3 +169,24 @@ Step 2 (`download`) runs the `hf-login` task (`hf auth login`) first, so accept
 the weight license on HuggingFace before it. Step 3 writes the engines under
 `models/avtr-1/artifacts/` (or `$AVTR1_LOCAL_STORAGE`); the driver loads whatever
 engines it finds there.
+
+### Zero-other ablation (optional flags)
+
+The driver has three optional flags. They are off by default, so the stock run
+stays identical. Use them to make the listener react to **no** speaker audio.
+
+| flag | effect |
+|------|--------|
+| `--zero_other_audio` | Zeros the listen track (speaker audio); the listener is driven by its own speech only. The track keeps its length, so the frame count matches the stock run. |
+| `--seed_per_video`   | Reseeds the torch RNG per stem, so each video has a distinct, reproducible seed (SHA-256 of the stem). The seed prints to the log. |
+| `--seed_base N`      | Shifts every per-stem seed; change it for a whole fresh random set. |
+
+Write the ablation run to its own column directory, so the stock `AVTR-1`
+column stays intact. CFG / seed defaults are unchanged.
+
+```bash
+cd models/avtr-1
+pixi run -e renderer python ../generate/avtr1.py \
+    --zero_other_audio --seed_per_video \
+    --out_dir ../../data/AVTR-1_zeroother/LS_AL
+```

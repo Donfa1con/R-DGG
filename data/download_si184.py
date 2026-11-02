@@ -39,13 +39,13 @@ Prerequisites / caveats (READ BEFORE RUNNING)
 * The underlying Hugging Face dataset (`facebook/seamless-interaction`) may be
   **gated** — you must request/accept access on HF and be logged in
   (`huggingface-cli login`) before `gather_file_id_data_from_s3` will succeed.
-* **The stem -> SI file_id mapping is the one thing still to confirm on the first
-  real download.** Our stems carry a trailing role letter (e.g. `..._P1293A`) that
-  the SI `file_id` does NOT have. This script derives the file_id by dropping that
-  trailing letter (see `derive_file_id`). The label/split/vendor/interaction_type
-  above are owner-confirmed; this letter-strip derivation is NOT yet confirmed
-  against the release. Run `--dry-run` first and inspect every stem -> file_id line
-  before downloading anything.
+* **The stem -> SI file_id mapping is VERIFIED: it is the identity.** Each stem is
+  already the exact `file_id` in the release, trailing role letter included (e.g.
+  `V00_S2017_I00001160_P1273A`). All 184 stems were matched verbatim against the
+  official `seamless_interaction/assets/filelist.csv` (label=improvised, split=test),
+  which also confirms the owner-stated label/split. `derive_file_id` therefore keeps
+  the whole stem; it does NOT strip the trailing letter (a stripped id is absent from
+  the release and fails loud). `--dry-run` still prints every stem -> file_id line.
 
 IMMUNE-U (fail loud, never guess): if a real download errors, this script prints
 the attempted file_id + guidance and RE-RAISES. It never skips a stem silently
@@ -69,13 +69,16 @@ _STEM_RE = re.compile(r"^(V\d+_S\d+_I\d+_P\d+)([A-Za-z])$")
 
 
 def derive_file_id(stem: str) -> str:
-    """stem -> SI file_id (UNVERIFIED mapping; see module docstring).
+    """stem -> SI file_id. VERIFIED: the mapping is the identity (keep the whole stem).
 
-    `V00_S2035_I00000998_P1293A` -> `V00_S2035_I00000998_P1293`
-    (strip the single trailing role letter from the participant field).
+    `V00_S2017_I00001160_P1273A` -> `V00_S2017_I00001160_P1273A`.
+    All 184 SI-184 stems appear verbatim as file_ids in the official
+    seamless_interaction `assets/filelist.csv` (label=improvised, split=test). The
+    trailing role letter IS part of the file_id; do NOT strip it (a stripped id is
+    not in the release and fails loud at download).
 
     Raises ValueError (fail loud) on any stem that does not match the expected
-    shape, rather than silently emitting a wrong file_id.
+    file_id shape, rather than silently emitting a wrong file_id.
     """
     m = _STEM_RE.match(stem.strip())
     if not m:
@@ -83,7 +86,7 @@ def derive_file_id(stem: str) -> str:
             f"stem {stem!r} does not match the expected "
             f"'V<d>_S<d>_I<d>_P<d><role-letter>' shape; refusing to guess a file_id"
         )
-    return m.group(1)
+    return m.group(0)
 
 
 def read_stems(stems_file: str) -> list[str]:
@@ -172,10 +175,10 @@ def main() -> None:
 
     # ---- dry-run: pure stdlib, no package import, no network. Inspect this first. ----
     if args.dry_run:
-        print(f"# {len(stems)} stems  (stem -> derived SI file_id; UNVERIFIED mapping)")
+        print(f"# {len(stems)} stems  (stem -> SI file_id; VERIFIED identity vs filelist.csv)")
         for stem in stems:
             print(f"{stem}\t{derive_file_id(stem)}")
-        print("\n# dry run: nothing downloaded. Confirm the mapping before a real run.")
+        print("\n# dry run: nothing downloaded. Mapping is the verified identity (filelist.csv).")
         return
 
     # ---- real run: needs the (possibly gated) package + HF access. ----
