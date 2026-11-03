@@ -5,6 +5,12 @@ quote numbers and (re)build figures without a GPU or the corpus. Full method and
 narrative: `../CVPR_zeroother_design.md`. All R-DGG values are the net directed
 gain (aud|mot) ×1e4.
 
+**PCA basis.** The metric default is the **full-data deterministic PCA basis** (all
+184 stems, all rows). Every number here is on that basis. The two figures
+`fig_metric_seed` and `fig_pca_size` are the exception on purpose: they document
+the OLD 60-stem / 40k-row random subsample nuisance (~0.05–0.08 ×1e4 per net) and
+are the **motivation** for the full-data default — not current-basis results.
+
 ## Layout
 
 | path | what |
@@ -63,13 +69,13 @@ SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count), `fig_pca_si
   significant; non-dyadic (lip-sync) baselines ~0; surrogate ~0. (`leaderboard.csv`)
 - **No AVTR-1 ablation is a significant drop** at n=13; the speaker-audio-pathway
   contribution is not established. (`ablation_*`, and `../CVPR_zeroother_design.md` §11)
-- **Generation seed moves R-DGG** by SD ≈ 0.11 over 3 realizations (0.40 / 0.57 /
-  0.62 for the same stock model+audio). (`seed_variance*`)
+- **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
+  0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per
   column (biggest mover: the PCA stem-subsample seed); the timeshift floor and the
   bootstrap are effectively deterministic (SD ≈ 0.01–0.02 and ≈ 0). (`metric_seed_sweep_*`)
-- **Together**, generation + metric nuisance SD ≈ 0.13 for the stock column —
-  comparable to the ablation effects (0.07–0.31), which is why single-seed deltas
+- **Together**, generation + metric nuisance SD ≈ 0.14 for the stock column —
+  comparable to the ablation effects (0.07–0.30), which is why single-seed deltas
   are not reliable at this n.
 - **The metric's Monte-Carlo components are well-converged at the defaults:** the
   timeshift floor and the bootstrap CI both shrink ∝ 1/√count (log-log slope ≈ −0.5),

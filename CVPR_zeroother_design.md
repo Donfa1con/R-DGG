@@ -317,19 +317,27 @@ sweep.
 
 ## 11. Results so far (zeroother + cfg0 ablations)
 
+> **PCA basis note.** The metric default is now the **full-data deterministic PCA
+> basis** (all 184 stems, all rows — no random subsample). Every number in §11 and
+> in `RESULTS.md` is recomputed on this basis. Releases before this change used a
+> 60-stem / 40k-row random subsample, which added a ~0.05–0.08 (×1e4) nuisance per
+> net; the qualitative story (silence is a weak ablation, cfg0 the stronger one,
+> and no drop is significant at n=13) is unchanged. See §11.2 and the gallery's
+> `fig_metric_seed` / `fig_pca_size` for the motivation.
+
 Three AVTR-1 columns, all scored against real GT audio, on one shared mask
 (GT reactive ∩ stock ∩ zero ∩ cfg0 face_ok; 178 stems, 13 identities). Harness:
 `rdgg/dose_curve.py` + `rdgg/cfg0_compare.py` (new files; existing code untouched).
 
 | column | how the speaker audio was ablated | net R-DGG ×1e4 | identity CI | p |
 |--------|-----------------------------------|----------------|-------------|---|
-| stock | none (real audio, cfg_other=3) | +0.564 | [0.16, 0.99] | 0.003 |
-| zeroother | waveform zeroed, cfg_other=3 | +0.498 | [−0.01, 0.94] | 0.027 |
-| cfg0 | real audio, cfg_other=0 | +0.258 | [−0.20, 0.73] | 0.14 |
+| stock | none (real audio, cfg_other=3) | +0.448 | [0.06, 0.86] | 0.010 |
+| zeroother | waveform zeroed, cfg_other=3 | +0.520 | [0.08, 0.95] | 0.010 |
+| cfg0 | real audio, cfg_other=0 | +0.152 | [−0.28, 0.58] | 0.254 |
 
 Reference marginals (RESULTS.md): GT +0.70 (p<0.001); non-dyadic baselines ~0
-(FLOAT +0.03, Ditto 0.00, SoulX-L −0.21, all n.s.). Ordering:
-`non-dyad ~0 < cfg0 +0.26 < zeroother +0.50 < stock +0.56 < GT +0.70`.
+(FLOAT −0.01, Ditto −0.05, SoulX-L −0.24, all n.s.). Ordering:
+`non-dyad ~0 < cfg0 +0.15 < stock +0.45 < zeroother +0.52 < GT +0.70`.
 
 Findings:
 
@@ -339,15 +347,16 @@ Findings:
    non-reactive. The earlier "self-audio leak" reading of zeroother is wrong:
    own-audio-driven lip-sync models would then also sit at ~0.5, but they are ~0.
 2. **Silence is a weak ablation; cfg_other=0 is the proper one.** cfg_other=0
-   removes ~0.31 of reactivity vs stock; zeroing the waveform removes only ~0.07.
-   A dyadic model fed silence still steers toward reactive behaviour (cfg=3 on
-   silence), so it stays reactive.
-3. **AVTR-1's reactivity is mixed.** Part flows through the speaker-audio pathway
-   (cfg0 < zeroother < stock). But cfg0 stays ~0.26, above the non-dyad floor, so
-   a substantial share is prior-driven (own audio + listener prior). Roughly
-   half-half.
+   removes ~0.30 of reactivity vs stock; zeroing the waveform removes nothing
+   (zeroother +0.52 ≈ stock +0.45, marginally higher, within seed noise). A dyadic
+   model fed silence still steers toward reactive behaviour (cfg=3 on silence), so
+   it stays reactive.
+3. **AVTR-1's reactivity is mixed.** cfg0 (~0.15) sits well below stock (~0.45),
+   so part flows through the speaker-audio guidance pathway. But cfg0 stays above
+   the non-dyad floor (~0), so a substantial share is prior-driven (own audio +
+   listener prior). Roughly half-half.
 4. **Not statistically significant.** Every paired drop spans 0
-   (Δ(stock−cfg0)=+0.31 p=0.16; Δ(zero−cfg0)=+0.24 p=0.43). The limit is n=13
+   (Δ(stock−cfg0)=+0.30 p=0.08; Δ(zero−cfg0)=+0.37 p=0.21). The limit is n=13
    identities. The split is directional evidence, not a firm verdict.
 
 Outputs: `data/GT/_metrics/{dose_curve,cfgother0_rdgg}__LS_AL.{json,npz}`.
@@ -359,46 +368,48 @@ per-video seed = same seeds as zeroother and cfg0) was added so all three
 ablations share one noise realization. Harness: `rdgg/seeded_4way.py` (new file;
 existing code untouched). Shared mask 178 stems, 13 identities.
 
-Marginals: seeded-stock **+0.403** [0.05, 0.72] p=0.013; zeroother **+0.497**
-[−0.01, 0.94] p=0.027; cfg0 **+0.259** [−0.20, 0.73] p=0.14; unseeded-stock
-cross-check **+0.564**.
+Marginals: seeded-stock **+0.351** [−0.04, 0.72] p=0.041; zeroother **+0.520**
+[0.08, 0.95] p=0.010; cfg0 **+0.152** [−0.28, 0.58] p=0.254; unseeded-stock
+cross-check **+0.448**. (New-basis numbers come from `rdgg/common4way.py`, the
+seed-matched four-column common-mask harness.)
 
-Seed-matched paired deltas (identical frames AND noise): Δ(stock−cfg0)=**+0.144**
-[−0.28, 0.56] p=0.49; Δ(stock−zero)=−0.094 p=0.70; Δ(zero−cfg0)=+0.238 p=0.44 —
+Seed-matched paired deltas (identical frames AND noise): Δ(stock−cfg0)=**+0.199**
+[−0.15, 0.57] p=0.269; Δ(stock−zero)=−0.169 p=0.508; Δ(zero−cfg0)=+0.368 p=0.212 —
 **none significant**.
 
 Two findings:
 
 1. **R-DGG carries substantial seed noise (3 realizations).** The same model,
    audio, and cfg_other=3, run with three different noise seeds (unseeded,
-   SEED_BASE=0, SEED_BASE=1), gives net = **+0.566 / +0.404 / +0.618** on one
-   common mask (`rdgg/seed_variance.py`, 178 stems). Spread: mean 0.53,
-   **SD(n=3) ≈ 0.11, range 0.21**. No seed-only pairwise delta is significant
-   (p=0.33–0.87 at n=13), but the realized point estimate moves ~0.2 across seeds —
-   the seed SD (~0.11) EXCEEDS the stock↔zeroother gap (0.07) and is ~1/3 of the
-   stock↔cfg0 gap (0.31). So a single-run R-DGG is seed-noisy ON THE ORDER OF the
+   SEED_BASE=0, SEED_BASE=1), gives net = **+0.445 / +0.350 / +0.602** on one
+   common mask (`rdgg/seed_variance.py`, 178 stems). Spread: mean 0.47,
+   **SD(n=3) ≈ 0.13, range 0.25**. No seed-only pairwise delta is significant
+   (p=0.36–0.59 at n=13), but the realized point estimate moves ~0.25 across seeds —
+   the seed SD (~0.13) EXCEEDS the stock↔zeroother gap (0.07) and is ~0.4× the
+   stock↔cfg0 gap (0.30). So a single-run R-DGG is seed-noisy ON THE ORDER OF the
    ablation effects; seed0 was a low draw, which made the seed0-based ablation
    deltas look smaller. The identity bootstrap does NOT capture this (one video per
    person). Reliable ablation/ranking claims need seed-averaging (and/or more
    identities). Final 5-column table (one common mask):
-   `cfg0 0.26 < seed0 0.40 < zeroother 0.50 < unseeded 0.57 < seed1 0.62`; the
-   three stock seeds are the SAME condition, so 0.40–0.62 is pure seed noise.
+   `cfg0 0.15 < seed0 0.35 < unseeded 0.45 < zeroother 0.52 < seed1 0.60`; the
+   three stock seeds are the SAME condition, so 0.35–0.60 is pure seed noise.
 2. **The speaker-audio-pathway contribution is not established.** Once noise is
-   matched, Δ(stock−cfg0) shrinks from +0.31 to +0.14 and is non-significant; the
-   three ablations (0.40 / 0.50 / 0.26) are mutually indistinguishable. Much of
-   the earlier apparent gap was noise, not the audio pathway.
+   matched, Δ(stock−cfg0) shrinks from +0.30 to +0.20 and is non-significant; the
+   three ablations (seeded 0.35 / zeroother 0.52 / cfg0 0.15) are mutually
+   indistinguishable. Much of the earlier apparent gap was noise, not the audio
+   pathway.
 
 **Final verdict.** On SI-184 (13 identities) we cannot establish that AVTR-1's
 R-DGG depends on the speaker-audio content — not via silence, not via cfg_other=0,
 not seed-matched. The power limit is DOUBLE: n=13 identities (identity CI ±0.4–0.6)
-AND single-run seed noise (SD ≈ 0.11), both on the order of or larger than the
-ablation effects (0.07–0.31). AVTR-1's reactivity is statistically consistent with
+AND single-run seed noise (SD ≈ 0.13), both on the order of or larger than the
+ablation effects (0.07–0.30). AVTR-1's reactivity is statistically consistent with
 a listener prior; we can prove neither that it uses nor that it ignores the speaker
 audio. The metric itself still holds at the broad level (GT +0.70 p<0.001; dyadic
 significant; non-dyad ~0). An independent audit confirmed the generation and
 scoring are correct. For any reliable fine-grained (close-model or within-model
 ablation) claim, average R-DGG over several seeds and/or add identities; a
-single-run value carries ~0.11 of seed noise the reported CI does not include.
+single-run value carries ~0.13 of seed noise the reported CI does not include.
 
 Outputs: `data/GT/_metrics/seeded_4way__LS_AL.json`.
 
@@ -449,6 +460,12 @@ edits). The count_sweep reuses those validated blocks and its empirical SD match
 lo/hi), `metrics/*.json` (authoritative copies), `make_tables.py` / `make_figures.py`
 (rebuild the CSVs / the `figures/*.pdf` with no GPU), and a `README.md`. Quote the
 CSVs; rebuild or restyle figures from them.
+
+`fig_metric_seed` and `fig_pca_size` are kept as the **motivation** for the
+full-data PCA default: they measure the OLD 60-stem / 40k-row subsample nuisance
+(their harnesses monkeypatch the fitters to the old random subsample). They are
+not current-basis results; they are the evidence that the random subsample added
+the nuisance the full-data default removes.
 
 Open options (await direction): within-video temporal dosing for within-subject
 power; fold the ~0.13 nuisance SD into the reported CI; or report the honest

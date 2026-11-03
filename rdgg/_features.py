@@ -29,19 +29,19 @@ def fit_pca(mats, k):
     mu = X.mean(0)
     sd = np.maximum(X.std(0), 1e-8)
     Xc = (X - mu) / sd
-    idx = np.random.default_rng(0).choice(len(Xc), size=min(40000, len(Xc)), replace=False)
-    _, sv, Vt = np.linalg.svd(Xc[idx], full_matrices=False)
+    # Fit on ALL rows (deterministic). This was a random 40000-row subsample, which
+    # added row-subsample seed nuisance (~0.05-0.08 net SD; see rdgg/pca_size_sweep.py).
+    # Using all rows removes it, for a one-time ~+50s SVD on ~1.07M rows at Phase-1.
+    _, sv, Vt = np.linalg.svd(Xc, full_matrices=False)
     kk = min(k, Vt.shape[0])
     return mu, sd, Vt[:kk].T
 
 
-def pca_fit_sample(stems, seed):
-    n = 60
-    stems = list(stems)
-    if len(stems) <= n:
-        return stems
-    idx = np.random.default_rng(seed).choice(len(stems), size=n, replace=False)
-    return [stems[i] for i in sorted(idx)]
+def pca_fit_sample(stems, seed=None):
+    # Fit the PCA basis on ALL stems (deterministic). This was a random 60-stem
+    # subsample (seed-dependent), the biggest metric-internal nuisance (~0.05-0.08
+    # net SD; see rdgg/metric_seed_sweep.py / pca_size_sweep.py). `seed` is now unused.
+    return list(stems)
 
 
 def reactive_mask(ls, sp, n_grid):

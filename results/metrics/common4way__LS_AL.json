@@ -16,53 +16,53 @@
   "nrow_mismatch": 0,
   "marginals": {
     "unseeded_stock": {
-      "g_a_m": 3.7382,
-      "g_shift": 3.1723,
-      "net": 0.5659,
+      "g_a_m": 3.6105,
+      "g_shift": 3.1626,
+      "net": 0.4479,
       "ci": {
-        "point": 0.5659,
-        "lo": 0.166,
-        "hi": 0.9899,
-        "p": 0.0029,
+        "point": 0.4479,
+        "lo": 0.063,
+        "hi": 0.8548,
+        "p": 0.0103,
         "n_clusters": 13
       },
       "own_r2": 0.9424
     },
     "seeded_stock": {
-      "g_a_m": 3.5422,
-      "g_shift": 3.1395,
-      "net": 0.4027,
+      "g_a_m": 3.4867,
+      "g_shift": 3.1357,
+      "net": 0.351,
       "ci": {
-        "point": 0.4027,
-        "lo": 0.0483,
-        "hi": 0.7234,
-        "p": 0.0127,
+        "point": 0.351,
+        "lo": -0.0426,
+        "hi": 0.7146,
+        "p": 0.0407,
         "n_clusters": 13
       },
       "own_r2": 0.9416
     },
     "zeroother": {
-      "g_a_m": 3.7033,
-      "g_shift": 3.2069,
-      "net": 0.4963,
+      "g_a_m": 3.7291,
+      "g_shift": 3.2094,
+      "net": 0.5197,
       "ci": {
-        "point": 0.4963,
-        "lo": -0.0099,
-        "hi": 0.9382,
-        "p": 0.0275,
+        "point": 0.5197,
+        "lo": 0.0834,
+        "hi": 0.9459,
+        "p": 0.0098,
         "n_clusters": 13
       },
       "own_r2": 0.9418
     },
     "cfg0": {
-      "g_a_m": 3.4166,
-      "g_shift": 3.1585,
-      "net": 0.2581,
+      "g_a_m": 3.3099,
+      "g_shift": 3.1577,
+      "net": 0.1522,
       "ci": {
-        "point": 0.2581,
-        "lo": -0.1999,
-        "hi": 0.7254,
-        "p": 0.1409,
+        "point": 0.1522,
+        "lo": -0.2777,
+        "hi": 0.5808,
+        "p": 0.2542,
         "n_clusters": 13
       },
       "own_r2": 0.9374
@@ -70,21 +70,21 @@
   },
   "paired_deltas": {
     "unseeded_minus_seeded": {
-      "delta": 0.163,
-      "lo": -0.146,
-      "hi": 0.513,
-      "p": 0.324,
+      "delta": 0.097,
+      "lo": -0.223,
+      "hi": 0.476,
+      "p": 0.587,
       "sig": false,
-      "ci_width": 0.659,
+      "ci_width": 0.699,
       "n_clusters": 13
     },
     "seeded_minus_cfg0": {
-      "delta": 0.145,
-      "lo": -0.275,
-      "hi": 0.563,
-      "p": 0.484,
+      "delta": 0.199,
+      "lo": -0.153,
+      "hi": 0.573,
+      "p": 0.269,
       "sig": false,
-      "ci_width": 0.838,
+      "ci_width": 0.726,
       "n_clusters": 13,
       "prior": {
         "delta": 0.144,
@@ -96,12 +96,12 @@
       "sig_changed": false
     },
     "seeded_minus_zero": {
-      "delta": -0.094,
-      "lo": -0.604,
-      "hi": 0.573,
-      "p": 0.698,
+      "delta": -0.169,
+      "lo": -0.675,
+      "hi": 0.378,
+      "p": 0.508,
       "sig": false,
-      "ci_width": 1.177,
+      "ci_width": 1.053,
       "n_clusters": 13,
       "prior": {
         "delta": -0.094,
@@ -113,12 +113,12 @@
       "sig_changed": false
     },
     "zero_minus_cfg0": {
-      "delta": 0.238,
-      "lo": -0.415,
-      "hi": 0.841,
-      "p": 0.439,
+      "delta": 0.368,
+      "lo": -0.22,
+      "hi": 0.945,
+      "p": 0.212,
       "sig": false,
-      "ci_width": 1.256,
+      "ci_width": 1.165,
       "n_clusters": 13,
       "prior": {
         "delta": 0.238,
@@ -130,23 +130,23 @@
       "sig_changed": false
     },
     "unseeded_minus_cfg0": {
-      "delta": 0.308,
-      "lo": -0.114,
-      "hi": 0.797,
-      "p": 0.16,
+      "delta": 0.296,
+      "lo": -0.036,
+      "hi": 0.695,
+      "p": 0.079,
       "sig": false,
-      "ci_width": 0.911,
+      "ci_width": 0.731,
       "n_clusters": 13
     }
   },
   "seed_test": {
     "delta_name": "unseeded_minus_seeded",
-    "delta": 0.163,
-    "lo": -0.146,
-    "hi": 0.513,
-    "p": 0.324,
+    "delta": 0.097,
+    "lo": -0.223,
+    "hi": 0.476,
+    "p": 0.587,
     "sig": false,
-    "ci_width": 0.659,
+    "ci_width": 0.699,
     "n_clusters": 13,
     "verdict": "SEED GAP NOT SIGNIFICANT (CI includes 0): the unseeded-vs-seeded difference is within noise"
   },

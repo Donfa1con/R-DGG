@@ -11,10 +11,11 @@ These are the **reference numbers a reproduction should match**:
 - **R-DGG** — match each system's value within its reported **95% CI**.
 - **Classic metrics** — match within seed / rounding.
 
-All numbers below are **copied verbatim** from the locked reference
-tables (not recomputed in this repo). Visual-quality metrics
-(FID / FVD / IQA / VQA / CSIM / Blinks) are **out of scope** for this repo and are
-not reported here.
+The **R-DGG** numbers are **recomputed in this repo** on the full-data
+deterministic PCA basis (see the R-DGG provenance below). The **classic-metric**
+numbers are **copied verbatim** from the locked reference tables (not recomputed
+here). Visual-quality metrics (FID / FVD / IQA / VQA / CSIM / Blinks) are **out of
+scope** for this repo and are not reported here.
 
 ---
 
@@ -35,73 +36,81 @@ fit, and the residual energy is unwhitened; `RIDGE=1e-4`, `SCHUR_RIDGE=1e-1`,
 `N_TIMESHIFT=100`, `PAIRED_NULLS=40` (8×8), `BOOTSTRAP=20000`, K_A=64, KMV=32,
 LMAX=100, minseg=4s.
 
+**PCA basis (default):** the audio/motion PCA basis is now fit on the **full data**
+(all 184 stems, all rows), so the fit is **deterministic** — no random stem or row
+subsample. The R-DGG numbers below are **recomputed in this repo on this full-data
+basis** (not the earlier 60-stem / 40k-row subsample). Earlier releases used the
+subsample basis, which added a ~0.05–0.08 (×1e4) nuisance to each net; removing it
+shifts points slightly and tightens the pairwise CIs (see the figure gallery's
+`fig_metric_seed` / `fig_pca_size` for the motivation).
+
 ## Leaderboard (aud|mot net ×1e4, common mask, 100 nulls)
 
 | # | model | kind | net | 95% CI | p50 | p | ownR² |
 |---|---|---|---|---|---|---|---|
-| 1 | **GT** (anchor) | GT | **+0.72** | [+0.32, +1.12] | +0.72 | **0.000** | 0.962 |
-| 2 | **AVTR-1** | dyadic | **+0.57** | [+0.19, +0.98] | +0.57 | **0.002** | 0.943 |
-| 3 | **DyStream** | dyadic | **+0.48** | [+0.06, +0.93] | +0.49 | **0.011** | 0.947 |
-| 4 | **AvatarForcing** | dyadic | **+0.32** | [+0.07, +0.56] | +0.32 | **0.008** | 0.952 |
-| 5 | SoulX Pro | non-dyad | +0.18 | [−0.34, +0.58] | +0.17 | 0.239 | 0.937 |
-| 6 | Ditto | non-dyad | +0.06 | [−0.20, +0.31] | +0.06 | 0.335 | 0.933 |
-| 7 | FLOAT | non-dyad | +0.01 | [−0.33, +0.42] | +0.00 | 0.491 | 0.952 |
-| — | GT×other (surrogate) | control | −0.11 | [−0.56, +0.45] | −0.11 | 0.659 | 0.910 |
-| 8 | SoulX Lite | non-dyad | −0.22 | [−0.54, +0.21] | −0.22 | 0.857 | 0.937 |
+| 1 | **GT** (anchor) | GT | **+0.73** | [+0.31, +1.15] | +0.72 | **0.000** | 0.962 |
+| 2 | **DyStream** | dyadic | **+0.50** | [+0.07, +1.01] | +0.50 | **0.009** | 0.947 |
+| 3 | **AVTR-1** | dyadic | **+0.46** | [+0.09, +0.86] | +0.46 | **0.006** | 0.943 |
+| 4 | **AvatarForcing** | dyadic | **+0.32** | [+0.05, +0.54] | +0.31 | **0.010** | 0.952 |
+| 5 | SoulX Pro | non-dyad | +0.10 | [−0.35, +0.50] | +0.09 | 0.338 | 0.937 |
+| — | GT×other (surrogate) | control | +0.04 | [−0.37, +0.53] | +0.05 | 0.417 | 0.910 |
+| 6 | Ditto | non-dyad | −0.02 | [−0.27, +0.22] | −0.01 | 0.546 | 0.933 |
+| 7 | FLOAT | non-dyad | −0.02 | [−0.33, +0.33] | −0.02 | 0.558 | 0.952 |
+| 8 | SoulX Lite | non-dyad | −0.26 | [−0.54, +0.11] | −0.27 | 0.924 | 0.937 |
 
 **Validation anchors (all hold):** GT anchor #1, p<0.001 · all 3 dyadic
-significant (p≤0.011) and above every non-dyadic · all 4 non-dyadic
-NON-significant (FLOAT ≈0) · surrogate ≈0/negative · rank-stability top5 identical
-under mean/median null.
+significant (p≤0.010) and above every non-dyadic · all 4 non-dyadic
+NON-significant (FLOAT ≈0) · surrogate ≈0 (+0.04, p=0.42) · rank-stability top5
+identical under mean/median null. The dyadic #2/#3 pair (DyStream, AVTR-1) swaps
+vs earlier releases; the two were never a significant ordering (Δ=−0.03, n.s.), so
+the swap is inside the removed PCA nuisance.
 
 **Headline claim (correct framing):** GT shows a significant listener R-DGG
-(+0.72, p<0.001); non-dyadic baselines incl. FLOAT show NO significant R-DGG
-(FLOAT +0.01, p=0.49; all non-dyadic n.s.). Frame as "GT reacts, FLOAT does not"
-(each vs the no-reaction null), NOT "GT > FLOAT head-to-head" (see the 8×8 caveat).
+(+0.73, p<0.001); non-dyadic baselines incl. FLOAT show NO significant R-DGG
+(FLOAT −0.02, p=0.56; all non-dyadic n.s.). Frame as "GT reacts, FLOAT does not"
+(each vs the no-reaction null).
 
 ## 8×8 pairwise
 
 ### Marginals (own GT&model mask, n varies, 100 nulls)
 
 ```
-GT         +0.695  [+0.286, +1.078]  n=178
-AVTR-1     +0.565  [+0.163, +0.989]  n=178
-DyStream   +0.487  [+0.066, +0.934]  n=177
-AvatarF    +0.318  [+0.072, +0.553]  n=178
-SoulX-P    +0.120  [−0.384, +0.527]  n=178
-FLOAT      +0.026  [−0.322, +0.450]  n=178
-Ditto      +0.003  [−0.235, +0.246]  n=178
-SoulX-L    −0.206  [−0.549, +0.249]  n=178
+GT         +0.704  [+0.282, +1.115]  n=178
+DyStream   +0.500  [+0.073, +1.004]  n=177
+AVTR-1     +0.447  [+0.064, +0.852]  n=178
+AvatarF    +0.301  [+0.053, +0.516]  n=178
+SoulX-P    +0.070  [−0.362, +0.467]  n=178
+FLOAT      −0.010  [−0.329, +0.361]  n=178
+Ditto      −0.053  [−0.272, +0.155]  n=178
+SoulX-L    −0.238  [−0.564, +0.186]  n=178
 ```
 
 ### Pairwise Δ = G_row − G_col (×1e4), GT&A&B frame-exact paired, 40 nulls; * = 95% CI excludes 0
 
-| row \ col | GT | AVTR | DySt | AvFo | SxP | FLOAT | Ditto | SxL |
+| row \ col | GT | DySt | AVTR | AvFo | SxP | FLOAT | Ditto | SxL |
 |---|---|---|---|---|---|---|---|---|
-| **GT** | — | +0.13 | +0.23 | +0.36 | +0.55 | +0.68 | +0.66\* | +0.89\* |
-| **AVTR-1** | −0.13 | — | +0.09 | +0.24 | +0.42 | +0.55 | +0.53\* | +0.76\* |
-| **DyStream** | −0.23 | −0.09 | — | +0.15 | +0.29 | +0.49 | +0.40 | +0.70\* |
-| **AvatarF** | −0.36 | −0.24 | −0.15 | — | +0.18 | +0.32 | +0.29\* | +0.52\* |
-| **SoulX-P** | −0.55 | −0.42 | −0.29 | −0.18 | — | +0.13 | +0.11 | +0.34 |
-| **FLOAT** | −0.68 | −0.55 | −0.49 | −0.32 | −0.13 | — | −0.02 | +0.21 |
-| **Ditto** | −0.66\* | −0.53\* | −0.40 | −0.29\* | −0.11 | +0.02 | — | +0.23 |
-| **SoulX-L** | −0.89\* | −0.76\* | −0.70\* | −0.52\* | −0.34 | −0.21 | −0.23 | — |
+| **GT** | — | +0.23 | +0.24 | +0.38 | +0.61\* | +0.72\* | +0.73\* | +0.94\* |
+| **DyStream** | −0.23 | — | +0.03 | +0.17 | +0.39 | +0.53 | +0.50\* | +0.76\* |
+| **AVTR-1** | −0.24 | −0.03 | — | +0.14 | +0.37 | +0.47 | +0.49\* | +0.69\* |
+| **AvatarF** | −0.38 | −0.17 | −0.14 | — | +0.23 | +0.34 | +0.35\* | +0.55\* |
+| **SoulX-P** | −0.61\* | −0.39 | −0.37 | −0.23 | — | +0.10 | +0.12 | +0.32 |
+| **FLOAT** | −0.72\* | −0.53 | −0.47 | −0.34 | −0.10 | — | +0.01 | +0.22 |
+| **Ditto** | −0.73\* | −0.50\* | −0.49\* | −0.35\* | −0.12 | −0.01 | — | +0.20 |
+| **SoulX-L** | −0.94\* | −0.76\* | −0.69\* | −0.55\* | −0.32 | −0.22 | −0.20 | — |
 
-### Significant pairs (7; CI excludes 0), stronger > weaker
+### Significant pairs (10; CI excludes 0), stronger > weaker
 
-- GT > SoulX Lite  Δ=+0.89 · AVTR-1 > SoulX Lite +0.76 · DyStream > SoulX Lite +0.70 · AvatarF > SoulX Lite +0.52
-- GT > Ditto +0.66 · AVTR-1 > Ditto +0.53 · AvatarF > Ditto +0.29
+- GT > SoulX Lite Δ=+0.94 · DyStream > SoulX Lite +0.76 · AVTR-1 > SoulX Lite +0.69 · AvatarF > SoulX Lite +0.55
+- GT > Ditto +0.73 · DyStream > Ditto +0.50 · AVTR-1 > Ditto +0.49 · AvatarF > Ditto +0.35
+- GT > FLOAT +0.72 · GT > SoulX Pro +0.61
 
 **Pairwise power is capped by 13 identity clusters (signal-limited, NOT
-null-limited).** Raising PAIRED_NULLS 40→100 yields the SAME 7 significant pairs
-(CIs barely move). Only MORE identities would add significant pairs.
-
-**GT vs FLOAT caveat (why it's not a significant pair):** Δ=+0.68 but 95% CI
-[−0.03, +1.26] includes 0 (one-sided p=0.029). FLOAT's average ≈0 is SCATTER, not
-uniform-zero. It is +1.75 on P1305A and −1.4 elsewhere. FLOAT's spurious
-audio-locked motion reads as-high-as GT's real reaction on 3 of 13 identities. GT
-and FLOAT anti-correlate across clusters (−0.38), so Var(GT−FLOAT) > Var(GT). The
-population claim (leaderboard, each vs the no-reaction null) is the one to make.
+null-limited).** Only MORE identities would add significant pairs. On the full-data
+basis the pairwise CIs are tighter than the earlier subsample basis, so **10** pairs
+clear 0 (up from 7): GT now separates from FLOAT and SoulX Pro, and DyStream from
+Ditto. Every dyadic system still significantly beats both near-zero baselines
+(Ditto, SoulX Lite); no two dyadic systems separate from each other, and no
+non-dyadic system separates from the surrogate.
 
 ---
 
@@ -211,5 +220,6 @@ in both encoders and strongest in the `full` variant.
 
 ---
 
-_Sources (verbatim, not recomputed here): R-DGG tables from the locked
-reference; classic-metric tables from the classic-metrics reference._
+_Sources: R-DGG tables recomputed in this repo (`rdgg/compute.py`, full-data
+deterministic PCA basis) → `data/GT/_metrics/reactivity_matrix__LS_AL.json`;
+classic-metric tables copied verbatim from the classic-metrics reference._
