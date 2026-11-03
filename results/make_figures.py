@@ -139,7 +139,8 @@ def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
     ax.axhline(0, color=MUTE, lw=1)
     ax.plot(k, net, color=color, lw=2, label="closed-form mean")
     ax.errorbar(ik, ip, yerr=[ilo, ihi], fmt="o", color=color, ecolor=INK,
-                elinewidth=1, capsize=3, markersize=5, label="identity-CI points", zorder=3)
+                elinewidth=1, capsize=3, markersize=5,
+                label="expected net ± 95% identity CI", zorder=3)
     ax.set_xlabel(xlabel)
     ax.set_ylabel("R-DGG net ×1e4")
     ax.set_title(title, fontsize=9)
@@ -268,11 +269,12 @@ def main():
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
                    title="Dose curve: stock → cfg0 (k=0..178)", out="fig_dose_curve_cfg0",
                    color=OK["vermillion"])
-    fig_metric_seed()
     fig_count_sweep()
-    fig_pca_size()
+    # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
+    # as provenance for the full-data PCA default, but are NOT rendered into the paper
+    # figure set (the PCA seed no longer affects the deterministic full-data basis).
     print("  figures: leaderboard, ablation, seed_variance, dose_curve, dose_curve_cfg0, "
-          "metric_seed, count_sweep, pca_size -> results/figures/*.pdf")
+          "count_sweep -> results/figures/*.pdf")
     print("done.")
 
 

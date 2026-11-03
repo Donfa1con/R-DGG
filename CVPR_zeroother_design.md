@@ -461,17 +461,86 @@ lo/hi), `metrics/*.json` (authoritative copies), `make_tables.py` / `make_figure
 (rebuild the CSVs / the `figures/*.pdf` with no GPU), and a `README.md`. Quote the
 CSVs; rebuild or restyle figures from them.
 
-`fig_metric_seed` and `fig_pca_size` are kept as the **motivation** for the
-full-data PCA default: they measure the OLD 60-stem / 40k-row subsample nuisance
-(their harnesses monkeypatch the fitters to the old random subsample). They are
-not current-basis results; they are the evidence that the random subsample added
-the nuisance the full-data default removes.
+`fig_metric_seed` and `fig_pca_size` measured the OLD 60-stem / 40k-row subsample
+nuisance (their harnesses monkeypatch the fitters to the old random subsample) and
+motivated the full-data PCA default. The measurement is **kept as provenance** (the
+`metric_seed_sweep_*` / `pca_size_*` CSVs, the harnesses, and the figure builders in
+`make_figures.py`), but the two figures are **not rendered into the paper set** and
+`make_figures.py` `main()` does not build them: the PCA seed no longer affects the
+deterministic full-data basis, so the plots are not used in the paper.
 
 Open options (await direction): within-video temporal dosing for within-subject
 power; fold the ~0.13 nuisance SD into the reported CI; or report the honest
 "underpowered, no significant directed-audio dependence" framing as is.
 New files: `rdgg/{dose_curve,cfg0_compare,seeded_4way,common4way,seed_variance,metric_seed_sweep}.py`,
 `results/*`; no existing metric code edited.
+
+---
+
+## 12. QUEUED — seed-averaged leaderboard (idea, not yet done)
+
+**Status: QUEUED. Not started. No code or data changed for this yet.**
+
+### 12.1 How we want to compute the leaderboard
+Report each model's R-DGG as the **mean over 3 generation seeds**, with an
+identity-clustered CI computed on the **per-identity seed-averaged values**:
+
+1. Generate each stochastic model with 3 seeds (same seed set across models).
+2. For each identity, average its R-DGG contribution over the 3 seeds.
+3. Run the identity-cluster bootstrap ONCE on those seed-averaged per-identity
+   values. That interval is the reported CI.
+
+**Do NOT add a separate seed-variance term to the CI.**
+
+### 12.2 Why (the reasoning we must not forget)
+The seeds are **per video** (`seed = sha256("{base}:{stem}")`), so the generation
+seed noise sits INSIDE each identity's value. The identity bootstrap resamples
+identities from their observed values, so it ALREADY contains the per-video seed
+noise in the between-identity spread. Adding a `sqrt(identity^2 + seed^2)` term on
+top **double-counts**. Averaging seeds does two clean things: it **centres** the
+point estimate (a single run is a seed lottery: SD ~0.13; the mean of 3 moves the
+lottery to 0.13/sqrt(3) ~0.075) and it slightly **tightens** the CI by de-noising
+the per-identity values. It never widens the CI.
+
+`sigma_seed` (the per-run SD, ~0.13 x1e4 on the full-data basis) is therefore only
+a **reported diagnostic** and the reason **n=3 seeds is enough** (the knee: single
+run centre-SD 0.13, n=3 -> 0.075, n=5 -> 0.058). It is NOT part of the CI formula.
+Pool `sigma_seed` across the stochastic models to estimate it well (do not run 20
+seeds per model).
+
+**One caveat to check:** a run-level COMMON-MODE seed shift (all videos move
+together with the base) would NOT show in the between-identity spread, and would
+then need a `sigma_common/sqrt(n)` term. With independent per-video seeds this is
+expected to be negligible. Verify it: compare the run-to-run SD of the corpus point
+(~0.13) against what one run's identity bootstrap predicts; if they agree, there is
+no hidden common mode and the average-then-bootstrap recipe is complete.
+
+### 12.3 Why NOT model-vs-model significance
+The binding limit is **13 identities**, not seeds. The significant-pair threshold is
+Delta ~0.35-0.5; adjacent models (e.g. DyStream +0.50 vs AVTR-1 +0.46) differ by
+far less. More seeds cannot make a close pair significant; only more identities can.
+Seed averaging is for a **reproducible leaderboard and an honest CI**, not for
+separating the reactive models from each other.
+
+### 12.4 How to get there (implementation path)
+- **Scope: only the stochastic diffusion dyadic models.** AVTR-1 already has 3 seeds
+  (`data/AVTR-1` unseeded, `data/AVTR-1_seeded` seed0, `data/AVTR-1_seeded_b1` seed1).
+  DyStream and AvatarForcing need **+2 seeds each**. GT (real data, no seed) and the
+  near-zero baselines stay single-run (their ordering is not significant).
+- **Seed hook.** `models/generate/avtr1.py` has the per-video reseed
+  (`--seed_per_video` / `--seed_base`, `stem_seed`). `models/generate/dystream.py`
+  and `avatarforcing.py` have **no seed** yet; add the same hook (reseed the torch
+  RNG per stem right before sampling; confirm each sampler draws from the global
+  torch RNG, else seed its own Generator). All models are diffusion/flow, so all are
+  stochastic; no generation test is needed, only a code hook.
+- **Audio is shared across seeds** (the seed changes only the generated listener
+  MOTION; the speaker audio is the real GT input). So for each new seed re-extract
+  **emoca + liveportrait only**; REUSE the existing `vad` + `hubert` audio features.
+- **Metric.** Generalise `rdgg/seed_variance.py` / the leaderboard to average the
+  per-identity values over the 3 seeds, then identity-bootstrap. Report the pooled
+  `sigma_seed` as a diagnostic.
+- Cost: ~4 generation + motion-extraction passes (2 DyStream + 2 AvatarForcing); the
+  GT operator and the other models stay fixed.
 
 ---
 

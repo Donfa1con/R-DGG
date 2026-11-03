@@ -6,10 +6,13 @@ narrative: `../CVPR_zeroother_design.md`. All R-DGG values are the net directed
 gain (aud|mot) ×1e4.
 
 **PCA basis.** The metric default is the **full-data deterministic PCA basis** (all
-184 stems, all rows). Every number here is on that basis. The two figures
-`fig_metric_seed` and `fig_pca_size` are the exception on purpose: they document
-the OLD 60-stem / 40k-row random subsample nuisance (~0.05–0.08 ×1e4 per net) and
-are the **motivation** for the full-data default — not current-basis results.
+184 stems, all rows). Every number here is on that basis. The PCA-seed nuisance the
+default removes was measured by `metric_seed_sweep.py` / `pca_size_sweep.py`; those
+measurements stay as **provenance** (the `metric_seed_sweep_*` and `pca_size_*` CSVs,
+the harnesses, and the `fig_metric_seed` / `fig_pca_size` builders in
+`make_figures.py`), but the two figures are **no longer rendered into the paper set**
+— the seed does not affect the deterministic full-data basis, so the plots are not
+used in the paper.
 
 ## Layout
 
@@ -48,12 +51,16 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 
 ## Figures (`make_figures.py`)
 
-`fig_leaderboard` (bar + CI, coloured by system type), `fig_ablation` (5 columns +
-CI vs GT anchor / floor), `fig_seed_variance` (3 stock seeds + mean±SD),
-`fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
-declines), `fig_metric_seed` (metric-seed net SD per knob vs the generation-seed
-SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count), `fig_pca_size`
-(net effect + basis overlap vs PCA subsample size).
+Paper set (rendered by `make_figures.py` `main()`): `fig_leaderboard` (bar + CI,
+coloured by system type), `fig_ablation` (5 columns + CI vs GT anchor / floor),
+`fig_seed_variance` (3 stock seeds + mean±SD), `fig_dose_curve` (stock→zeroother,
+k=0..178), `fig_dose_curve_cfg0` (stock→cfg0, declines), `fig_count_sweep`
+(Monte-Carlo noise vs count, ∝ 1/√count).
+
+Provenance only (builders kept, CSVs kept, NOT rendered into the paper set):
+`fig_metric_seed` (metric-seed net SD per knob vs the generation-seed SD) and
+`fig_pca_size` (net effect + basis overlap vs PCA subsample size) — they measured
+the OLD subsample nuisance that the full-data default removes.
 
 ## How to regenerate
 

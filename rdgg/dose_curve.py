@@ -158,6 +158,61 @@ def net_expected(A, p):
     return (np.log(MR / BR) - np.log(MN / BN).mean()) * 1e4
 
 
+def dose_ci(E_stock, E_zero, stems, k, B, seed, n_sched=160):
+    """Dose-level CI at k switched videos: EXPECTED-over-schedules point with an
+    identity-cluster CI (the statistically-clean estimand).
+
+    The schedule (WHICH k of N videos are switched) is a finite-population design
+    choice, not a sample from a superpopulation, so it must NOT inflate the CI
+    tails. We therefore INTEGRATE the schedule INTO THE POINT: the net is averaged
+    over `n_sched` random schedules of size k (averaging the realized log-ratio, so
+    there is no Jensen bias), and the CI is the identity-cluster bootstrap of that
+    schedule-averaged net. The interval then reflects ONLY population (identity)
+    uncertainty, is comparable across the whole curve, and does not balloon
+    mid-curve from the combinatorics of choosing k videos. At k=0 / k=N there is one
+    schedule, so this reduces to the pure identity bootstrap. Pure numpy; no GPU.
+
+    Returns point == estimand of the interval (same quantity), so point lies between
+    lo and hi by construction (up to Monte-Carlo)."""
+    N = len(stems)
+    clusters = list(dict.fromkeys(_ident_key(s) for s in stems))
+    cidx = {c: i for i, c in enumerate(clusters)}
+    NC = len(clusters)
+    cl = np.array([cidx[_ident_key(s)] for s in stems])
+    Cmat = np.zeros((NC, N))
+    Cmat[cl, np.arange(N)] = 1.0                     # cluster one-hot: Cmat @ per-stem -> per-cluster
+    a = lambda E, q: np.array([E[s][q] for s in stems])
+    BRs, MRs, BNs, MNs = a(E_stock, "both_r"), a(E_stock, "mot_r"), a(E_stock, "both_n"), a(E_stock, "mot_n")
+    BRz, MRz, BNz, MNz = a(E_zero, "both_r"), a(E_zero, "mot_r"), a(E_zero, "both_n"), a(E_zero, "mot_n")
+    K = BNs.shape[1]
+    rng = np.random.default_rng(seed)
+    # pre-aggregate each schedule to per-cluster sums, stacked over schedules S
+    S = 1 if (k <= 0 or k >= N) else n_sched
+    BRc = np.empty((S, NC)); MRc = np.empty((S, NC))
+    BNc = np.empty((S, NC, K)); MNc = np.empty((S, NC, K))
+    for s in range(S):
+        if k <= 0:
+            zc = np.zeros(N, bool)
+        elif k >= N:
+            zc = np.ones(N, bool)
+        else:
+            zc = np.zeros(N, bool); zc[rng.choice(N, k, replace=False)] = True
+        BRc[s] = Cmat @ np.where(zc, BRz, BRs); MRc[s] = Cmat @ np.where(zc, MRz, MRs)
+        BNc[s] = Cmat @ np.where(zc[:, None], BNz, BNs); MNc[s] = Cmat @ np.where(zc[:, None], MNz, MNs)
+
+    def sched_avg_net(sel):
+        """mean over schedules of the realized net on the resampled clusters `sel`."""
+        BR = BRc[:, sel].sum(1); MR = MRc[:, sel].sum(1)           # (S,)
+        BK = BNc[:, sel, :].sum(1); MK = MNc[:, sel, :].sum(1)     # (S, K)
+        return float((np.log(MR / BR) - np.log(MK / BK).mean(1)).mean()) * 1e4
+
+    point = sched_avg_net(np.arange(NC))
+    d = np.array([sched_avg_net(rng.integers(0, NC, NC)) for _ in range(B)])
+    lo, p50, hi = np.percentile(d, [2.5, 50, 97.5])
+    return {"point": float(point), "lo": float(lo), "p50": float(p50), "hi": float(hi),
+            "n_clusters": NC, "n_sched": int(S)}
+
+
 def main():
     ap = argparse.ArgumentParser(description="R-DGG zeroother dose-response curve (standalone).")
     ap.add_argument("--corpus", default=os.environ.get("CORPUS", _config.CORPUS))
@@ -240,19 +295,20 @@ def main():
     cf_k = list(range(N + 1))
     cf_net = [float(net_expected(A, k / N)) for k in cf_k]
 
-    # identity-clustered CI at a few k (reuse gnet_boot_ci on a representative E_mix)
+    # dose-level CI: EXPECTED-over-schedules point + identity-cluster CI (dose_ci).
+    # The schedule (which k videos) is integrated into the POINT, not the CI tails,
+    # so interval widths are comparable across the whole curve and do not balloon
+    # mid-curve from combinatorics. Endpoints k=0 / k=N have one schedule, so dose_ci
+    # reduces to the pure identity bootstrap (cross-checked against gnet_boot_ci).
     ci = {}
     for k in sorted(set([0, N // 4, N // 2, 3 * N // 4, N])):
-        z = np.zeros(N, bool)
-        if 0 < k < N:
-            z[np.random.default_rng(100 + k).choice(N, k, replace=False)] = True
-        elif k == N:
-            z[:] = True
-        E_mix = {s: (E_zero[s] if z[i] else E_stock[s]) for i, s in enumerate(stems)}
-        d = gnet_boot_ci(E_mix, stems, _ident_key, BOOTSTRAP, one_sided=False)
-        ci[int(k)] = {"point": d["point"], "lo": d["lo"], "hi": d["hi"], "n_clusters": d["n_clusters"]}
-        print(f"  [CI] k={k}: point {d['point']:.3f} [{d['lo']:.3f}, {d['hi']:.3f}] "
-              f"({d['n_clusters']} clusters)", flush=True)
+        d = dose_ci(E_stock, E_zero, stems, k, BOOTSTRAP, 100 + k)
+        ci[int(k)] = {"point": d["point"], "lo": d["lo"], "hi": d["hi"], "p50": d["p50"],
+                      "n_clusters": d["n_clusters"], "n_sched": d["n_sched"],
+                      "method": "expected-over-schedules + identity"}
+        c = ci[int(k)]
+        print(f"  [CI] k={k}: point {c['point']:.3f} [{c['lo']:.3f}, {c['hi']:.3f}] "
+              f"({c['n_clusters']} clusters, {c['n_sched']} schedules)", flush=True)
 
     # exact additivity validation at selected k (rebuild TRUE mixed design, refit ControlFit)
     print("  [validate] exact additivity (refit ControlFit on the true mixed design)...", flush=True)
@@ -292,6 +348,11 @@ def main():
         "sampled_curve": sampled,
         "closed_form_curve": {"k": cf_k, "net": cf_net},
         "identity_ci": ci,
+        "identity_ci_method": ("expected-over-schedules point with an identity-cluster CI: the net is "
+                               "averaged over n_sched random size-k schedules (schedule integrated into "
+                               "the POINT, no Jensen bias), then the identity clusters are bootstrapped. "
+                               "The CI is pure population uncertainty, comparable across k; endpoints "
+                               "k=0/k=N have one schedule and reduce to the identity bootstrap"),
         "additivity_validation": val, "additivity_max_abs_err": float(max_err),
         "nrow_mismatch_count": len(nrow_mismatch),
     }
