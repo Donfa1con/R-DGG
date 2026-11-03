@@ -174,8 +174,43 @@ def fig_metric_seed():
     plt.close(fig)
 
 
+COLC = {"GT": OK["green"], "seeded": OK["blue"], "zero": OK["orange"]}
+
+
+def fig_count_sweep():
+    ts, bs = rows("count_sweep_timeshift.csv"), rows("count_sweep_bootstrap.csv")
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.4, 3.2))
+    for col in COLC:
+        r = [x for x in ts if x["column"] == col]
+        a1.plot([fnum(x["n_nulls"]) for x in r], [fnum(x["sd_net_empirical_x1e4"]) for x in r],
+                "o-", color=COLC[col], ms=4, lw=1.5, label=col)
+    gt = [x for x in ts if x["column"] == "GT"]
+    a1.plot([fnum(x["n_nulls"]) for x in gt], [fnum(x["sd_theory_1_over_sqrtN_x1e4"]) for x in gt],
+            "--", color=MUTE, lw=1, label="1/√N (theory)")
+    a1.set(xscale="log", yscale="log", xlabel="timeshift nulls N",
+           ylabel="SD(net) ×1e4")
+    a1.set_title("floor Monte-Carlo noise", fontsize=9)
+    for col in COLC:
+        r = [x for x in bs if x["column"] == col]
+        a2.plot([fnum(x["n_bootstrap"]) for x in r], [fnum(x["sd_ci_lo_x1e4"]) for x in r],
+                "o-", color=COLC[col], ms=4, lw=1.5, label=col)
+    a2.set(xscale="log", yscale="log", xlabel="bootstrap resamples B",
+           ylabel="SD(CI lower) ×1e4")
+    a2.set_title("CI Monte-Carlo noise", fontsize=9)
+    for ax in (a1, a2):
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(True, which="both", color=GRID, lw=0.5)
+        ax.legend(frameon=False, fontsize=7.5)
+    fig.suptitle("Metric Monte-Carlo noise vs count (∝ 1/√count)", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(FIGS / "fig_count_sweep.pdf")
+    plt.close(fig)
+
+
 def main():
-    for fn in (fig_leaderboard, fig_ablation, fig_seed_variance, fig_dose_curve, fig_metric_seed):
+    for fn in (fig_leaderboard, fig_ablation, fig_seed_variance, fig_dose_curve,
+               fig_metric_seed, fig_count_sweep):
         fn()
         print(f"  figures/{fn.__name__.replace('fig_', 'fig_')}.pdf")
     print("done.")

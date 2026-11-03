@@ -424,8 +424,16 @@ fitted object), not only the final net, on GT / seeded-stock / zeroother.
   reinforces the underpower finding: the point estimate itself carries seed/metric
   noise on the order of the effects.
 
-Validated: an independent audit confirmed the sweep code (faithful seeded variants,
-correct knob isolation, rotation-robust subspace measure, no existing-module edits).
+- **Monte-Carlo components are well-converged at the defaults** (`rdgg/count_sweep.py`,
+  variance-vs-count): the timeshift floor and the bootstrap CI both shrink ∝ 1/√count
+  (log-log slope ≈ −0.5, matching theory), and at N=100 / B=20000 the noise is small
+  (SD(net) ≈ 0.014, SD(CI) ≈ 0.004). So the default counts are adequate; the metric
+  nuisance comes from the PCA subsample, not the null/bootstrap counts.
+
+Validated: an independent audit confirmed the metric_seed_sweep code (faithful seeded
+variants, correct knob isolation, rotation-robust subspace measure, no existing-module
+edits). The count_sweep reuses those validated blocks and its empirical SD matches the
+1/√count theory (slopes −0.49 to −0.56), which checks the implementation.
 
 ### 11.3 Paper-ready results
 

@@ -26,7 +26,8 @@ SPLIT = "LS_AL"
 METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
-JSON = ["common4way", "seed_variance", "dose_curve", "cfgother0_rdgg", "metric_seed_sweep"]
+JSON = ["common4way", "seed_variance", "dose_curve", "cfgother0_rdgg",
+        "metric_seed_sweep", "count_sweep"]
 
 
 def load(name):
@@ -190,6 +191,22 @@ def build_metric_seed_sweep():
               ["source", "net_SD_GT_x1e4", "net_SD_seeded_x1e4", "net_SD_zero_x1e4"], rows)
 
 
+def build_count_sweep():
+    d = load("count_sweep")
+    rows = []
+    for col, rr in d["dim1_timeshift_count"]["per_column"].items():
+        for r in rr:
+            rows.append([col, r["N"], r["sd_floor_net_empirical"], r["sd_theory_1_over_sqrtN"]])
+    write_csv("count_sweep_timeshift.csv",
+              ["column", "n_nulls", "sd_net_empirical_x1e4", "sd_theory_1_over_sqrtN_x1e4"], rows)
+    rows = []
+    for col, rr in d["dim2_bootstrap_count"]["per_column"].items():
+        for r in rr:
+            rows.append([col, r["B"], r["sd_ci_lo"], r["sd_ci_hi"], r.get("point_sd", 0)])
+    write_csv("count_sweep_bootstrap.csv",
+              ["column", "n_bootstrap", "sd_ci_lo_x1e4", "sd_ci_hi_x1e4", "point_sd_x1e4"], rows)
+
+
 def main():
     print("copying authoritative JSON -> results/metrics/")
     copy_json()
@@ -199,6 +216,7 @@ def main():
     build_seed_variance()
     build_dose_curve()
     build_metric_seed_sweep()
+    build_count_sweep()
     print("done.")
 
 

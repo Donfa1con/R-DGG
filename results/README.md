@@ -35,13 +35,15 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `metric_seed_sweep_pca.csv` | per PCA-seed setting: subspace max angle, overlap, proj-delta, ‖ΔB‖, per-column net |
 | `metric_seed_sweep_timeshift.csv` | per timeshift base: floor, within-draw SE, net |
 | `metric_seed_sweep_summary.csv` | metric-seed net SD per knob + combined, vs the generation-seed SD |
+| `count_sweep_timeshift.csv` | SD(net) vs number of timeshift nulls N (empirical + 1/√N theory) |
+| `count_sweep_bootstrap.csv` | SD(CI bound) vs number of bootstrap resamples B |
 
 ## Figures (`make_figures.py`)
 
 `fig_leaderboard` (bar + CI, coloured by system type), `fig_ablation` (5 columns +
 CI vs GT anchor / floor), `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (k=0..178), `fig_metric_seed` (metric-seed net SD per knob vs the
-generation-seed SD).
+generation-seed SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
 
 ## How to regenerate
 
@@ -65,6 +67,11 @@ generation-seed SD).
 - **Together**, generation + metric nuisance SD ≈ 0.13 for the stock column —
   comparable to the ablation effects (0.07–0.31), which is why single-seed deltas
   are not reliable at this n.
+- **The metric's Monte-Carlo components are well-converged at the defaults:** the
+  timeshift floor and the bootstrap CI both shrink ∝ 1/√count (log-log slope ≈ −0.5),
+  and at N=100 nulls / B=20000 the noise is small (SD(net) ≈ 0.014 / SD(CI) ≈ 0.004).
+  So they are NOT the source of the ~0.05–0.08 metric nuisance — the PCA subsample
+  is. (`count_sweep_*`)
 
 ### Caveat on the PCA source metrics
 
