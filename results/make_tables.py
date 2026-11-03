@@ -26,7 +26,7 @@ SPLIT = "LS_AL"
 METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
-JSON = ["common4way", "seed_variance", "dose_curve", "cfgother0_rdgg",
+JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
         "metric_seed_sweep", "count_sweep"]
 
 
@@ -130,18 +130,18 @@ def build_seed_variance():
 
 
 # ---- dose curve (raw points for error bars) --------------------------------
-def build_dose_curve():
-    d = load("dose_curve")
-    write_csv("dose_curve_sampled.csv",
+def build_dose_curve(name="dose_curve", tag=""):
+    d = load(name)
+    write_csv(f"dose_curve{tag}_sampled.csv",
               ["k", "frac", "mean_x1e4", "p50_x1e4", "lo_x1e4", "hi_x1e4", "n_subsets"],
               [[r["k"], r["frac"], r["mean"], r.get("p50", ""), r["lo"], r["hi"], r["n_subsets"]]
                for r in d["sampled_curve"]])
     cf = d["closed_form_curve"]
-    write_csv("dose_curve_closedform.csv", ["k", "net_x1e4"],
+    write_csv(f"dose_curve{tag}_closedform.csv", ["k", "net_x1e4"],
               list(zip(cf["k"], cf["net"])))
-    write_csv("dose_curve_identity_ci.csv", ["k", "point_x1e4", "ci_lo_x1e4", "ci_hi_x1e4"],
+    write_csv(f"dose_curve{tag}_identity_ci.csv", ["k", "point_x1e4", "ci_lo_x1e4", "ci_hi_x1e4"],
               [[int(k), v["point"], v["lo"], v["hi"]] for k, v in d["identity_ci"].items()])
-    write_csv("dose_curve_additivity.csv", ["k", "additive_x1e4", "exact_x1e4", "abs_err_x1e4"],
+    write_csv(f"dose_curve{tag}_additivity.csv", ["k", "additive_x1e4", "exact_x1e4", "abs_err_x1e4"],
               [[r["k"], r["additive"], r["exact"], r["abs_err"]] for r in d["additivity_validation"]])
 
 
@@ -215,6 +215,7 @@ def main():
     build_ablation()
     build_seed_variance()
     build_dose_curve()
+    build_dose_curve("dose_curve_cfg0", "_cfg0")
     build_metric_seed_sweep()
     build_count_sweep()
     print("done.")

@@ -124,9 +124,11 @@ def fig_seed_variance():
     plt.close(fig)
 
 
-def fig_dose_curve():
-    cf = rows("dose_curve_closedform.csv")
-    ic = rows("dose_curve_identity_ci.csv")
+def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
+                   title="Dose curve: stock → zeroother (k=0..178)", out="fig_dose_curve",
+                   color=OK["blue"]):
+    cf = rows(f"dose_curve{tag}_closedform.csv")
+    ic = rows(f"dose_curve{tag}_identity_ci.csv")
     k = [fnum(r["k"]) for r in cf]
     net = [fnum(r["net_x1e4"]) for r in cf]
     ik = [fnum(r["k"]) for r in ic]
@@ -135,15 +137,15 @@ def fig_dose_curve():
     ihi = [fnum(r["ci_hi_x1e4"]) - fnum(r["point_x1e4"]) for r in ic]
     fig, ax = plt.subplots(figsize=(5.2, 3.2))
     ax.axhline(0, color=MUTE, lw=1)
-    ax.plot(k, net, color=OK["blue"], lw=2, label="closed-form mean")
-    ax.errorbar(ik, ip, yerr=[ilo, ihi], fmt="o", color=OK["blue"], ecolor=INK,
+    ax.plot(k, net, color=color, lw=2, label="closed-form mean")
+    ax.errorbar(ik, ip, yerr=[ilo, ihi], fmt="o", color=color, ecolor=INK,
                 elinewidth=1, capsize=3, markersize=5, label="identity-CI points", zorder=3)
-    ax.set_xlabel("number of videos with zeroed speaker audio (k)")
+    ax.set_xlabel(xlabel)
     ax.set_ylabel("R-DGG net ×1e4")
-    ax.set_title("Dose curve: stock → zeroother (k=0..178)", fontsize=9)
+    ax.set_title(title, fontsize=9)
     tidy(ax)
     ax.legend(frameon=False, fontsize=8)
-    fig.savefig(FIGS / "fig_dose_curve.pdf")
+    fig.savefig(FIGS / f"{out}.pdf")
     plt.close(fig)
 
 
@@ -162,8 +164,10 @@ def fig_metric_seed():
                width=w, color=c, label=lab, zorder=2)
     ax.axhline(gen, color=OK["vermillion"], lw=1.4, ls="--",
                label=f"generation-seed SD ({gen:.3f})")
+    LBL = {"knob1": "PCA stem\nsubsample", "knob2": "PCA row\nsubsample",
+           "knob4_floor_SD": "timeshift\nfloor", "combined_metric_seed": "combined"}
     ax.set_xticks(list(x))
-    ax.set_xticklabels([r["source"].replace("_", "\n") for r in knobs], fontsize=7.5)
+    ax.set_xticklabels([LBL.get(r["source"], r["source"]) for r in knobs], fontsize=8)
     ax.set_ylabel("metric-seed net SD ×1e4")
     ax.set_title("Metric-internal seed sensitivity vs generation seed", fontsize=9)
     tidy(ax)
@@ -209,10 +213,17 @@ def fig_count_sweep():
 
 
 def main():
-    for fn in (fig_leaderboard, fig_ablation, fig_seed_variance, fig_dose_curve,
-               fig_metric_seed, fig_count_sweep):
-        fn()
-        print(f"  figures/{fn.__name__.replace('fig_', 'fig_')}.pdf")
+    fig_leaderboard()
+    fig_ablation()
+    fig_seed_variance()
+    fig_dose_curve()   # stock -> zeroother
+    fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
+                   title="Dose curve: stock → cfg0 (k=0..178)", out="fig_dose_curve_cfg0",
+                   color=OK["vermillion"])
+    fig_metric_seed()
+    fig_count_sweep()
+    print("  figures: leaderboard, ablation, seed_variance, dose_curve, dose_curve_cfg0, "
+          "metric_seed, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 

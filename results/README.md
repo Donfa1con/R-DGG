@@ -28,10 +28,11 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `seed_variance.csv` | three stock noise seeds (unseeded / base0 / base1): net, CI, own_r2 |
 | `seed_variance_summary.csv` | their mean, sample/pop SD, min, max, range |
 | `seed_variance_paired_deltas.csv` | paired Δ among the three seeds |
-| `dose_curve_sampled.csv` | dose curve k=0..178: sampled mean + band |
+| `dose_curve_sampled.csv` | dose curve stock→zeroother k=0..178: sampled mean + band |
 | `dose_curve_closedform.csv` | the closed-form mean curve (179 points) |
 | `dose_curve_identity_ci.csv` | identity-CI points at k ∈ {0,44,89,133,178} |
 | `dose_curve_additivity.csv` | additive-estimate vs exact-capture validation |
+| `dose_curve_cfg0_*.csv` | same dose curve but stock→cfg0 (declines 0.57→0.26, vs the flat stock→zeroother) |
 | `metric_seed_sweep_pca.csv` | per PCA-seed setting: subspace max angle, overlap, proj-delta, ‖ΔB‖, per-column net |
 | `metric_seed_sweep_timeshift.csv` | per timeshift base: floor, within-draw SE, net |
 | `metric_seed_sweep_summary.csv` | metric-seed net SD per knob + combined, vs the generation-seed SD |
@@ -42,8 +43,9 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 
 `fig_leaderboard` (bar + CI, coloured by system type), `fig_ablation` (5 columns +
 CI vs GT anchor / floor), `fig_seed_variance` (3 stock seeds + mean±SD),
-`fig_dose_curve` (k=0..178), `fig_metric_seed` (metric-seed net SD per knob vs the
-generation-seed SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
+`fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
+declines), `fig_metric_seed` (metric-seed net SD per knob vs the generation-seed
+SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
 
 ## How to regenerate
 
