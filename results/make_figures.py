@@ -223,12 +223,15 @@ def fig_pca_size():
         return "all" if v >= 1e8 else f"{int(v / 1000)}k"
 
     gen = 0.111
+    TOTAL_ROWS = 1069850   # full PCA rows; the "all" row point sits at its true magnitude
+    xvals = {"stem": [fnum(r["n_stems"]) for r in st],
+             "row": [min(fnum(r["n_rows"]), TOTAL_ROWS) for r in ro]}
     fig, ax = plt.subplots(2, 2, figsize=(7.4, 5.0))
     titles = {"stem": "stem subsample (rows=40k)", "row": "row subsample (stems=60)"}
-    xlab = {"stem": "stems used in the PCA fit", "row": "rows used in the PCA fit"}
+    xlab = {"stem": "stems used in the PCA fit (log)", "row": "rows used in the PCA fit (log)"}
     for j, dim in enumerate(("stem", "row")):
         d = data[dim]
-        x = list(range(len(d)))                       # ordinal: equal spacing per swept size
+        x = xvals[dim]                                 # log axis, true magnitudes
         labels = [szlabel(r["n_stems" if dim == "stem" else "n_rows"], dim) for r in d]
         for key, lab, c in (("net_SD_GT_x1e4", "GT", OK["green"]),
                             ("net_SD_seeded_x1e4", "stock", OK["blue"]),
@@ -237,13 +240,15 @@ def fig_pca_size():
         ax[0][j].axhline(gen, color=OK["vermillion"], lw=1.2, ls="--", label="gen-seed SD")
         ax[0][j].set_title(titles[dim], fontsize=9)
         ax[0][j].set_ylabel("net SD ×1e4" if j == 0 else "")
-        ax[0][j].set_xticks(x); ax[0][j].set_xticklabels(labels)
         ax[1][j].plot(x, [fnum(r["aud_overlap"]) for r in d], "s-", color=OK["sky"], ms=4, lw=1.4, label="audio")
         ax[1][j].plot(x, [fnum(r["mot_overlap"]) for r in d], "^-", color=OK["purple"], ms=4, lw=1.4, label="motion")
         ax[1][j].set_ylabel("basis overlap (cos²)" if j == 0 else "")
         ax[1][j].set_xlabel(xlab[dim])
-        ax[1][j].set_xticks(x); ax[1][j].set_xticklabels(labels)
         ax[1][j].set_ylim(0.9, 1.005)
+        for a in (ax[0][j], ax[1][j]):
+            a.set_xscale("log")
+            a.minorticks_off()                         # kill log minor ticks + their stray labels
+            a.set_xticks(x); a.set_xticklabels(labels)
     for a in ax.flat:
         a.spines["top"].set_visible(False); a.spines["right"].set_visible(False)
         a.grid(color=GRID, lw=0.5); a.set_axisbelow(True)
