@@ -38,6 +38,7 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `metric_seed_sweep_summary.csv` | metric-seed net SD per knob + combined, vs the generation-seed SD |
 | `count_sweep_timeshift.csv` | SD(net) vs number of timeshift nulls N (empirical + 1/√N theory) |
 | `count_sweep_bootstrap.csv` | SD(CI bound) vs number of bootstrap resamples B |
+| `pca_size_stem.csv` / `pca_size_row.csv` | net SD + basis overlap vs PCA subsample SIZE (stems / rows) |
 
 ## Figures (`make_figures.py`)
 
@@ -45,7 +46,8 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 CI vs GT anchor / floor), `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_metric_seed` (metric-seed net SD per knob vs the generation-seed
-SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
+SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count), `fig_pca_size`
+(net effect + basis overlap vs PCA subsample size).
 
 ## How to regenerate
 
@@ -74,6 +76,11 @@ SD), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
   and at N=100 nulls / B=20000 the noise is small (SD(net) ≈ 0.014 / SD(CI) ≈ 0.004).
   So they are NOT the source of the ~0.05–0.08 metric nuisance — the PCA subsample
   is. (`count_sweep_*`)
+- **The PCA subsample is the mover, and only the FULL set removes it.** As the PCA
+  stem/row subsample grows, the basis overlap converges smoothly to 1, but the net
+  effect on R-DGG stays ~0.04–0.08 across intermediate sizes and drops to 0 only at
+  the full set (deterministic basis). Partial increases barely help the metric; use
+  all stems / all rows to make the PCA nuisance vanish. (`pca_size_*`)
 
 ### Caveat on the PCA source metrics
 

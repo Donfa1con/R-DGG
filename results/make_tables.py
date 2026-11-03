@@ -27,7 +27,7 @@ METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
-        "metric_seed_sweep", "count_sweep"]
+        "metric_seed_sweep", "count_sweep", "pca_size_sweep"]
 
 
 def load(name):
@@ -191,6 +191,21 @@ def build_metric_seed_sweep():
               ["source", "net_SD_GT_x1e4", "net_SD_seeded_x1e4", "net_SD_zero_x1e4"], rows)
 
 
+def build_pca_size_sweep():
+    d = load("pca_size_sweep")
+    for dim, key, sizelab in [("dimA_stem_subsample_size", "stem", "n_stems"),
+                              ("dimB_row_subsample_size", "row", "n_rows")]:
+        rows = []
+        for r in d[dim]["per_size"]:
+            s = r["net_SD"]
+            rows.append([r["size"], r["K"], s["GT"], s["seeded"], s["zero"],
+                         r["aud_overlap_mean"], r["mot_overlap_mean"],
+                         r["aud_max_angle_mean"], r["mot_max_angle_mean"]])
+        write_csv(f"pca_size_{key}.csv",
+                  [sizelab, "K", "net_SD_GT_x1e4", "net_SD_seeded_x1e4", "net_SD_zero_x1e4",
+                   "aud_overlap", "mot_overlap", "aud_max_angle_deg", "mot_max_angle_deg"], rows)
+
+
 def build_count_sweep():
     d = load("count_sweep")
     rows = []
@@ -218,6 +233,7 @@ def main():
     build_dose_curve("dose_curve_cfg0", "_cfg0")
     build_metric_seed_sweep()
     build_count_sweep()
+    build_pca_size_sweep()
     print("done.")
 
 

@@ -212,6 +212,40 @@ def fig_count_sweep():
     plt.close(fig)
 
 
+def fig_pca_size():
+    st, ro = rows("pca_size_stem.csv"), rows("pca_size_row.csv")
+    TOTAL_ROWS = 1069850
+    fx = {"stem": [fnum(r["n_stems"]) / 184 for r in st],
+          "row": [min(fnum(r["n_rows"]), TOTAL_ROWS) / TOTAL_ROWS for r in ro]}
+    data = {"stem": st, "row": ro}
+    gen = 0.111
+    fig, ax = plt.subplots(2, 2, figsize=(7.4, 5.0))
+    titles = {"stem": "stem subsample (rows=40k)", "row": "row subsample (stems=60)"}
+    for j, dim in enumerate(("stem", "row")):
+        x = fx[dim]; d = data[dim]
+        for key, lab, c in (("net_SD_GT_x1e4", "GT", OK["green"]),
+                            ("net_SD_seeded_x1e4", "stock", OK["blue"]),
+                            ("net_SD_zero_x1e4", "zeroother", OK["orange"])):
+            ax[0][j].plot(x, [fnum(r[key]) for r in d], "o-", color=c, ms=4, lw=1.4, label=lab)
+        ax[0][j].axhline(gen, color=OK["vermillion"], lw=1.2, ls="--", label="gen-seed SD")
+        ax[0][j].set_title(titles[dim], fontsize=9)
+        ax[0][j].set_ylabel("net SD ×1e4" if j == 0 else "")
+        ax[1][j].plot(x, [fnum(r["aud_overlap"]) for r in d], "s-", color=OK["sky"], ms=4, lw=1.4, label="audio")
+        ax[1][j].plot(x, [fnum(r["mot_overlap"]) for r in d], "^-", color=OK["purple"], ms=4, lw=1.4, label="motion")
+        ax[1][j].set_ylabel("basis overlap (cos²)" if j == 0 else "")
+        ax[1][j].set_xlabel("subsample fraction of full")
+        ax[1][j].set_ylim(0.9, 1.005)
+    for a in ax.flat:
+        a.spines["top"].set_visible(False); a.spines["right"].set_visible(False)
+        a.grid(color=GRID, lw=0.5); a.set_axisbelow(True)
+    ax[0][0].legend(frameon=False, fontsize=7.5, ncol=2)
+    ax[1][0].legend(frameon=False, fontsize=7.5)
+    fig.suptitle("PCA subsample size: net effect (top) vs basis stability (bottom)", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(FIGS / "fig_pca_size.pdf")
+    plt.close(fig)
+
+
 def main():
     fig_leaderboard()
     fig_ablation()
@@ -222,8 +256,9 @@ def main():
                    color=OK["vermillion"])
     fig_metric_seed()
     fig_count_sweep()
+    fig_pca_size()
     print("  figures: leaderboard, ablation, seed_variance, dose_curve, dose_curve_cfg0, "
-          "metric_seed, count_sweep -> results/figures/*.pdf")
+          "metric_seed, count_sweep, pca_size -> results/figures/*.pdf")
     print("done.")
 
 

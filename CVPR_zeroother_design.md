@@ -429,6 +429,14 @@ fitted object), not only the final net, on GT / seeded-stock / zeroother.
   (log-log slope ≈ −0.5, matching theory), and at N=100 / B=20000 the noise is small
   (SD(net) ≈ 0.014, SD(CI) ≈ 0.004). So the default counts are adequate; the metric
   nuisance comes from the PCA subsample, not the null/bootstrap counts.
+- **PCA subsample SIZE sweep** (`rdgg/pca_size_sweep.py`): as the stem/row subsample
+  grows, the basis overlap converges smoothly to 1, but the NET effect on R-DGG stays
+  ~0.04–0.08 across intermediate sizes and reaches 0 only at the FULL set
+  (deterministic basis). So the basis wobble damps to a roughly-constant net nuisance;
+  partial increases barely help, and only using all stems / all rows removes it. This
+  directly measures "how the basis variance affects the final metric" — the answer is
+  a near-constant ~0.05–0.08 until full determinism. (K=5 → the intermediate SD values
+  are noisy; the smooth overlap→1 and the net→0-only-at-full are the robust reads.)
 
 Validated: an independent audit confirmed the metric_seed_sweep code (faithful seeded
 variants, correct knob isolation, rotation-robust subspace measure, no existing-module
