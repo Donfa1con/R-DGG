@@ -214,15 +214,22 @@ def fig_count_sweep():
 
 def fig_pca_size():
     st, ro = rows("pca_size_stem.csv"), rows("pca_size_row.csv")
-    TOTAL_ROWS = 1069850
-    fx = {"stem": [fnum(r["n_stems"]) / 184 for r in st],
-          "row": [min(fnum(r["n_rows"]), TOTAL_ROWS) / TOTAL_ROWS for r in ro]}
     data = {"stem": st, "row": ro}
+
+    def szlabel(v, dim):
+        v = fnum(v)
+        if dim == "stem":
+            return "all" if v >= 184 else str(int(v))
+        return "all" if v >= 1e8 else f"{int(v / 1000)}k"
+
     gen = 0.111
     fig, ax = plt.subplots(2, 2, figsize=(7.4, 5.0))
     titles = {"stem": "stem subsample (rows=40k)", "row": "row subsample (stems=60)"}
+    xlab = {"stem": "stems used in the PCA fit", "row": "rows used in the PCA fit"}
     for j, dim in enumerate(("stem", "row")):
-        x = fx[dim]; d = data[dim]
+        d = data[dim]
+        x = list(range(len(d)))                       # ordinal: equal spacing per swept size
+        labels = [szlabel(r["n_stems" if dim == "stem" else "n_rows"], dim) for r in d]
         for key, lab, c in (("net_SD_GT_x1e4", "GT", OK["green"]),
                             ("net_SD_seeded_x1e4", "stock", OK["blue"]),
                             ("net_SD_zero_x1e4", "zeroother", OK["orange"])):
@@ -230,10 +237,12 @@ def fig_pca_size():
         ax[0][j].axhline(gen, color=OK["vermillion"], lw=1.2, ls="--", label="gen-seed SD")
         ax[0][j].set_title(titles[dim], fontsize=9)
         ax[0][j].set_ylabel("net SD ×1e4" if j == 0 else "")
+        ax[0][j].set_xticks(x); ax[0][j].set_xticklabels(labels)
         ax[1][j].plot(x, [fnum(r["aud_overlap"]) for r in d], "s-", color=OK["sky"], ms=4, lw=1.4, label="audio")
         ax[1][j].plot(x, [fnum(r["mot_overlap"]) for r in d], "^-", color=OK["purple"], ms=4, lw=1.4, label="motion")
         ax[1][j].set_ylabel("basis overlap (cos²)" if j == 0 else "")
-        ax[1][j].set_xlabel("subsample fraction of full")
+        ax[1][j].set_xlabel(xlab[dim])
+        ax[1][j].set_xticks(x); ax[1][j].set_xticklabels(labels)
         ax[1][j].set_ylim(0.9, 1.005)
     for a in ax.flat:
         a.spines["top"].set_visible(False); a.spines["right"].set_visible(False)
