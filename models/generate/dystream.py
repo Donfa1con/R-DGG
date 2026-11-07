@@ -23,6 +23,7 @@ after MAX_CONSECUTIVE_FAIL consecutive failures (a systemic error hits every ste
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import sys
@@ -64,6 +65,7 @@ sys.path.insert(0, REPO)
 os.chdir(REPO)   # app.py opens repo-relative config/checkpoint paths at import (documented launch: cwd == repo)
 import cv2  # noqa: E402
 from PIL import Image  # noqa: E402
+import torch  # noqa: E402
 import app  # noqa: E402
 
 # DyStream demo defaults (app.py sliders) == sample.yaml model.cfg_* block
@@ -74,6 +76,15 @@ MAX_CONSECUTIVE_FAIL = 3            # abort once failures EXCEED this (i.e. on t
 # I/O paths are argparse-populated in main() (defaults point at the repo's data/).
 REFDIR = WAVDIR = PAIRS = OUTDIR = PARTIAL = ""
 LIMIT: int | None = None
+# Reproducibility knobs (argparse-populated; defaults keep the stock run intact).
+SEED_PER_VIDEO = False       # reseed torch RNG per stem -> distinct, reproducible noise per video
+SEED_BASE = 0                # mixed into every per-stem seed; change for a whole fresh random set
+
+
+def stem_seed(stem: str) -> int:
+    """Deterministic 32-bit per-stem seed (sha256 of 'SEED_BASE:stem'); mirrors avtr1.py.
+    Same stem -> same noise; every stem different; change SEED_BASE for a fresh random set."""
+    return int.from_bytes(hashlib.sha256(f"{SEED_BASE}:{stem}".encode()).digest()[:4], "big")
 
 
 def _noop(*a, **k):
@@ -107,7 +118,7 @@ def read_pairs() -> dict[str, str]:
 
 
 def main() -> None:
-    global REFDIR, WAVDIR, PAIRS, OUTDIR, PARTIAL, LIMIT
+    global REFDIR, WAVDIR, PAIRS, OUTDIR, PARTIAL, LIMIT, SEED_PER_VIDEO, SEED_BASE
     ap = argparse.ArgumentParser(
         description="Batch DyStream (dyadic listener generation) -- SI-184 reproduction")
     ap.add_argument("--references", default=os.path.join(_DATA, "references"),
@@ -123,10 +134,15 @@ def main() -> None:
                     help="pairing list (col1 = listener stems); falls back to all --pairs keys if absent")
     ap.add_argument("--limit", type=int, default=int(os.environ.get("DS_LIMIT", "0")),
                     help="smoke: first N stems only (0 = all)")
+    ap.add_argument("--seed_per_video", action="store_true",
+                    help="reseed torch RNG per stem -> distinct, reproducible noise per video")
+    ap.add_argument("--seed_base", type=int, default=0,
+                    help="offset mixed into each per-stem seed (change for a fresh random set)")
     args = ap.parse_args()
     REFDIR, WAVDIR, PAIRS, OUTDIR = args.references, args.wav_dir, args.pairs, args.out_dir
     PARTIAL = f"{OUTDIR}/.partial"
     LIMIT = args.limit or None
+    SEED_PER_VIDEO, SEED_BASE = args.seed_per_video, args.seed_base
 
     os.makedirs(OUTDIR, exist_ok=True)
     os.makedirs(PARTIAL, exist_ok=True)
@@ -151,8 +167,10 @@ def main() -> None:
     if LIMIT:
         stems = stems[:LIMIT]
 
+    seed_mode = f"per-video seed (base={SEED_BASE})" if SEED_PER_VIDEO else "model default (unseeded)"
     print(f"[dystream] {len(stems)} stems  REF={REFDIR}  WAV={WAVDIR}\n"
-          f"           OUT={OUTDIR}  CFG(a={CFG_A},ao={CFG_AO},anc={CFG_ANC},all={CFG_ALL},steps={DENOISE})",
+          f"           OUT={OUTDIR}  CFG(a={CFG_A},ao={CFG_AO},anc={CFG_ANC},all={CFG_ALL},steps={DENOISE})  "
+          f"{seed_mode}",
           flush=True)
 
     app.load_dystream_model()
@@ -179,6 +197,12 @@ def main() -> None:
                     raise FileNotFoundError(f"{nm} missing: {path}")
 
             ref_pil = Image.open(ref_png).convert("RGB")
+            if SEED_PER_VIDEO:
+                # reseed the global torch RNG right before sampling so this video's diffusion
+                # noise is fixed by its per-stem seed (run_inference draws torch.randn without an
+                # explicit generator); mirrors models/generate/avtr1.py.
+                sd = stem_seed(stem)
+                torch.manual_seed(sd); torch.cuda.manual_seed_all(sd)
             out_tmp, *_ = app.run_inference(
                 ref_pil, own_wav, other_wav,
                 DENOISE, CFG_A, CFG_AO, CFG_ANC, CFG_ALL,

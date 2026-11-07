@@ -22,7 +22,7 @@ differs slightly from the demo's global-min/max stretch but is content-identical
 and removes the need to hold all frames. Idempotent; ffmpeg/ffprobe must be on
 PATH (asserted). No *_tmp orphans; a failed stem's partial output is removed.
 """
-import os, sys, glob, argparse, subprocess, shutil, time, tempfile
+import os, sys, glob, argparse, subprocess, shutil, time, tempfile, hashlib
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 # Model source = the pinned, in-repo git submodule at models/avatarforcing (override with
@@ -41,6 +41,12 @@ import torch.nn.functional as F
 from omegaconf import OmegaConf
 
 from inference import InferenceAgent
+
+
+def _stem_seed(stem: str, base: int) -> int:
+    """Deterministic 32-bit per-stem seed (sha256 of 'base:stem'); mirrors models/generate/avtr1.py.
+    Same stem -> same noise; every stem different; change `base` for a whole fresh random set."""
+    return int.from_bytes(hashlib.sha256(f"{base}:{stem}".encode()).digest()[:4], "big")
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -286,6 +292,10 @@ def main():
     ap.add_argument("--u_cfg_scale", type=float, default=1.0)
     ap.add_argument("--ext", default="mp4")
     ap.add_argument("--max_consec_fail", type=int, default=3)
+    ap.add_argument("--seed_per_video", action="store_true",
+                    help="reseed torch RNG per stem -> distinct, reproducible noise per video")
+    ap.add_argument("--seed_base", type=int, default=0,
+                    help="offset mixed into each per-stem seed (change for a fresh random set)")
     args = ap.parse_args()
 
     require_tools()
@@ -338,6 +348,7 @@ def main():
         stems = stems[:args.limit]
 
     log(f"{len(stems)} stems -> {args.out_dir}")
+    log("seed: " + (f"per-video (base={args.seed_base})" if args.seed_per_video else "model default (unseeded)"))
     ok = skip = fail = consec = 0
     for i, X in enumerate(stems, 1):
         out_path = os.path.join(args.out_dir, f"{X}.{args.ext}")
@@ -370,6 +381,12 @@ def main():
 
                     writer = FFmpegWriter(out_path, avatar_wav, fps, input_size)
                     agent.G._cur_writer = writer
+                    if args.seed_per_video:
+                        # reseed the global torch RNG right before sampling so this video's initial
+                        # flow noise is fixed by its per-stem seed (G.inference draws torch.randn
+                        # without an explicit generator); mirrors models/generate/avtr1.py.
+                        sd = _stem_seed(X, args.seed_base)
+                        torch.manual_seed(sd); torch.cuda.manual_seed_all(sd)
                     with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
                         agent.G.inference(data=data, a_cfg_scale=args.a_cfg_scale,
                                           u_cfg_scale=args.u_cfg_scale, nfe=args.nfe,

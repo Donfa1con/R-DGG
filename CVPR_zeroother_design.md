@@ -198,6 +198,23 @@ different analysis, NOT part of this curve. See section 10.
 (The noise-seed difference between the two columns is accepted and not treated as
 a confound, by decision.)
 
+### 6.6 Term: "expected-over-schedules" (how the implemented dose CI works)
+
+A **schedule** is one choice of WHICH k of the N videos are switched to the
+ablation at dose level k. There are C(N,k) schedules. **Expected-over-schedules**
+means the curve value at k is the EXPECTED net over a random schedule of size k,
+i.e. the mean net over many random size-k schedules. The point is this expectation
+(so the choice of which videos is averaged into the POINT, not left in the tails).
+
+`rdgg/dose_curve.py` `dose_ci()` reports this: the net is averaged over `n_sched`
+random schedules (averaging the realized log-ratio, so no Jensen bias), then the
+identity clusters are bootstrapped on that schedule-averaged net. So the CI is pure
+population (identity) uncertainty, its width is comparable across k, and it does NOT
+balloon mid-curve from the combinatorics of picking k videos. At k=0 and k=N there
+is one schedule, so `dose_ci` reduces to the plain identity bootstrap. This
+supersedes the earlier "band is not a CI" plan (point 5 above): the schedule spread
+is integrated into the point, and the plotted interval is a valid identity CI.
+
 ---
 
 ## 7. Harness plan [proposed]
