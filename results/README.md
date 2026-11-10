@@ -34,6 +34,8 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `leaderboard.csv` | 8 systems + GT anchor + GT×other surrogate: net, CI, p, own_r2 (from `../RESULTS.md`) |
 | `ablation_marginals.csv` | 5 AVTR-1 columns on one common mask: unseeded / seed0 / seed1 / zeroother / cfg0 — g_a_m, g_shift, net, CI, p, own_r2 |
 | `ablation_paired_deltas.csv` | identity-clustered paired Δ among those columns, with CI, p, sig |
+| `shift_ablation.csv` | shift-correction ablation: every model × every seed + GT & surrogate controls — `g_a_m` (uncorrected), `g_shift`, `net` (R-DGG), and identity CI on BOTH `net` and raw `g_a_m` |
+| `shift_ablation_seed_avg.csv` | per dyadic model, mean/SD of `net` and `g_a_m` over the 3 generation seeds |
 | `seed_variance.csv` | three stock noise seeds (unseeded / base0 / base1): net, CI, own_r2 |
 | `seed_variance_summary.csv` | their mean, sample/pop SD, min, max, range |
 | `seed_variance_paired_deltas.csv` | paired Δ among the three seeds |
@@ -53,9 +55,11 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 
 Paper set (rendered by `make_figures.py` `main()`): `fig_leaderboard` (bar + CI,
 coloured by system type), `fig_ablation` (5 columns + CI vs GT anchor / floor),
-`fig_seed_variance` (3 stock seeds + mean±SD), `fig_dose_curve` (stock→zeroother,
-k=0..178), `fig_dose_curve_cfg0` (stock→cfg0, declines), `fig_count_sweep`
-(Monte-Carlo noise vs count, ∝ 1/√count).
+`fig_shift_ablation` (two panels, every model × every seed + GT controls:
+uncorrected `g_a_m` left vs corrected `net` = R-DGG right — shows the correction is
+needed to read the controls as ~0), `fig_seed_variance` (3 stock seeds + mean±SD),
+`fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
+declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
 
 Provenance only (builders kept, CSVs kept, NOT rendered into the paper set):
 `fig_metric_seed` (metric-seed net SD per knob vs the generation-seed SD) and
@@ -76,6 +80,11 @@ the OLD subsample nuisance that the full-data default removes.
   significant; non-dyadic (lip-sync) baselines ~0; surrogate ~0. (`leaderboard.csv`)
 - **No AVTR-1 ablation is a significant drop** at n=13; the speaker-audio-pathway
   contribution is not established. (`ablation_*`, and `../CVPR_zeroother_design.md` §11)
+- **The time-shift correction is necessary:** uncorrected, every column sits on a
+  common ≈+3.1×1e4 floor and reads p≈0 (GT +3.80, surrogate +3.24, FLOAT +3.13,
+  Ditto +3.02 — indistinguishable); subtracting `g_shift` collapses every control to
+  ~0 (surrogate +0.01 p=0.47; talking-heads −0.24…+0.07, all n.s.) and leaves only GT
+  and the dyadic models positive. (`shift_ablation.csv`, `fig_shift_ablation`)
 - **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
   0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per

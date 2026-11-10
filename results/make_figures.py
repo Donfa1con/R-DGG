@@ -13,6 +13,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 HERE = Path(__file__).resolve().parent
 TABLES = HERE / "tables"
@@ -121,6 +122,81 @@ def fig_seed_variance():
     ax.grid(axis="y", color=GRID, lw=0.6)
     ax.legend(frameon=False, fontsize=8)
     fig.savefig(FIGS / "fig_seed_variance.pdf")
+    plt.close(fig)
+
+
+# shift-correction ablation: uncorrected g_a_m (left) vs corrected net = R-DGG (right)
+SHIFT_GROUP_C = {"GT-control": OK["green"], "dyadic": OK["blue"], "non-dyad": OK["orange"]}
+SHIFT_LOWFID = {"DyStream [seed0]", "DyStream [seed1]"}   # n~81, 4x floor -- flag, don't hide
+
+
+def fig_shift_ablation():
+    d = rows("shift_ablation.csv")
+    recs, labels = [], []                                  # insert a spacer between groups
+    prev = None
+    for r in d:
+        if prev is not None and r["group"] != prev:
+            recs.append(None); labels.append("")
+        recs.append(r); labels.append(r["column"]); prev = r["group"]
+    y = list(range(len(recs)))[::-1]
+
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(9.2, 6.4), sharey=True,
+                                   gridspec_kw={"width_ratios": [1, 1], "wspace": 0.08})
+
+    def draw(ax, vk, lok, hik, xlim, hollow):
+        ax.axvline(0, color=MUTE, lw=1, zorder=1)
+        for yi, r in zip(y, recs):
+            if r is None:
+                continue
+            gc = SHIFT_GROUP_C.get(r["group"], OK["grey"])
+            v, lo, hi = fnum(r[vk]), fnum(r[lok]), fnum(r[hik])
+            low = r["column"] in SHIFT_LOWFID
+            if v > xlim[1]:                                # off-scale: clip to edge + label
+                ax.plot(xlim[1], yi, marker=">", ms=7, color=gc,
+                        alpha=(0.55 if low else 1.0), clip_on=False, zorder=3)
+                ax.text(xlim[1] - 0.03, yi + 0.42, f"$g_{{a\\,m}}$={v:.1f}", ha="right",
+                        va="bottom", fontsize=6.8, color=gc)
+                continue
+            kw = dict(mfc="white", mec=gc, mew=1.4) if hollow else dict(mfc=gc, mec=gc)
+            ax.errorbar(v, yi, xerr=[[v - lo], [hi - v]], fmt="o", ms=6,
+                        ecolor=(gc if hollow else INK), elinewidth=1, capsize=2,
+                        alpha=(0.55 if low else 1.0), zorder=3, **kw)
+        ax.set_xlim(*xlim)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", color=GRID, lw=0.6, zorder=0)
+        ax.set_axisbelow(True)
+
+    draw(axL, "g_a_m_x1e4", "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", (2.2, 4.7), hollow=True)
+    axL.set_xlabel("uncorrected $g_{a\\,m}$ ×1e4   (95% identity CI)")
+    axL.set_title("WITHOUT shift correction", fontsize=9.5)
+    axL.axvspan(3.0, 3.25, color=OK["grey"], alpha=0.12, zorder=0)
+    axL.text(3.125, len(recs) - 0.4, "common\nfloor", ha="center", va="top", fontsize=7, color=MUTE)
+
+    gt_net = next((fnum(r["net_x1e4"]) for r in d if r["column"] == "GT"), None)
+    draw(axR, "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", (-0.9, 2.3), hollow=False)
+    if gt_net is not None:
+        axR.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
+    axR.set_xlabel("corrected net = $g_{a\\,m}-g_{shift}$ ×1e4   (R-DGG)")
+    axR.set_title("WITH shift correction (R-DGG)", fontsize=9.5)
+
+    axL.set_yticks(y)
+    axL.set_yticklabels(labels, fontsize=8)
+    handles = [Line2D([0], [0], marker="s", mfc=c, mec=c, ls="none", ms=7, label=g)
+               for g, c in SHIFT_GROUP_C.items()]
+    handles += [
+        Line2D([0], [0], marker="o", mfc="white", mec=INK, mew=1.4, ls="none", ms=6, label="uncorrected (left)"),
+        Line2D([0], [0], marker="o", mfc=INK, mec=INK, ls="none", ms=6, label="corrected (right)"),
+        Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor"),
+    ]
+    axR.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
+    fig.suptitle("Is the time-shift correction needed? R-DGG ablation — all models, all seeds, GT controls",
+                 fontsize=10.5, y=0.98)
+    fig.text(0.5, 0.005,
+             "DyStream seed0/seed1 clipped (n≈81, 4× floor — low fidelity, shown pale); "
+             "all other columns n≈178, 13 identities.",
+             ha="center", fontsize=7, color=MUTE)
+    fig.savefig(FIGS / "fig_shift_ablation.pdf")
     plt.close(fig)
 
 
@@ -264,6 +340,7 @@ def fig_pca_size():
 def main():
     fig_leaderboard()
     fig_ablation()
+    fig_shift_ablation()
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -273,8 +350,8 @@ def main():
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
-    print("  figures: leaderboard, ablation, seed_variance, dose_curve, dose_curve_cfg0, "
-          "count_sweep -> results/figures/*.pdf")
+    print("  figures: leaderboard, ablation, shift_ablation, seed_variance, dose_curve, "
+          "dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 

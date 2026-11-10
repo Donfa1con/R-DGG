@@ -27,7 +27,7 @@ METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
-        "metric_seed_sweep", "count_sweep", "pca_size_sweep"]
+        "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation"]
 
 
 def load(name):
@@ -105,6 +105,30 @@ def build_ablation():
             for k, v in pd.items()]
     write_csv("ablation_paired_deltas.csv",
               ["pair", "delta_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p", "sig", "ci_width_x1e4"], rows)
+
+
+# ---- shift-correction ablation (every model x every seed + GT controls) -----
+def build_shift_ablation():
+    d = load("shift_ablation")
+    cols = d["columns"]
+    rows = []
+    for lbl in d["order"]:
+        c = cols[lbl]
+        rows.append([lbl, c["model"], c["group"], c["seed"], c["n_stems"], c["n_identities"],
+                     c["own_r2"], c["g_a_m"], c["g_shift"], c["net"], c["floor_sd"],
+                     c["ci_net"]["lo"], c["ci_net"]["hi"], c["ci_net"]["p"],
+                     c["ci_raw"]["lo"], c["ci_raw"]["hi"], c["ci_raw"]["p"]])
+    write_csv("shift_ablation.csv",
+              ["column", "model", "group", "seed", "n_stems", "n_identities", "own_r2",
+               "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4", "floor_sd_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
+               "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", "raw_p"], rows)
+    sa = d["seed_averaged_dyadic"]
+    write_csv("shift_ablation_seed_avg.csv",
+              ["model", "net_mean_x1e4", "net_sd_x1e4", "net_min_x1e4", "net_max_x1e4",
+               "g_a_m_mean_x1e4", "g_a_m_sd_x1e4"],
+              [[m, v["net_mean"], v["net_sd"], v["net_min"], v["net_max"],
+                v["g_a_m_mean"], v["g_a_m_sd"]] for m, v in sa.items()])
 
 
 # ---- seed variance (3 stock noise realizations) ----------------------------
@@ -228,6 +252,7 @@ def main():
     print("writing tables -> results/tables/")
     build_leaderboard()
     build_ablation()
+    build_shift_ablation()
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")
