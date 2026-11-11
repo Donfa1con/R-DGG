@@ -682,29 +682,37 @@ knob. We switch the operating point ONLY when a variant **strictly dominates** o
   production layer-9 baseline to max |Δnet| = 0.005 ×1e4 over the 15 columns (fp16
   rounding), so the layer-6 and layer-12 differences are real, not an extraction
   artifact.
-- **Result (the layer is LOAD-BEARING; layer 9 is necessary — NOT a robustness
-  no-op).** Unlike the lag window, the layer choice changes the verdict:
-  1. **Anchor (rule 1): only layer 9 keeps it.** GT is significant at layer 9
-     (+0.60, p<0.01) and loses significance at BOTH neighbours — layer 6 +0.17
-     (p=0.21), layer 12 +0.16 (p=0.21). A held-out positive control that reads as
-     non-significant means the metric is not validated at that layer.
-  2. **Controls (rule 2): layer 6 breaks them too.** At layer 6 two talking-head
-     controls turn significantly positive (SoulX Lite +0.37 p=0.04, Ditto +0.26
-     p=0.02); the surrogate rises to +0.20 (p=0.12). Layer 12 keeps the controls
-     ~0 and n.s., but its anchor is already gone. Layer 9 is the only layer with
-     both a significant anchor and null controls.
-  3. **Separation (rule 3): only layer 9.** At layer 6 the control SoulX Lite
-     (+0.37, sig.) outranks the GT anchor (+0.17, n.s.); the ordering is broken.
-     The dyadic models mostly stay positive at all three layers (AVTR-1, DyStream
-     robust; AvatarForcing wobbles), but without a significant GT their positives
-     cannot be read as reaction.
-  4. **Decision (rule 4): keep layer 9 — it strictly dominates.** It is the only
-     layer of the three that passes rules 1–3; both neighbours are disqualified on
-     the anchor, layer 6 also on the controls. This is the pre-registered layer
-     choice, and the ablation shows it is load-bearing, not arbitrary — the same
-     failure mode the repo used to reject `hubert-large` ("loses the held-out
-     anchor", `extractors/hubert/README.md`). Report as a necessity result, not a
-     robustness one. See `results/` (`hubert_ablation*`, `fig_hubert_ablation`).
+- **Result (FULL sweep 6..12 — layer 9 sits in a robust working plateau 7–11; only
+  the two extreme layers fail, by two distinct mechanisms).** A first pass sampled
+  only 6/9/12 and concluded "only 9 works, both neighbours fail"; that was a
+  3-point artifact (6 and 12 are the failing extremes). Extracting the four missing
+  layers (7,8,10,11, GT only) gives the real shape:
+  1. **Anchor across layers.** GT net / p: l6 +0.17/0.21 (n.s.), l7 +0.49/0.04,
+     l8 +0.65/0.0003, l9 +0.60/0.003, l10 +0.67/0.002, l11 +0.38/0.017, l12
+     +0.15/0.21 (n.s.). So the GT anchor is **significant at 7,8,9,10,11** and fails
+     only at the two ends (6 and 12). Layer 9 is comfortably inside the plateau, not
+     a knife-edge — the choice is robust to ±2 layers.
+  2. **Controls.** Only **layer 6** turns controls significantly positive (SoulX
+     Lite +0.36 p=0.04, Ditto +0.26 p=0.02). Layers 7–12 keep every control ~0 and
+     n.s.
+  3. **Dyadic.** AVTR-1 and DyStream are **robustly positive and significant at every
+     layer** (p<0.01) — they are strong signals and do not discriminate the layer.
+     AvatarForcing (the weakest) is n.s. at 6/10/11, significant at 7/8/9/12. The
+     discriminating criteria are the anchor and the control-nullness.
+  4. **Two failure mechanisms at the ends.** Layer **6** fails despite the HIGHEST
+     effective rank (participation ratio 80) — it is too early/acoustic, so it reads
+     generic coupling that lights up the talking-head controls, without the specific
+     speech-reaction signal (anchor n.s.). Layer **12** fails the other way: the
+     final layer specialises to the pretraining objective and collapses to low rank
+     (participation ratio 31 vs ~67–71 for 7–10), losing the subtle signal (controls
+     stay clean, anchor lost). The GT net decline 10→11→12 (+0.67→+0.38→+0.15) tracks
+     the rank collapse (67→53→31). See the mechanism note above and
+     `results/hubert_ablation_effdim.csv`.
+  5. **Decision.** Keep layer 9 — it is central in the working band 7–11. The honest
+     framing is NOT "only 9 works" but "9 is a safe, central choice in a robust
+     plateau; the metric breaks only at the extreme early (too acoustic) and final
+     (rank-collapsed) layers." See `results/` (`hubert_ablation*`,
+     `fig_hubert_ablation`).
 
 - **Mechanism (why layer 12 fails — verified, not a hunch).** It is NOT an extraction
   or normalisation artifact. (a) Extraction is identical for every layer: `extract.py`

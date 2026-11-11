@@ -42,8 +42,9 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `motion_cond_ablation_seed_avg.csv` | per dyadic model × channel (4), seed-averaged `net` with identity CI (same energy-average method) + `net_per_seed_sd` |
 | `lmax_ablation.csv` | lag-window robustness on the SAME common mask: every column × 3 windows — `L48`/`L100`/`L150` (max lag 48/100/150 frames = 1.9/4/6 s; L100 is the default, from `shift_ablation`) — `g_a_m`, `g_shift`, `net`, identity CI, p |
 | `lmax_ablation_seed_avg.csv` | per dyadic model × window, seed-averaged `net` with identity CI |
-| `hubert_ablation.csv` | HuBERT-layer ablation on the SAME common mask: every column × 3 layers — `6`/`9`/`12` (9 is the default; GT audio re-extracted at all three into one cache) — `g_a_m`, `g_shift`, `net`, identity CI, p |
-| `hubert_ablation_seed_avg.csv` | per dyadic model × HuBERT layer, seed-averaged `net` with identity CI |
+| `hubert_ablation.csv` | HuBERT-layer sweep on the SAME common mask: every column × 7 layers — `6`…`12` (9 is the default; GT audio re-extracted at every layer) — `g_a_m`, `g_shift`, `net`, identity CI, p |
+| `hubert_ablation_seed_avg.csv` | per dyadic model × HuBERT layer (6–12), seed-averaged `net` with identity CI |
+| `hubert_ablation_effdim.csv` | per layer: effective dimensionality (participation ratio of the 768-dim features) + the GT anchor net/p — the late decline tracks the rank collapse |
 | `pca_dim_ablation.csv` | PCA output-dim sweep at layer 9 on the common mask: audio `K_A` {32,64,96} and motion `K_MV` {16,32,64} × every column — `g_a_m`, `g_shift`, `net`, identity CI (verify64 = chunk-matched K_A=64/KMV=32 baseline) |
 | `pca_dim_ablation_seed_avg.csv` | per dyadic model × knob × dim, seed-averaged `net` with identity CI |
 | `pca_dim_ablation_l12_diagnostic.csv` | GT aligned `g_a_m` at l9/K64, l12/K64, l12/K96 + the % of the l12→l9 gap a wider audio PCA recovers (14% = content degradation, not PCA budget) |
@@ -90,10 +91,9 @@ this is why R-DGG reads the audio channel, net of motion),
 `fig_lmax_ablation` (R-DGG net per column at 3 lag windows 1.9/4/6 s, coloured by window —
 the three nearly coincide for every column, GT stays significant and controls stay ~0, so
 the metric is robust to the window; GT net declines mildly as the window widens),
-`fig_hubert_ablation` (R-DGG net per column at HuBERT layers 6 / 9 / 12, coloured by layer —
-UNLIKE the window, the layer is load-bearing: layer 9 is the only one where the GT anchor
-is significant; layers 6 and 12 both lose it, and layer 6 also turns two talking-head
-controls significantly positive),
+`fig_hubert_ablation` (full layer sweep 6–12: GT anchor net (filled=significant) + the control
+envelope on the left axis, effective dimensionality on the right — the anchor plateaus at 7–11
+and fails at both ends, layer 12 as the effective rank collapses),
 `fig_pca_dim_ablation` (two panels: audio `K_A` {32,64,96} has an optimum at 64 — narrow
 inflates the controls, wide drops GT and turns a talking-head control significant; motion
 `K_MV` {16,32,64} is a flat no-op),
@@ -162,19 +162,22 @@ the OLD subsample nuisance that the full-data default removes.
   dominates (the short window raises GT but nudges the controls up too), so we keep the 4 s
   default (rubric rule 4; switching re-computes the whole leaderboard).
   (`lmax_ablation*`, `fig_lmax_ablation`, `../CVPR_zeroother_design.md` §13.2)
-- **The HuBERT layer is load-bearing, and layer 9 is necessary — not a robustness no-op.**
-  Re-extracting GT audio at layers 6 / 9 / 12 (GT audio is sufficient; R-DGG always reads GT
-  audio), layer 9 is the ONLY one of the three where the GT anchor is significant (+0.60,
-  p<0.01). Both neighbours lose the anchor: layer 6 GT +0.17 (p=0.21), layer 12 GT +0.16
-  (p=0.21). Layer 6 is the worst — it also turns two talking-head controls significantly
-  positive (SoulX Lite +0.37 p=0.04, Ditto +0.26 p=0.02), so the control nulls break too.
-  The dyadic models mostly stay positive at all three layers (AVTR-1, DyStream robust), but
-  without a significant GT the metric is not validated — construct validity holds only at
-  layer 9. This confirms the pre-registered layer choice and mirrors the checkpoint
-  precedent (`hubert-large` was rejected for losing the held-out anchor; see
-  `extractors/hubert/README.md`). The fresh cache is faithful: layer 9 re-extracted
-  reproduces the production baseline to max |Δnet| = 0.005. (`hubert_ablation*`,
-  `fig_hubert_ablation`, `../CVPR_zeroother_design.md` §13.3)
+- **The HuBERT layer: layer 9 sits in a robust working plateau 7–11; only the extreme
+  layers fail, by two mechanisms.** Re-extracting GT audio at every layer 6–12 (GT audio is
+  sufficient; R-DGG always reads GT audio), the GT anchor is significant at **7,8,9,10,11**
+  (net +0.49/+0.65/+0.60/+0.67/+0.38, all p<0.05) and fails only at the two ends — layer 6
+  +0.17 (p=0.21) and layer 12 +0.15 (p=0.21). Controls stay ~0 and n.s. at 7–12; only layer
+  6 lights two talking-head controls (SoulX Lite +0.37 p=0.04, Ditto +0.26 p=0.02). AVTR-1
+  and DyStream are robustly significant at EVERY layer; the anchor and control-nullness are
+  the discriminating criteria. The two ends fail differently: layer 6 has the HIGHEST
+  effective rank (participation ratio 80) but is too early/acoustic (reads generic coupling →
+  controls light up); layer 12 collapses to low rank (participation ratio 31 vs ~67–71 for
+  7–10) as the final layer specialises to the pretraining objective (anchor lost, controls
+  clean). The GT net decline 10→11→12 (+0.67→+0.38→+0.15) tracks the rank collapse
+  (67→53→31). So layer 9 is a safe, central choice — not a knife-edge, and not "the only
+  layer that works" (a 3-point artifact of the first 6/9/12 pass). The fresh cache is
+  faithful: layer 9 re-extracted reproduces the production baseline to max |Δnet| = 0.005.
+  (`hubert_ablation*`, `fig_hubert_ablation`, `../CVPR_zeroother_design.md` §13.3)
 - **The PCA output dim: audio `K_A`=64 is an optimum, motion `K_MV` is immaterial.** At
   layer 9, the audio PCA dim has a sweet spot: narrow `K_A`=32 inflates the controls
   (surrogate +0.04→+0.17, SoulX Lite −0.12→+0.34, still n.s.) and the dyadic nets (loses

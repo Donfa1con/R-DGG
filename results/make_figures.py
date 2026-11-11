@@ -430,54 +430,58 @@ HUBERT_LAYER_C = {"6": OK["sky"], "9": OK["blue"], "12": OK["vermillion"]}
 HUBERT_LAYER_LABEL = {"6": "layer 6", "9": "layer 9 (default)", "12": "layer 12"}
 
 
-def fig_hubert_ablation(csv="hubert_ablation.csv", out="fig_hubert_ablation", xlim=(-0.7, 1.9), dy=0.26):
-    d = rows(csv)
-    order, bycol = [], {}
-    for r in d:
-        c = r["column"]
-        if c not in bycol:
-            order.append(c); bycol[c] = {"group": r["group"]}
-        bycol[c][r["hubert_layer"]] = r
-    recs, labels, prev = [], [], None
-    for c in order:
-        g = bycol[c]["group"]
-        if prev is not None and g != prev:
-            recs.append(None); labels.append("")
-        recs.append(bycol[c]); labels.append(c); prev = g
-    y = list(range(len(recs)))[::-1]
+def fig_hubert_ablation(out="fig_hubert_ablation"):
+    """Full layer sweep 6..12: GT anchor net (filled=significant) + the control envelope on the
+    left axis, the effective dimensionality (participation ratio) on the right axis."""
+    hub = rows("hubert_ablation.csv")
+    eff = {int(r["hubert_layer"]): r for r in rows("hubert_ablation_effdim.csv")}
+    sa = rows("hubert_ablation_seed_avg.csv")
+    layers = sorted(eff)
+    # control envelope: surrogate + talking-heads (exclude GT and dyadic)
+    ctrl = {L: [] for L in layers}
+    for r in hub:
+        if r["column"] == "GT×other" or r["group"] == "non-dyad":
+            ctrl[int(r["hubert_layer"])].append(fnum(r["net_x1e4"]))
+    dyad = {}
+    for r in sa:
+        dyad.setdefault(r["model"], {})[int(r["hubert_layer"])] = fnum(r["net_x1e4"])
 
-    fig, ax = plt.subplots(figsize=(6.8, 6.6))
-    ax.axvline(0, color=MUTE, lw=1, zorder=1)
-    gt_net = fnum(bycol.get("GT", {}).get("9", {}).get("net_x1e4"))
-    if gt_net is not None:
-        ax.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
-
-    offs = {"6": +dy, "9": 0.0, "12": -dy}
-    for yi, rc in zip(y, recs):
-        if rc is None:
-            continue
-        for lay, off in offs.items():
-            r = rc.get(lay)
-            if r is None:
-                continue
-            v, lo, hi = fnum(r["net_x1e4"]), fnum(r["net_ci_lo_x1e4"]), fnum(r["net_ci_hi_x1e4"])
-            gc = HUBERT_LAYER_C[lay]
-            ax.errorbar(v, yi + off, xerr=[[v - lo], [hi - v]], fmt="o", ms=5, color=gc,
-                        ecolor=gc, elinewidth=0.8, capsize=2, zorder=3)
-    ax.set_xlim(*xlim)
-    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=8)
-    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
-    ax.grid(axis="x", color=GRID, lw=0.6, zorder=0); ax.set_axisbelow(True)
-    ax.set_xlabel("net ×1e4   (95% identity CI)")
-    handles = [Line2D([0], [0], marker="o", mfc=HUBERT_LAYER_C[w], mec=HUBERT_LAYER_C[w], ls="none",
-                      ms=6, label=HUBERT_LAYER_LABEL[w]) for w in ("6", "9", "12")]
-    handles += [Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor (layer 9)")]
-    ax.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
-    fig.suptitle("HuBERT-layer robustness: R-DGG net at layers 6 / 9 / 12",
-                 fontsize=10.5, y=0.98)
-    fig.text(0.5, 0.004, "All on the common mask (identical frames), n≈177, 13 identities, GT audio "
-             "re-extracted at layers 6/9/12. GT stays significant and controls stay ~0 across layers.",
-             ha="center", fontsize=6.6, color=MUTE)
+    fig, axL = plt.subplots(figsize=(7.4, 5.2))
+    axL.axhline(0, color=MUTE, lw=1, zorder=1)
+    axL.axvspan(6.5, 11.5, color=OK["green"], alpha=0.06, zorder=0)  # working band 7-11
+    # control envelope band
+    clo = [min(ctrl[L]) for L in layers]; chi = [max(ctrl[L]) for L in layers]
+    axL.fill_between(layers, clo, chi, color=OK["grey"], alpha=0.25, zorder=1, label="controls (envelope)")
+    # dyadic faint lines
+    for m, c in zip(dyad, (OK["blue"], OK["sky"], OK["purple"])):
+        axL.plot(layers, [dyad[m][L] for L in layers], color=c, lw=1, alpha=0.5, zorder=2, label=m)
+    # GT anchor: line + filled(sig)/hollow(n.s.) markers
+    gnet = [fnum(eff[L]["GT_net_x1e4"]) for L in layers]
+    axL.plot(layers, gnet, color=OK["green"], lw=2, zorder=4, label="GT anchor")
+    for L in layers:
+        sig = fnum(eff[L]["GT_net_p"]) < 0.05
+        axL.plot(L, fnum(eff[L]["GT_net_x1e4"]), marker="o", ms=8, zorder=5,
+                 mfc=(OK["green"] if sig else "white"), mec=OK["green"], mew=1.8)
+    axL.set_xlabel("HuBERT transformer layer"); axL.set_ylabel("R-DGG net ×1e4", color=INK)
+    axL.set_xticks(layers); axL.spines["top"].set_visible(False)
+    axL.grid(axis="y", color=GRID, lw=0.6, zorder=0); axL.set_axisbelow(True)
+    # right axis: effective dimensionality
+    axR = axL.twinx()
+    axR.plot(layers, [fnum(eff[L]["eff_dim_participation_ratio"]) for L in layers],
+             color=INK, lw=1.3, ls="--", marker="s", ms=4, zorder=3)
+    axR.set_ylabel("effective dim (participation ratio)", color=INK)
+    axR.spines["top"].set_visible(False)
+    axL.set_title("HuBERT layer sweep: GT anchor plateaus at 7–11, fails at both ends as the "
+                  "representation specialises", fontsize=9.5)
+    h, l = axL.get_legend_handles_labels()
+    h += [Line2D([0], [0], color=INK, ls="--", marker="s", ms=4, label="eff. dim (right axis)"),
+          Line2D([0], [0], marker="o", mfc=OK["green"], mec=OK["green"], ls="none", ms=7, label="GT sig. (p<0.05)"),
+          Line2D([0], [0], marker="o", mfc="white", mec=OK["green"], mew=1.8, ls="none", ms=7, label="GT n.s.")]
+    axL.legend(handles=h, frameon=False, fontsize=6.8, loc="upper right", ncol=2)
+    fig.text(0.5, -0.02, "Common mask, n≈177, 13 identities. Layer 6 fails by lit controls (too acoustic, "
+             "high rank); layers 7–11 work (anchor sig., controls ~0); layer 12 fails as the final layer "
+             "collapses to low effective rank. Dyadic AVTR-1/DyStream are robust across all layers.",
+             ha="center", fontsize=6.3, color=MUTE)
     fig.savefig(FIGS / f"{out}.pdf")
     plt.close(fig)
 

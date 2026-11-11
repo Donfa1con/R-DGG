@@ -30,7 +30,9 @@ JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgothe
         "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
         "operator_ablation", "motion_cond_ablation",
         "lmax_ablation__L50", "lmax_ablation__L150",
-        "hubert_ablation__l6", "hubert_ablation__l9", "hubert_ablation__l12",
+        "hubert_ablation__l6", "hubert_ablation__l7", "hubert_ablation__l8",
+        "hubert_ablation__l9", "hubert_ablation__l10", "hubert_ablation__l11",
+        "hubert_ablation__l12",
         "pca_dim_ablation__verify64", "pca_dim_ablation__ka32", "pca_dim_ablation__ka96",
         "pca_dim_ablation__kmv16", "pca_dim_ablation__kmv64", "pca_dim_ablation__l12_ka96"]
 
@@ -267,13 +269,16 @@ def build_lmax_ablation(name="lmax_ablation"):
 # All three from the one re-extracted GT cache data/GT/LS_AL_hubert_l6912 (GT audio is
 # sufficient: R-DGG always reads GT audio). l9 is the production layer; its fresh-cache run
 # is cross-checked against the production shift_ablation by scratchpad/run_hubert_ablation.py.
-HUBERT_LAYERS = [("l6", "hubert_ablation__l6", 6), ("l9", "hubert_ablation__l9", 9),
-                 ("l12", "hubert_ablation__l12", 12)]
+HUBERT_LAYERS = [(f"l{L}", f"hubert_ablation__l{L}", L) for L in (6, 7, 8, 9, 10, 11, 12)]
+# Participation ratio (effective dimensionality of the 768-dim features) per layer, computed
+# offline on the per-dim-standardised GT HuBERT features (as the metric standardises before PCA):
+# PR = (sum lambda)^2 / sum(lambda^2) over the correlation-matrix eigenvalues. ~187k frames / 15 stems.
+HUBERT_EFFDIM = {6: 79.8, 7: 67.2, 8: 68.0, 9: 71.3, 10: 67.4, 11: 52.6, 12: 31.0}
 
 
 def build_hubert_ablation(name="hubert_ablation"):
-    """HuBERT-layer robustness: R-DGG net per column at transformer layers 6/9/12
-    (9 is the default), each on the common mask, with identity CI."""
+    """HuBERT-layer sweep 6..12 (9 is the default), each on the common mask, with identity
+    CI, plus the per-layer participation ratio (effective dimensionality)."""
     D = {tag: load(src) for tag, src, _ in HUBERT_LAYERS}
     order = D["l9"]["order"]
     rows = []
@@ -296,6 +301,14 @@ def build_hubert_ablation(name="hubert_ablation"):
     write_csv(f"{name}_seed_avg.csv",
               ["model", "hubert_layer", "net_x1e4", "net_ci_lo_x1e4",
                "net_ci_hi_x1e4", "net_p"], rows)
+    # per-layer effective dimensionality (participation ratio) alongside the GT anchor net,
+    # for the "net vs eff-dim" mechanism read: the late decline (10->11->12) tracks the collapse.
+    rows = []
+    for tag, _src, layer in HUBERT_LAYERS:
+        gt = D[tag]["columns"]["GT"]
+        rows.append([layer, HUBERT_EFFDIM[layer], gt["net"], gt["ci_net"]["p"]])
+    write_csv(f"{name}_effdim.csv",
+              ["hubert_layer", "eff_dim_participation_ratio", "GT_net_x1e4", "GT_net_p"], rows)
 
 
 # ---- PCA output-dim ablation: audio K_A and motion KMV sweeps at layer 9 -----
