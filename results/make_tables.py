@@ -29,7 +29,8 @@ TABLES.mkdir(exist_ok=True)
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
         "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
         "operator_ablation", "motion_cond_ablation",
-        "lmax_ablation__L50", "lmax_ablation__L150"]
+        "lmax_ablation__L50", "lmax_ablation__L150",
+        "hubert_ablation__l6", "hubert_ablation__l9", "hubert_ablation__l12"]
 
 
 def load(name):
@@ -260,6 +261,41 @@ def build_lmax_ablation(name="lmax_ablation"):
                "net_ci_hi_x1e4", "net_p"], rows)
 
 
+# ---- HuBERT-layer ablation: net at layers 6 / 9 / 12, same common mask ------
+# All three from the one re-extracted GT cache data/GT/LS_AL_hubert_l6912 (GT audio is
+# sufficient: R-DGG always reads GT audio). l9 is the production layer; its fresh-cache run
+# is cross-checked against the production shift_ablation by scratchpad/run_hubert_ablation.py.
+HUBERT_LAYERS = [("l6", "hubert_ablation__l6", 6), ("l9", "hubert_ablation__l9", 9),
+                 ("l12", "hubert_ablation__l12", 12)]
+
+
+def build_hubert_ablation(name="hubert_ablation"):
+    """HuBERT-layer robustness: R-DGG net per column at transformer layers 6/9/12
+    (9 is the default), each on the common mask, with identity CI."""
+    D = {tag: load(src) for tag, src, _ in HUBERT_LAYERS}
+    order = D["l9"]["order"]
+    rows = []
+    for lbl in order:
+        base = D["l9"]["columns"][lbl]
+        for tag, _src, layer in HUBERT_LAYERS:
+            c = D[tag]["columns"][lbl]
+            rows.append([lbl, base["model"], base["group"], base["seed"], layer,
+                         c["n_stems"], c["n_identities"], c["g_a_m"], c["g_shift"], c["net"],
+                         c["ci_net"]["lo"], c["ci_net"]["hi"], c["ci_net"]["p"]])
+    write_csv(f"{name}.csv",
+              ["column", "model", "group", "seed", "hubert_layer",
+               "n_stems", "n_identities", "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p"], rows)
+    rows = []
+    for m in D["l9"]["seed_averaged_dyadic"]:
+        for tag, _src, layer in HUBERT_LAYERS:
+            v = D[tag]["seed_averaged_dyadic"][m]["net"]
+            rows.append([m, layer, v["point"], v["lo"], v["hi"], v["p"]])
+    write_csv(f"{name}_seed_avg.csv",
+              ["model", "hubert_layer", "net_x1e4", "net_ci_lo_x1e4",
+               "net_ci_hi_x1e4", "net_p"], rows)
+
+
 # ---- seed variance (3 stock noise realizations) ----------------------------
 def build_seed_variance():
     p1 = load("seed_variance")["part1_three_stock_seeds"]
@@ -385,6 +421,7 @@ def main():
     build_operator_ablation()
     build_motion_cond_ablation()
     build_lmax_ablation()
+    build_hubert_ablation()
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")

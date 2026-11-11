@@ -1,0 +1,46 @@
+column,model,group,seed,hubert_layer,n_stems,n_identities,g_a_m_x1e4,g_shift_x1e4,net_x1e4,net_ci_lo_x1e4,net_ci_hi_x1e4,net_p
+GT,GT,GT-control,GT,6,177,13,3.5375,3.3632,0.1743,-0.2412,0.5599,0.2062
+GT,GT,GT-control,GT,9,177,13,3.9502,3.3518,0.5983,0.1711,1.0294,0.0032
+GT,GT,GT-control,GT,12,177,13,3.5055,3.3509,0.1546,-0.1911,0.5343,0.2114
+GT×other,GT×other,GT-control,surrogate,6,177,13,3.658,3.4614,0.1966,-0.1259,0.5332,0.1167
+GT×other,GT×other,GT-control,surrogate,9,177,13,3.5375,3.4921,0.0454,-0.3607,0.5346,0.4284
+GT×other,GT×other,GT-control,surrogate,12,177,13,3.2743,3.4816,-0.2073,-0.7939,0.2895,0.6844
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,6,177,13,3.7508,3.414,0.3368,-0.2659,0.8395,0.1293
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,9,177,13,3.9839,3.4215,0.5623,0.1892,0.9434,0.0018
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,12,177,13,4.0862,3.4446,0.6417,0.1939,1.1104,0.0027
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,6,177,13,3.7956,3.4483,0.3473,0.0736,0.6851,0.0043
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,9,177,13,3.7737,3.3968,0.3769,-0.0936,0.8341,0.0607
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,12,177,13,3.7275,3.4182,0.3092,-0.0903,0.7304,0.0672
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,6,177,13,3.7994,3.4331,0.3663,0.0431,0.7315,0.0133
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,9,177,13,4.0585,3.4136,0.6449,0.1512,1.0692,0.0066
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,12,177,13,3.6219,3.4337,0.1882,-0.2591,0.6162,0.2107
+DyStream [unseeded],DyStream,dyadic,unseeded,6,177,13,3.8348,3.3251,0.5097,0.0169,1.0478,0.0209
+DyStream [unseeded],DyStream,dyadic,unseeded,9,177,13,3.8334,3.3501,0.4833,0.0021,1.0416,0.0245
+DyStream [unseeded],DyStream,dyadic,unseeded,12,177,13,3.7762,3.3228,0.4534,-0.0299,1.0402,0.0347
+DyStream [seed0],DyStream,dyadic,seed0,6,177,13,4.2995,3.3088,0.9908,0.6124,1.3873,0.0
+DyStream [seed0],DyStream,dyadic,seed0,9,177,13,4.198,3.319,0.879,0.0844,1.5209,0.0151
+DyStream [seed0],DyStream,dyadic,seed0,12,177,13,4.1464,3.273,0.8734,0.1886,1.595,0.0037
+DyStream [seed1],DyStream,dyadic,seed1,6,177,13,4.294,3.3066,0.9874,0.5742,1.3827,0.0
+DyStream [seed1],DyStream,dyadic,seed1,9,177,13,3.9702,3.2993,0.6708,0.1005,1.2147,0.0091
+DyStream [seed1],DyStream,dyadic,seed1,12,177,13,4.0533,3.2677,0.7857,0.2506,1.3397,0.0011
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,6,177,13,3.4019,3.4895,-0.0876,-0.4213,0.2791,0.6716
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,9,177,13,3.7628,3.4265,0.3362,0.0192,0.5868,0.0195
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,12,177,13,3.6567,3.4644,0.1923,-0.0586,0.5006,0.0683
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,6,177,13,3.6414,3.4331,0.2083,-0.0755,0.4957,0.0717
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,9,177,13,3.6647,3.3822,0.2824,-0.1536,0.6684,0.1056
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,12,177,13,3.5696,3.418,0.1516,-0.0992,0.4229,0.1351
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,6,177,13,3.5421,3.4635,0.0786,-0.1604,0.3732,0.2746
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,9,177,13,3.4724,3.4162,0.0562,-0.2725,0.3652,0.3767
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,12,177,13,3.6336,3.4567,0.1769,0.0516,0.2882,0.0044
+SoulX Lite,SoulX Lite,non-dyad,single,6,177,13,3.7352,3.3702,0.365,-0.0383,0.816,0.0382
+SoulX Lite,SoulX Lite,non-dyad,single,9,177,13,3.2567,3.3717,-0.115,-0.4235,0.282,0.7405
+SoulX Lite,SoulX Lite,non-dyad,single,12,177,13,3.4179,3.3577,0.0602,-0.3008,0.363,0.3468
+SoulX Pro,SoulX Pro,non-dyad,single,6,177,13,3.2148,3.3811,-0.1663,-0.5266,0.1207,0.848
+SoulX Pro,SoulX Pro,non-dyad,single,9,177,13,3.4786,3.3412,0.1375,-0.2857,0.5703,0.2903
+SoulX Pro,SoulX Pro,non-dyad,single,12,177,13,3.5617,3.3619,0.1997,-0.3999,0.7785,0.2971
+Ditto,Ditto,non-dyad,single,6,177,13,3.5754,3.3176,0.2578,0.0084,0.5637,0.0209
+Ditto,Ditto,non-dyad,single,9,177,13,3.378,3.329,0.049,-0.255,0.3225,0.3638
+Ditto,Ditto,non-dyad,single,12,177,13,3.2516,3.3311,-0.0796,-0.3784,0.2285,0.7094
+FLOAT,FLOAT,non-dyad,single,6,177,13,3.5185,3.4334,0.0851,-0.1557,0.3637,0.2485
+FLOAT,FLOAT,non-dyad,single,9,177,13,3.3646,3.3973,-0.0326,-0.4425,0.3808,0.5619
+FLOAT,FLOAT,non-dyad,single,12,177,13,3.0658,3.3887,-0.3229,-0.684,0.1041,0.9388

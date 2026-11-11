@@ -669,16 +669,42 @@ knob. We switch the operating point ONLY when a variant **strictly dominates** o
 
 ### 13.3 HuBERT layer — 6 / 9 / 12
 
-- **Change.** Re-extract **GT only** at layers 6 and 12
-  (`extractors/hubert/extract.py --layers 6 12` on `data/GT/LS_AL_hubert`), then
-  switch `HUB_LAYER` (`rdgg/_config.py`). GT is sufficient because R-DGG always
-  reads GT audio for the speaker driver AND the listener own-audio block; no path
-  reads per-model audio (§4; `rdgg/compute.py:197`). The models change only the
-  motion.
-- **What it tests.** Robustness to the layer choice. The repo already ran a layer
-  grid before it fixed layer 9, so this ablation CONFIRMS that choice. Expected
-  outcome: layer 9 passes the rubric at least as well; report as a robustness
-  check. Switch away from 9 only on strict dominance (rule 4).
+- **Change.** Re-extract **GT only** at layers 6, 9, 12 into one fresh cache
+  `data/GT/LS_AL_hubert_l6912` (`extractors/hubert/extract.py --layers 6 9 12`). GT
+  is sufficient because R-DGG always reads GT audio for the speaker driver AND the
+  listener own-audio block; no path reads per-model audio (§4; `rdgg/compute.py:197`).
+  `scratchpad/run_hubert_ablation.py` then runs the `shift_ablation.py` harness at
+  each layer in a fresh process (editing `HUB_LAYER` and the `HUB` dir in `_config.py`
+  on the branch, then restoring), tagging the output `hubert_ablation__l{N}`. Layer 9
+  is re-run from the fresh cache as a cross-check against the production
+  `shift_ablation`.
+- **Cross-check (cache is faithful).** Layer 9 from the fresh cache reproduces the
+  production layer-9 baseline to max |Δnet| = 0.005 ×1e4 over the 15 columns (fp16
+  rounding), so the layer-6 and layer-12 differences are real, not an extraction
+  artifact.
+- **Result (the layer is LOAD-BEARING; layer 9 is necessary — NOT a robustness
+  no-op).** Unlike the lag window, the layer choice changes the verdict:
+  1. **Anchor (rule 1): only layer 9 keeps it.** GT is significant at layer 9
+     (+0.60, p<0.01) and loses significance at BOTH neighbours — layer 6 +0.17
+     (p=0.21), layer 12 +0.16 (p=0.21). A held-out positive control that reads as
+     non-significant means the metric is not validated at that layer.
+  2. **Controls (rule 2): layer 6 breaks them too.** At layer 6 two talking-head
+     controls turn significantly positive (SoulX Lite +0.37 p=0.04, Ditto +0.26
+     p=0.02); the surrogate rises to +0.20 (p=0.12). Layer 12 keeps the controls
+     ~0 and n.s., but its anchor is already gone. Layer 9 is the only layer with
+     both a significant anchor and null controls.
+  3. **Separation (rule 3): only layer 9.** At layer 6 the control SoulX Lite
+     (+0.37, sig.) outranks the GT anchor (+0.17, n.s.); the ordering is broken.
+     The dyadic models mostly stay positive at all three layers (AVTR-1, DyStream
+     robust; AvatarForcing wobbles), but without a significant GT their positives
+     cannot be read as reaction.
+  4. **Decision (rule 4): keep layer 9 — it strictly dominates.** It is the only
+     layer of the three that passes rules 1–3; both neighbours are disqualified on
+     the anchor, layer 6 also on the controls. This is the pre-registered layer
+     choice, and the ablation shows it is load-bearing, not arbitrary — the same
+     failure mode the repo used to reject `hubert-large` ("loses the held-out
+     anchor", `extractors/hubert/README.md`). Report as a necessity result, not a
+     robustness one. See `results/` (`hubert_ablation*`, `fig_hubert_ablation`).
 
 ---
 

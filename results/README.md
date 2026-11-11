@@ -42,6 +42,8 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `motion_cond_ablation_seed_avg.csv` | per dyadic model × channel (4), seed-averaged `net` with identity CI (same energy-average method) + `net_per_seed_sd` |
 | `lmax_ablation.csv` | lag-window robustness on the SAME common mask: every column × 3 windows — `L48`/`L100`/`L150` (max lag 48/100/150 frames = 1.9/4/6 s; L100 is the default, from `shift_ablation`) — `g_a_m`, `g_shift`, `net`, identity CI, p |
 | `lmax_ablation_seed_avg.csv` | per dyadic model × window, seed-averaged `net` with identity CI |
+| `hubert_ablation.csv` | HuBERT-layer ablation on the SAME common mask: every column × 3 layers — `6`/`9`/`12` (9 is the default; GT audio re-extracted at all three into one cache) — `g_a_m`, `g_shift`, `net`, identity CI, p |
+| `hubert_ablation_seed_avg.csv` | per dyadic model × HuBERT layer, seed-averaged `net` with identity CI |
 
 > **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
 > `dystream_seeded_b1`) were re-extracted at face-detection threshold
@@ -85,6 +87,10 @@ this is why R-DGG reads the audio channel, net of motion),
 `fig_lmax_ablation` (R-DGG net per column at 3 lag windows 1.9/4/6 s, coloured by window —
 the three nearly coincide for every column, GT stays significant and controls stay ~0, so
 the metric is robust to the window; GT net declines mildly as the window widens),
+`fig_hubert_ablation` (R-DGG net per column at HuBERT layers 6 / 9 / 12, coloured by layer —
+UNLIKE the window, the layer is load-bearing: layer 9 is the only one where the GT anchor
+is significant; layers 6 and 12 both lose it, and layer 6 also turns two talking-head
+controls significantly positive),
 `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
@@ -150,6 +156,19 @@ the OLD subsample nuisance that the full-data default removes.
   dominates (the short window raises GT but nudges the controls up too), so we keep the 4 s
   default (rubric rule 4; switching re-computes the whole leaderboard).
   (`lmax_ablation*`, `fig_lmax_ablation`, `../CVPR_zeroother_design.md` §13.2)
+- **The HuBERT layer is load-bearing, and layer 9 is necessary — not a robustness no-op.**
+  Re-extracting GT audio at layers 6 / 9 / 12 (GT audio is sufficient; R-DGG always reads GT
+  audio), layer 9 is the ONLY one of the three where the GT anchor is significant (+0.60,
+  p<0.01). Both neighbours lose the anchor: layer 6 GT +0.17 (p=0.21), layer 12 GT +0.16
+  (p=0.21). Layer 6 is the worst — it also turns two talking-head controls significantly
+  positive (SoulX Lite +0.37 p=0.04, Ditto +0.26 p=0.02), so the control nulls break too.
+  The dyadic models mostly stay positive at all three layers (AVTR-1, DyStream robust), but
+  without a significant GT the metric is not validated — construct validity holds only at
+  layer 9. This confirms the pre-registered layer choice and mirrors the checkpoint
+  precedent (`hubert-large` was rejected for losing the held-out anchor; see
+  `extractors/hubert/README.md`). The fresh cache is faithful: layer 9 re-extracted
+  reproduces the production baseline to max |Δnet| = 0.005. (`hubert_ablation*`,
+  `fig_hubert_ablation`, `../CVPR_zeroother_design.md` §13.3)
 - **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
   0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per

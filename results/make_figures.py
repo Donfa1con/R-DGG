@@ -426,6 +426,62 @@ def fig_lmax_ablation(csv="lmax_ablation.csv", out="fig_lmax_ablation", xlim=(-0
     plt.close(fig)
 
 
+HUBERT_LAYER_C = {"6": OK["sky"], "9": OK["blue"], "12": OK["vermillion"]}
+HUBERT_LAYER_LABEL = {"6": "layer 6", "9": "layer 9 (default)", "12": "layer 12"}
+
+
+def fig_hubert_ablation(csv="hubert_ablation.csv", out="fig_hubert_ablation", xlim=(-0.7, 1.9), dy=0.26):
+    d = rows(csv)
+    order, bycol = [], {}
+    for r in d:
+        c = r["column"]
+        if c not in bycol:
+            order.append(c); bycol[c] = {"group": r["group"]}
+        bycol[c][r["hubert_layer"]] = r
+    recs, labels, prev = [], [], None
+    for c in order:
+        g = bycol[c]["group"]
+        if prev is not None and g != prev:
+            recs.append(None); labels.append("")
+        recs.append(bycol[c]); labels.append(c); prev = g
+    y = list(range(len(recs)))[::-1]
+
+    fig, ax = plt.subplots(figsize=(6.8, 6.6))
+    ax.axvline(0, color=MUTE, lw=1, zorder=1)
+    gt_net = fnum(bycol.get("GT", {}).get("9", {}).get("net_x1e4"))
+    if gt_net is not None:
+        ax.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
+
+    offs = {"6": +dy, "9": 0.0, "12": -dy}
+    for yi, rc in zip(y, recs):
+        if rc is None:
+            continue
+        for lay, off in offs.items():
+            r = rc.get(lay)
+            if r is None:
+                continue
+            v, lo, hi = fnum(r["net_x1e4"]), fnum(r["net_ci_lo_x1e4"]), fnum(r["net_ci_hi_x1e4"])
+            gc = HUBERT_LAYER_C[lay]
+            ax.errorbar(v, yi + off, xerr=[[v - lo], [hi - v]], fmt="o", ms=5, color=gc,
+                        ecolor=gc, elinewidth=0.8, capsize=2, zorder=3)
+    ax.set_xlim(*xlim)
+    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=8)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    ax.grid(axis="x", color=GRID, lw=0.6, zorder=0); ax.set_axisbelow(True)
+    ax.set_xlabel("net ×1e4   (95% identity CI)")
+    handles = [Line2D([0], [0], marker="o", mfc=HUBERT_LAYER_C[w], mec=HUBERT_LAYER_C[w], ls="none",
+                      ms=6, label=HUBERT_LAYER_LABEL[w]) for w in ("6", "9", "12")]
+    handles += [Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor (layer 9)")]
+    ax.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
+    fig.suptitle("HuBERT-layer robustness: R-DGG net at layers 6 / 9 / 12",
+                 fontsize=10.5, y=0.98)
+    fig.text(0.5, 0.004, "All on the common mask (identical frames), n≈177, 13 identities, GT audio "
+             "re-extracted at layers 6/9/12. GT stays significant and controls stay ~0 across layers.",
+             ha="center", fontsize=6.6, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
+    plt.close(fig)
+
+
 def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
                    title="Dose curve: stock → zeroother (k=0..178)", out="fig_dose_curve",
                    color=OK["blue"]):
@@ -570,6 +626,7 @@ def main():
     fig_operator_ablation()
     fig_motion_cond_ablation()
     fig_lmax_ablation()
+    fig_hubert_ablation()
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -580,7 +637,8 @@ def main():
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
     print("  figures: leaderboard, ablation, shift_ablation, operator_ablation, motion_cond_ablation, "
-          "lmax_ablation, seed_variance, dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
+          "lmax_ablation, hubert_ablation, seed_variance, dose_curve, dose_curve_cfg0, count_sweep "
+          "-> results/figures/*.pdf")
     print("done.")
 
 
