@@ -1,0 +1,570 @@
+{
+  "metric": "R-DGG shift-correction ablation",
+  "question": "is the time-shift correction (net = g_a_m - g_shift) needed?",
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "n_folds": 4,
+  "mask_mode": "common",
+  "mask": "ONE shared mask = GT-reactive & every model-seed column's face_ok; all columns score on IDENTICAL frames (surrogate excluded from the intersection, like the leaderboard; its seam-blinding then applies on top)",
+  "arithmetic": {
+    "g_a_m": "1e4 * log(mot_r/both_r)  -- aligned gain, UNCORRECTED",
+    "g_shift": "1e4 * mean_k log(mot_n[k]/both_n[k])  -- mean of 100 time-shift nulls",
+    "net": "g_a_m - g_shift  -- R-DGG, CORRECTED",
+    "ci": "identity-clustered bootstrap, B=20000, one-sided p=P(draw<=0)"
+  },
+  "controls": {
+    "GT": "held-out positive control (must react, net>0)",
+    "GT\u00d7other": "GT motion under a wrong pairing (negative control, must read ~0)",
+    "non-dyad": "talking-head models with real audio but no dyadic reaction (must read ~0)"
+  },
+  "order": [
+    "GT",
+    "GT\u00d7other",
+    "AVTR-1 [unseeded]",
+    "AVTR-1 [seed0]",
+    "AVTR-1 [seed1]",
+    "DyStream [unseeded]",
+    "DyStream [seed0]",
+    "DyStream [seed1]",
+    "AvatarForcing [unseeded]",
+    "AvatarForcing [seed0]",
+    "AvatarForcing [seed1]",
+    "SoulX Lite",
+    "SoulX Pro",
+    "Ditto",
+    "FLOAT"
+  ],
+  "columns": {
+    "GT": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9619,
+      "g_a_m": 3.9506,
+      "g_shift": 3.3538,
+      "net": 0.5968,
+      "floor_sd": 0.1325,
+      "ci_net": {
+        "point": 0.5968,
+        "lo": 0.1646,
+        "p50": 0.5941,
+        "hi": 1.0279,
+        "p": 0.0037,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.9506,
+        "lo": 3.3452,
+        "p50": 3.958,
+        "hi": 4.4443,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "GT",
+      "group": "GT-control",
+      "seed": "GT"
+    },
+    "GT\u00d7other": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9098,
+      "g_a_m": 3.5497,
+      "g_shift": 3.4892,
+      "net": 0.0605,
+      "floor_sd": 0.165,
+      "ci_net": {
+        "point": 0.0605,
+        "lo": -0.3423,
+        "p50": 0.0578,
+        "hi": 0.5464,
+        "p": 0.4026,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.5497,
+        "lo": 2.9363,
+        "p50": 3.5504,
+        "hi": 4.1251,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "GT\u00d7other",
+      "group": "GT-control",
+      "seed": "surrogate"
+    },
+    "AVTR-1 [unseeded]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9417,
+      "g_a_m": 3.9928,
+      "g_shift": 3.4212,
+      "net": 0.5716,
+      "floor_sd": 0.1562,
+      "ci_net": {
+        "point": 0.5716,
+        "lo": 0.1899,
+        "p50": 0.574,
+        "hi": 0.957,
+        "p": 0.0018,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.9928,
+        "lo": 3.5788,
+        "p50": 3.9924,
+        "hi": 4.3888,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AVTR-1",
+      "group": "dyadic",
+      "seed": "unseeded"
+    },
+    "AVTR-1 [seed0]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9408,
+      "g_a_m": 3.7845,
+      "g_shift": 3.3952,
+      "net": 0.3892,
+      "floor_sd": 0.1556,
+      "ci_net": {
+        "point": 0.3892,
+        "lo": -0.082,
+        "p50": 0.3827,
+        "hi": 0.8477,
+        "p": 0.0546,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.7845,
+        "lo": 3.2354,
+        "p50": 3.7715,
+        "hi": 4.3128,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AVTR-1",
+      "group": "dyadic",
+      "seed": "seed0"
+    },
+    "AVTR-1 [seed1]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9397,
+      "g_a_m": 4.0674,
+      "g_shift": 3.4145,
+      "net": 0.6529,
+      "floor_sd": 0.1529,
+      "ci_net": {
+        "point": 0.6529,
+        "lo": 0.1675,
+        "p50": 0.6526,
+        "hi": 1.0742,
+        "p": 0.0055,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 4.0674,
+        "lo": 3.4278,
+        "p50": 4.062,
+        "hi": 4.6254,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AVTR-1",
+      "group": "dyadic",
+      "seed": "seed1"
+    },
+    "DyStream [unseeded]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9464,
+      "g_a_m": 3.8453,
+      "g_shift": 3.3523,
+      "net": 0.493,
+      "floor_sd": 0.1529,
+      "ci_net": {
+        "point": 0.493,
+        "lo": 0.016,
+        "p50": 0.5003,
+        "hi": 1.0442,
+        "p": 0.021,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.8453,
+        "lo": 3.3001,
+        "p50": 3.8349,
+        "hi": 4.3255,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "DyStream",
+      "group": "dyadic",
+      "seed": "unseeded"
+    },
+    "DyStream [seed0]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9499,
+      "g_a_m": 4.2006,
+      "g_shift": 3.3211,
+      "net": 0.8795,
+      "floor_sd": 0.1441,
+      "ci_net": {
+        "point": 0.8795,
+        "lo": 0.1002,
+        "p50": 0.8616,
+        "hi": 1.5106,
+        "p": 0.014,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 4.2006,
+        "lo": 3.2164,
+        "p50": 4.1776,
+        "hi": 4.9629,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "DyStream",
+      "group": "dyadic",
+      "seed": "seed0"
+    },
+    "DyStream [seed1]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9502,
+      "g_a_m": 3.9647,
+      "g_shift": 3.2994,
+      "net": 0.6653,
+      "floor_sd": 0.1535,
+      "ci_net": {
+        "point": 0.6653,
+        "lo": 0.1063,
+        "p50": 0.6513,
+        "hi": 1.1989,
+        "p": 0.0083,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.9647,
+        "lo": 3.2335,
+        "p50": 3.9404,
+        "hi": 4.6117,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "DyStream",
+      "group": "dyadic",
+      "seed": "seed1"
+    },
+    "AvatarForcing [unseeded]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9526,
+      "g_a_m": 3.7608,
+      "g_shift": 3.4276,
+      "net": 0.3332,
+      "floor_sd": 0.1259,
+      "ci_net": {
+        "point": 0.3332,
+        "lo": 0.0176,
+        "p50": 0.3313,
+        "hi": 0.5787,
+        "p": 0.0202,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.7608,
+        "lo": 2.8016,
+        "p50": 3.741,
+        "hi": 4.4002,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AvatarForcing",
+      "group": "dyadic",
+      "seed": "unseeded"
+    },
+    "AvatarForcing [seed0]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.955,
+      "g_a_m": 3.6677,
+      "g_shift": 3.382,
+      "net": 0.2856,
+      "floor_sd": 0.1174,
+      "ci_net": {
+        "point": 0.2856,
+        "lo": -0.1564,
+        "p50": 0.2763,
+        "hi": 0.6741,
+        "p": 0.1056,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.6677,
+        "lo": 2.9048,
+        "p50": 3.6536,
+        "hi": 4.2397,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AvatarForcing",
+      "group": "dyadic",
+      "seed": "seed0"
+    },
+    "AvatarForcing [seed1]": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9531,
+      "g_a_m": 3.4821,
+      "g_shift": 3.4166,
+      "net": 0.0656,
+      "floor_sd": 0.1335,
+      "ci_net": {
+        "point": 0.0656,
+        "lo": -0.2653,
+        "p50": 0.06,
+        "hi": 0.3806,
+        "p": 0.3593,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.4821,
+        "lo": 2.8734,
+        "p50": 3.4776,
+        "hi": 3.9131,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "AvatarForcing",
+      "group": "dyadic",
+      "seed": "seed1"
+    },
+    "SoulX Lite": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9366,
+      "g_a_m": 3.2542,
+      "g_shift": 3.3735,
+      "net": -0.1193,
+      "floor_sd": 0.1453,
+      "ci_net": {
+        "point": -0.1193,
+        "lo": -0.4191,
+        "p50": -0.1289,
+        "hi": 0.2668,
+        "p": 0.752,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.2542,
+        "lo": 2.6741,
+        "p50": 3.2512,
+        "hi": 3.7029,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "SoulX Lite",
+      "group": "non-dyad",
+      "seed": "single"
+    },
+    "SoulX Pro": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9371,
+      "g_a_m": 3.4774,
+      "g_shift": 3.3426,
+      "net": 0.1349,
+      "floor_sd": 0.1623,
+      "ci_net": {
+        "point": 0.1349,
+        "lo": -0.2876,
+        "p50": 0.1194,
+        "hi": 0.5647,
+        "p": 0.2916,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.4774,
+        "lo": 2.8216,
+        "p50": 3.4515,
+        "hi": 4.094,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "SoulX Pro",
+      "group": "non-dyad",
+      "seed": "single"
+    },
+    "Ditto": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9334,
+      "g_a_m": 3.3762,
+      "g_shift": 3.3305,
+      "net": 0.0458,
+      "floor_sd": 0.1407,
+      "ci_net": {
+        "point": 0.0458,
+        "lo": -0.2481,
+        "p50": 0.0488,
+        "hi": 0.3132,
+        "p": 0.3709,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.3762,
+        "lo": 3.017,
+        "p50": 3.3653,
+        "hi": 3.7773,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "Ditto",
+      "group": "non-dyad",
+      "seed": "single"
+    },
+    "FLOAT": {
+      "n_stems": 177,
+      "n_identities": 13,
+      "own_r2": 0.9528,
+      "g_a_m": 3.3561,
+      "g_shift": 3.3949,
+      "net": -0.0388,
+      "floor_sd": 0.1696,
+      "ci_net": {
+        "point": -0.0388,
+        "lo": -0.4377,
+        "p50": -0.0409,
+        "hi": 0.364,
+        "p": 0.5746,
+        "n_clusters": 13
+      },
+      "ci_raw": {
+        "point": 3.3561,
+        "lo": 2.9478,
+        "p50": 3.3438,
+        "hi": 3.7915,
+        "p": 0.0,
+        "n_clusters": 13
+      },
+      "model": "FLOAT",
+      "group": "non-dyad",
+      "seed": "single"
+    }
+  },
+  "seed_averaged_dyadic": {
+    "AVTR-1": {
+      "seeds": [
+        "AVTR-1 [unseeded]",
+        "AVTR-1 [seed0]",
+        "AVTR-1 [seed1]"
+      ],
+      "n_seeds": 3,
+      "net": {
+        "point": 0.5381,
+        "lo": 0.2048,
+        "hi": 0.8389,
+        "p": 0.0009,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "g_a_m": {
+        "point": 3.9484,
+        "lo": 3.5059,
+        "hi": 4.3339,
+        "p": 0.0,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "per_seed_net": [
+        0.5716,
+        0.3892,
+        0.6529
+      ],
+      "per_seed_net_sd": 0.135,
+      "per_seed_g_a_m": [
+        3.9928,
+        3.7845,
+        4.0674
+      ],
+      "per_seed_g_a_m_sd": 0.1466
+    },
+    "DyStream": {
+      "seeds": [
+        "DyStream [unseeded]",
+        "DyStream [seed0]",
+        "DyStream [seed1]"
+      ],
+      "n_seeds": 3,
+      "net": {
+        "point": 0.661,
+        "lo": 0.1193,
+        "hi": 1.1942,
+        "p": 0.0066,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "g_a_m": {
+        "point": 3.988,
+        "lo": 3.3459,
+        "hi": 4.5826,
+        "p": 0.0,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "per_seed_net": [
+        0.493,
+        0.8795,
+        0.6653
+      ],
+      "per_seed_net_sd": 0.1936,
+      "per_seed_g_a_m": [
+        3.8453,
+        4.2006,
+        3.9647
+      ],
+      "per_seed_g_a_m_sd": 0.1808
+    },
+    "AvatarForcing": {
+      "seeds": [
+        "AvatarForcing [unseeded]",
+        "AvatarForcing [seed0]",
+        "AvatarForcing [seed1]"
+      ],
+      "n_seeds": 3,
+      "net": {
+        "point": 0.2294,
+        "lo": -0.0385,
+        "hi": 0.4914,
+        "p": 0.0499,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "g_a_m": {
+        "point": 3.6385,
+        "lo": 2.9414,
+        "hi": 4.1256,
+        "p": 0.0,
+        "n_stems": 177,
+        "n_identities": 13
+      },
+      "per_seed_net": [
+        0.3332,
+        0.2856,
+        0.0656
+      ],
+      "per_seed_net_sd": 0.1428,
+      "per_seed_g_a_m": [
+        3.7608,
+        3.6677,
+        3.4821
+      ],
+      "per_seed_g_a_m_sd": 0.1419
+    }
+  }
+}

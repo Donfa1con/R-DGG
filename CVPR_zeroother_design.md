@@ -706,6 +706,87 @@ knob. We switch the operating point ONLY when a variant **strictly dominates** o
      anchor", `extractors/hubert/README.md`). Report as a necessity result, not a
      robustness one. See `results/` (`hubert_ablation*`, `fig_hubert_ablation`).
 
+- **Mechanism (why layer 12 fails — verified, not a hunch).** It is NOT an extraction
+  or normalisation artifact. (a) Extraction is identical for every layer: `extract.py`
+  takes `hidden_states[N]`, same code/index/dtype. (b) LayerNorm is symmetric: the
+  checkpoint is post-norm (`do_stable_layer_norm=False`), each transformer layer ends
+  with its own `final_layer_norm`, and the one `encoder.layer_norm` is applied at the
+  START (verified in `modeling_hubert.py:966-968`); layer 12 skips no norm and 6/9 get
+  no extra one, and `hidden_states[12] == last_hidden_state` empirically. (c) The metric
+  DOES normalise before PCA (per-dim z-score in `fit_pca`, then the lagged design is
+  standardised again). The real cause is the LEARNED representation of the final layer:
+  it is specialised toward HuBERT's pretraining objective and collapses to a much lower
+  effective rank. Measured on the extracted features (per-dim standardised, as the
+  metric does): participation ratio (effective dim of 768) is 79.8 / 71.3 / **31.0** for
+  layers 6 / 9 / 12, and the per-frame norm grows 9.0 → 9.0 → 12.6. So the subtle
+  "reacts to what was said" signal that layer 9 holds across ~71 directions is squeezed
+  out at layer 12. The §13.4 L12 diagnostic (a wider PCA recovers only 14% of the gap)
+  confirms this is content degradation, not a PCA-budget effect.
+
+### 13.4 PCA output dimension — audio `K_A_TARGET`, motion `KMV` (with the L12 diagnostic)
+
+This is the PCA OUTPUT dimension, not the PCA subsample SIZE (that is the separate
+`pca_size_sweep`, which the full-data default already settled). The audio driver is
+HuBERT reduced to `K_A_TARGET = 64` PCA dims; the motion driver is EMOCA reduced to
+`KMV = 32`.
+
+- **Change.** `scratchpad/run_pca_dim_ablation.py` edits `K_A_TARGET` / `KMV` in
+  `_config.py` on the branch (unique anchors, verified), runs the `shift_ablation.py`
+  harness in a fresh process per config, tags the output `pca_dim_ablation__{tag}`,
+  and restores. Code only; no re-extraction. Five new configs on the common mask
+  (baseline K_A=64/KMV=32/layer 9 is the committed `shift_ablation`):
+  1. audio sweep (layer 9): K_A ∈ {32, 128}
+  2. motion sweep (layer 9): KMV ∈ {16, 64}
+  3. **L12 diagnostic:** (layer 12, K_A=128) — reuses the `LS_AL_hubert_l6912` cache,
+     so it is the one extra run that folds the layer-12 question into this batch.
+- **Rubric expectation (§13.0).** The dim is an operating-point knob, so judge it by
+  the rubric: does a different dim keep GT significant, the controls ~0, and the
+  dyadic models positive? Expected: a robustness result around 64/32 (the metric is
+  not a knife-edge on the dim), report it as such unless a dim strictly dominates.
+- **Folded-in L12 diagnostic (mechanistic, not rubric-gated).** §13.3 showed layer 12
+  loses the GT anchor via a lower aligned `g_a_m` (the floor `g_shift` and `own_r2`
+  are layer-invariant), consistent with either (a) content degradation in the final
+  HuBERT layer, or (b) a PCA-budget effect — layer 12 is anisotropic, so the top-64
+  PCA directions may be spent on nuisance (speaker identity, "rogue" dims) and capture
+  less reaction-relevant content. The test: compare `g_a_m(l12, K_A=128)` against
+  `g_a_m(l12, K_A=64)` and `g_a_m(l9, K_A=64)`. If the wider audio PCA lifts the
+  layer-12 aligned gain toward the layer-9 level, the failure was the PCA budget; if
+  it stays low, it is content degradation and PCA is not the cause. (The ridge is
+  already ruled out: `floor_sd` is stable across layers, no coefficient blow-up.)
+
+- **Memory note.** K_A=128 does not fit in 22 GiB (the audio design doubles; OOM in
+  the fit AND the scoring). `scratchpad/run_pca_dim_ablation.py` makes the wide point
+  **K_A=96** fit with two transient, numerically-verified-safe `_granger.py` edits
+  (restored in `finally`): lower `GRAM_CHUNK` (fp64 Gram block size), and rewrite
+  `apply_lagged_standardisation` in-place (its one caller passes a throwaway gather
+  copy). A `verify64` run (K_A=64 under the edits) reproduces the committed baseline to
+  max |Δnet| = 0.003 (the GRAM fp32-reassociation; the in-place edit is bit-identical),
+  so the edits are harmless; the whole sweep runs at one `GRAM_CHUNK`, with `verify64`
+  as the chunk-matched K_A=64 baseline.
+
+- **Result.**
+  1. **Audio `K_A`: 64 is an optimum, both neighbours are worse (keep 64).** GT stays
+     significant at all three (K_A 32/64/96 → +0.70/+0.60/+0.35, p ≤ 0.04), but at
+     **K_A=32** the controls creep up (surrogate +0.04→+0.17, SoulX Lite −0.12→+0.34;
+     still n.s. but the margin shrinks) and the dyadic nets inflate — the narrow audio
+     PCA loses specificity. At **K_A=96** GT drops to +0.35 AND a talking-head control
+     turns **significantly positive** (SoulX Pro +0.45, p=0.01) — a rule-2 failure. The
+     default K_A=64 holds the controls closest to 0 with a significant anchor. So 64 is
+     not arbitrary; it sits at the sweet spot, and the ablation reports that.
+  2. **Motion `KMV`: immaterial (pure no-op).** KMV 16/32/64 changes nothing — GT
+     +0.584/+0.599/+0.597, every control and dyadic net within |Δ|<0.02. Expected: the
+     motion contribution is near-orthogonal and the `aud|mot` conditioning removes it,
+     so how many motion PCA dims there are does not matter.
+  3. **L12 diagnostic → content degradation, not PCA budget.** Widening the audio PCA
+     at layer 12 (K_A 64→96) lifts GT's aligned `g_a_m` only from +3.51 to +3.57 —
+     **14%** of the +3.51→+3.95 gap to layer 9 — and GT stays non-significant
+     (p=0.15). So the layer-12 failure is NOT the PCA budget discarding content into
+     dims 65-96; it is content degradation. This confirms the anisotropy reading
+     (§13.3): layer 12 already holds 0.68 of its variance in the top-64, so there is
+     little to recover by widening. (Caveat: K_A=96 is only 1.5×; a much wider PCA was
+     not testable in 22 GiB, but +14% over +50% dims is a weak trend consistent with
+     content, not budget.) See `results/` (`pca_dim_ablation*`, `fig_pca_dim_ablation`).
+
 ---
 
 Commits to the `cvpr` branch happen only on an explicit command.

@@ -1,0 +1,5 @@
+point,g_a_m_x1e4,note
+l9_K64,3.9508,layer-9 target (default)
+l12_K64,3.5055,layer-12 at default dim
+l12_K96,3.5686,layer-12 at wider audio PCA
+recovery_pct,14.2,percent of the l12->l9 g_a_m gap closed by K_A 64->96 (low=content degradation)

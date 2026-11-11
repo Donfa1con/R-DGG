@@ -44,6 +44,9 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `lmax_ablation_seed_avg.csv` | per dyadic model × window, seed-averaged `net` with identity CI |
 | `hubert_ablation.csv` | HuBERT-layer ablation on the SAME common mask: every column × 3 layers — `6`/`9`/`12` (9 is the default; GT audio re-extracted at all three into one cache) — `g_a_m`, `g_shift`, `net`, identity CI, p |
 | `hubert_ablation_seed_avg.csv` | per dyadic model × HuBERT layer, seed-averaged `net` with identity CI |
+| `pca_dim_ablation.csv` | PCA output-dim sweep at layer 9 on the common mask: audio `K_A` {32,64,96} and motion `K_MV` {16,32,64} × every column — `g_a_m`, `g_shift`, `net`, identity CI (verify64 = chunk-matched K_A=64/KMV=32 baseline) |
+| `pca_dim_ablation_seed_avg.csv` | per dyadic model × knob × dim, seed-averaged `net` with identity CI |
+| `pca_dim_ablation_l12_diagnostic.csv` | GT aligned `g_a_m` at l9/K64, l12/K64, l12/K96 + the % of the l12→l9 gap a wider audio PCA recovers (14% = content degradation, not PCA budget) |
 
 > **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
 > `dystream_seeded_b1`) were re-extracted at face-detection threshold
@@ -91,6 +94,9 @@ the metric is robust to the window; GT net declines mildly as the window widens)
 UNLIKE the window, the layer is load-bearing: layer 9 is the only one where the GT anchor
 is significant; layers 6 and 12 both lose it, and layer 6 also turns two talking-head
 controls significantly positive),
+`fig_pca_dim_ablation` (two panels: audio `K_A` {32,64,96} has an optimum at 64 — narrow
+inflates the controls, wide drops GT and turns a talking-head control significant; motion
+`K_MV` {16,32,64} is a flat no-op),
 `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
@@ -169,6 +175,20 @@ the OLD subsample nuisance that the full-data default removes.
   `extractors/hubert/README.md`). The fresh cache is faithful: layer 9 re-extracted
   reproduces the production baseline to max |Δnet| = 0.005. (`hubert_ablation*`,
   `fig_hubert_ablation`, `../CVPR_zeroother_design.md` §13.3)
+- **The PCA output dim: audio `K_A`=64 is an optimum, motion `K_MV` is immaterial.** At
+  layer 9, the audio PCA dim has a sweet spot: narrow `K_A`=32 inflates the controls
+  (surrogate +0.04→+0.17, SoulX Lite −0.12→+0.34, still n.s.) and the dyadic nets (loses
+  specificity); wide `K_A`=96 drops GT to +0.35 and turns a talking-head control
+  significant (SoulX Pro +0.45, p=0.01). The default 64 holds the controls closest to 0
+  with a significant anchor. The motion dim `K_MV` {16,32,64} changes nothing (|Δ|<0.02) —
+  the conditioning removes motion, so its dim is immaterial. **Why layer 12 fails
+  (mechanism):** not an extraction/LayerNorm/normalisation artifact (extraction is
+  identical per layer; post-norm checkpoint so `hidden_states[12]==last_hidden_state`;
+  features are z-scored before PCA). The final HuBERT layer is specialised to the
+  pretraining objective and collapses to a low effective rank — participation ratio
+  79.8/71.3/31.0 for layers 6/9/12 — squeezing out the reaction signal. A wider PCA at
+  layer 12 recovers only 14% of the gap: content degradation, not a PCA budget limit.
+  (`pca_dim_ablation*`, `fig_pca_dim_ablation`, `../CVPR_zeroother_design.md` §13.4)
 - **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
   0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per

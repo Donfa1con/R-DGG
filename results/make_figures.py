@@ -482,6 +482,65 @@ def fig_hubert_ablation(csv="hubert_ablation.csv", out="fig_hubert_ablation", xl
     plt.close(fig)
 
 
+def fig_pca_dim_ablation(csv="pca_dim_ablation.csv", out="fig_pca_dim_ablation", xlim=(-0.7, 1.9), dy=0.26):
+    d = rows(csv)
+    # split by knob; within each, one record per column carrying its 3 dims
+    panels = {"audio_K_A": {}, "motion_KMV": {}}
+    orders = {"audio_K_A": [], "motion_KMV": []}
+    dims = {"audio_K_A": ["32", "64", "96"], "motion_KMV": ["16", "32", "64"]}
+    for r in d:
+        k = r["knob"]; c = r["column"]
+        if c not in panels[k]:
+            orders[k].append(c); panels[k][c] = {"group": r["group"]}
+        panels[k][c][r["dim"]] = r
+    C = {0: OK["sky"], 1: OK["blue"], 2: OK["vermillion"]}
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 6.6), sharey=True,
+                             gridspec_kw={"wspace": 0.08})
+    for ax, knob in zip(axes, ("audio_K_A", "motion_KMV")):
+        bycol = panels[knob]; dd = dims[knob]
+        recs, labels, prev = [], [], None
+        for c in orders[knob]:
+            g = bycol[c]["group"]
+            if prev is not None and g != prev:
+                recs.append(None); labels.append("")
+            recs.append(bycol[c]); labels.append(c); prev = g
+        y = list(range(len(recs)))[::-1]
+        ax.axvline(0, color=MUTE, lw=1, zorder=1)
+        gt = fnum(bycol.get("GT", {}).get(dd[1], {}).get("net_x1e4"))
+        if gt is not None:
+            ax.axvline(gt, color=OK["green"], lw=1, ls="--", zorder=1)
+        offs = {dd[0]: +dy, dd[1]: 0.0, dd[2]: -dy}
+        for yi, rc in zip(y, recs):
+            if rc is None:
+                continue
+            for j, dm in enumerate(dd):
+                r = rc.get(dm)
+                if r is None:
+                    continue
+                v, lo, hi = fnum(r["net_x1e4"]), fnum(r["net_ci_lo_x1e4"]), fnum(r["net_ci_hi_x1e4"])
+                ax.errorbar(v, yi + offs[dm], xerr=[[v - lo], [hi - v]], fmt="o", ms=5, color=C[j],
+                            ecolor=C[j], elinewidth=0.8, capsize=2, zorder=3)
+        ax.set_xlim(*xlim)
+        ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", color=GRID, lw=0.6, zorder=0); ax.set_axisbelow(True)
+        ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=8)
+        name = "AUDIO PCA dim $K_A$" if knob == "audio_K_A" else "MOTION PCA dim $K_{MV}$"
+        sub = "64 is the sweet spot; both sides worse" if knob == "audio_K_A" else "no effect (flat)"
+        ax.set_title(f"{name} — {sub}", fontsize=9.5)
+        ax.set_xlabel("net ×1e4   (95% identity CI)")
+        hh = [Line2D([0], [0], marker="o", mfc=C[j], mec=C[j], ls="none", ms=6,
+                     label=f"{'default ' if j == 1 else ''}{dd[j]}") for j in range(3)]
+        ax.legend(handles=hh, frameon=False, fontsize=7.2, loc="lower right", title=name.split("—")[0])
+    fig.suptitle("PCA output-dimension ablation (layer 9): audio K_A has an optimum at 64, motion K_MV is immaterial",
+                 fontsize=10.0, y=0.99)
+    fig.text(0.5, 0.004, "Common mask, n≈177, 13 identities, seed-averaged dyadic. Narrow K_A inflates the "
+             "controls; wide K_A drops GT and turns a talking-head control significant. The motion dim changes nothing.",
+             ha="center", fontsize=6.4, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
+    plt.close(fig)
+
+
 def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
                    title="Dose curve: stock → zeroother (k=0..178)", out="fig_dose_curve",
                    color=OK["blue"]):
@@ -627,6 +686,7 @@ def main():
     fig_motion_cond_ablation()
     fig_lmax_ablation()
     fig_hubert_ablation()
+    fig_pca_dim_ablation()
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",

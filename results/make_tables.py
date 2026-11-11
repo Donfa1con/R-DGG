@@ -30,7 +30,9 @@ JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgothe
         "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
         "operator_ablation", "motion_cond_ablation",
         "lmax_ablation__L50", "lmax_ablation__L150",
-        "hubert_ablation__l6", "hubert_ablation__l9", "hubert_ablation__l12"]
+        "hubert_ablation__l6", "hubert_ablation__l9", "hubert_ablation__l12",
+        "pca_dim_ablation__verify64", "pca_dim_ablation__ka32", "pca_dim_ablation__ka96",
+        "pca_dim_ablation__kmv16", "pca_dim_ablation__kmv64", "pca_dim_ablation__l12_ka96"]
 
 
 def load(name):
@@ -296,6 +298,55 @@ def build_hubert_ablation(name="hubert_ablation"):
                "net_ci_hi_x1e4", "net_p"], rows)
 
 
+# ---- PCA output-dim ablation: audio K_A and motion KMV sweeps at layer 9 -----
+# All configs share GRAM_CHUNK=4096 + the in-place scoring (transient memory fixes for the
+# wide K_A=96 point); verify64 is the chunk-matched K_A=64/KMV=32 baseline, so the sweep is
+# internally consistent. L12_ka96 is the layer-12 PCA-budget-vs-content diagnostic.
+PCA_DIM_AUDIO = [("ka32", 32), ("verify64", 64), ("ka96", 96)]     # KMV fixed at 32
+PCA_DIM_MOTION = [("kmv16", 16), ("verify64", 32), ("kmv64", 64)]  # K_A fixed at 64
+PCA_DIM_SWEEPS = [("audio_K_A", PCA_DIM_AUDIO), ("motion_KMV", PCA_DIM_MOTION)]
+
+
+def build_pca_dim_ablation(name="pca_dim_ablation"):
+    """PCA output-dimension sweep on layer 9 (common mask): audio K_A {32,64,96} and
+    motion KMV {16,32,64}, each with identity CI; plus the L12 g_a_m recovery diagnostic."""
+    rows = []
+    for knob, sweep in PCA_DIM_SWEEPS:
+        D = {tag: load(f"{name}__{tag}") for tag, _ in sweep}
+        base_tag = sweep[1][0]
+        for lbl in D[base_tag]["order"]:
+            b = D[base_tag]["columns"][lbl]
+            for tag, dim in sweep:
+                c = D[tag]["columns"][lbl]
+                rows.append([knob, dim, lbl, b["model"], b["group"], b["seed"],
+                             c["g_a_m"], c["g_shift"], c["net"],
+                             c["ci_net"]["lo"], c["ci_net"]["hi"], c["ci_net"]["p"]])
+    write_csv(f"{name}.csv",
+              ["knob", "dim", "column", "model", "group", "seed",
+               "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p"], rows)
+    rows = []
+    for knob, sweep in PCA_DIM_SWEEPS:
+        D = {tag: load(f"{name}__{tag}") for tag, _ in sweep}
+        for m in D[sweep[1][0]]["seed_averaged_dyadic"]:
+            for tag, dim in sweep:
+                v = D[tag]["seed_averaged_dyadic"][m]["net"]
+                rows.append([knob, dim, m, v["point"], v["lo"], v["hi"], v["p"]])
+    write_csv(f"{name}_seed_avg.csv",
+              ["knob", "dim", "model", "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p"], rows)
+    # L12 diagnostic: GT aligned g_a_m -- does a wider audio PCA recover layer 12?
+    l9_64 = load(f"{name}__verify64")["columns"]["GT"]["g_a_m"]
+    l12_64 = load("hubert_ablation__l12")["columns"]["GT"]["g_a_m"]
+    l12_96 = load(f"{name}__l12_ka96")["columns"]["GT"]["g_a_m"]
+    recov = round(100 * (l12_96 - l12_64) / (l9_64 - l12_64), 1)
+    write_csv(f"{name}_l12_diagnostic.csv",
+              ["point", "g_a_m_x1e4", "note"],
+              [["l9_K64", l9_64, "layer-9 target (default)"],
+               ["l12_K64", l12_64, "layer-12 at default dim"],
+               ["l12_K96", l12_96, "layer-12 at wider audio PCA"],
+               ["recovery_pct", recov, "percent of the l12->l9 g_a_m gap closed by K_A 64->96 (low=content degradation)"]])
+
+
 # ---- seed variance (3 stock noise realizations) ----------------------------
 def build_seed_variance():
     p1 = load("seed_variance")["part1_three_stock_seeds"]
@@ -422,6 +473,7 @@ def main():
     build_motion_cond_ablation()
     build_lmax_ablation()
     build_hubert_ablation()
+    build_pca_dim_ablation()
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")
