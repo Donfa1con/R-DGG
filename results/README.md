@@ -34,8 +34,10 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `leaderboard.csv` | 8 systems + GT anchor + GT×other surrogate: net, CI, p, own_r2 (from `../RESULTS.md`) |
 | `ablation_marginals.csv` | 5 AVTR-1 columns on one common mask: unseeded / seed0 / seed1 / zeroother / cfg0 — g_a_m, g_shift, net, CI, p, own_r2 |
 | `ablation_paired_deltas.csv` | identity-clustered paired Δ among those columns, with CI, p, sig |
-| `shift_ablation.csv` | shift-correction ablation: every model × every seed + GT & surrogate controls — `g_a_m` (uncorrected), `g_shift`, `net` (R-DGG), and identity CI on BOTH `net` and raw `g_a_m` |
-| `shift_ablation_seed_avg.csv` | per dyadic model, mean/SD of `net` and `g_a_m` over the 3 generation seeds |
+| `shift_ablation.csv` | shift-correction ablation (per-column MARGINAL mask): every model × every seed + GT & surrogate controls — `g_a_m` (uncorrected), `g_shift`, `net` (R-DGG), and identity CI on BOTH `net` and raw `g_a_m` |
+| `shift_ablation_seed_avg.csv` | per dyadic model, mean/SD of `net` and `g_a_m` over the 3 generation seeds (marginal) |
+| `shift_ablation_common.csv` | same ablation on ONE shared COMMON mask (identical frames = GT-reactive & every model-seed column's face_ok), so every column has the same n≈177 |
+| `shift_ablation_common_seed_avg.csv` | per dyadic model seed mean/SD (common mask) |
 
 > **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
 > `dystream_seeded_b1`) were re-extracted at face-detection threshold
@@ -66,7 +68,9 @@ Paper set (rendered by `make_figures.py` `main()`): `fig_leaderboard` (bar + CI,
 coloured by system type), `fig_ablation` (5 columns + CI vs GT anchor / floor),
 `fig_shift_ablation` (two panels, every model × every seed + GT controls:
 uncorrected `g_a_m` left vs corrected `net` = R-DGG right — shows the correction is
-needed to read the controls as ~0), `fig_seed_variance` (3 stock seeds + mean±SD),
+needed to read the controls as ~0; per-column marginal mask),
+`fig_shift_ablation_common` (the same, on ONE shared common mask = identical frames
+for every column), `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
 

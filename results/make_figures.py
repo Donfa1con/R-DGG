@@ -130,8 +130,10 @@ SHIFT_GROUP_C = {"GT-control": OK["green"], "dyadic": OK["blue"], "non-dyad": OK
 SHIFT_LOWFID = set()   # all columns n~178 after the DyStream seed re-extraction (det_thresh 0.1)
 
 
-def fig_shift_ablation():
-    d = rows("shift_ablation.csv")
+def fig_shift_ablation(csv="shift_ablation.csv", out="fig_shift_ablation",
+                       footnote="All columns n≈178, 13 identities (same GT&model marginal mask per column).",
+                       xlim_left=(2.2, 4.7), floorband=(3.0, 3.25), xlim_right=(-0.9, 2.3)):
+    d = rows(csv)
     recs, labels = [], []                                  # insert a spacer between groups
     prev = None
     for r in d:
@@ -167,14 +169,15 @@ def fig_shift_ablation():
         ax.grid(axis="x", color=GRID, lw=0.6, zorder=0)
         ax.set_axisbelow(True)
 
-    draw(axL, "g_a_m_x1e4", "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", (2.2, 4.7), hollow=True)
+    draw(axL, "g_a_m_x1e4", "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", xlim_left, hollow=True)
     axL.set_xlabel("uncorrected $g_{a\\,m}$ ×1e4   (95% identity CI)")
     axL.set_title("WITHOUT shift correction", fontsize=9.5)
-    axL.axvspan(3.0, 3.25, color=OK["grey"], alpha=0.12, zorder=0)
-    axL.text(3.125, len(recs) - 0.4, "common\nfloor", ha="center", va="top", fontsize=7, color=MUTE)
+    axL.axvspan(floorband[0], floorband[1], color=OK["grey"], alpha=0.12, zorder=0)
+    axL.text((floorband[0] + floorband[1]) / 2, len(recs) - 0.4, "common\nfloor",
+             ha="center", va="top", fontsize=7, color=MUTE)
 
     gt_net = next((fnum(r["net_x1e4"]) for r in d if r["column"] == "GT"), None)
-    draw(axR, "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", (-0.9, 2.3), hollow=False)
+    draw(axR, "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", xlim_right, hollow=False)
     if gt_net is not None:
         axR.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
     axR.set_xlabel("corrected net = $g_{a\\,m}-g_{shift}$ ×1e4   (R-DGG)")
@@ -192,9 +195,8 @@ def fig_shift_ablation():
     axR.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
     fig.suptitle("Is the time-shift correction needed? R-DGG ablation — all models, all seeds, GT controls",
                  fontsize=10.5, y=0.98)
-    fig.text(0.5, 0.005, "All columns n≈178, 13 identities (same GT&model marginal mask per column).",
-             ha="center", fontsize=7, color=MUTE)
-    fig.savefig(FIGS / "fig_shift_ablation.pdf")
+    fig.text(0.5, 0.005, footnote, ha="center", fontsize=7, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
     plt.close(fig)
 
 
@@ -339,6 +341,10 @@ def main():
     fig_leaderboard()
     fig_ablation()
     fig_shift_ablation()
+    fig_shift_ablation(csv="shift_ablation_common.csv", out="fig_shift_ablation_common",
+                       footnote="All columns on ONE shared mask (identical frames): GT-reactive & every "
+                                "model-seed column's face_ok. n≈177, 13 identities.",
+                       xlim_left=(2.6, 5.1), floorband=(3.3, 3.5), xlim_right=(-0.7, 1.8))
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -348,8 +354,8 @@ def main():
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
-    print("  figures: leaderboard, ablation, shift_ablation, seed_variance, dose_curve, "
-          "dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
+    print("  figures: leaderboard, ablation, shift_ablation(+_common), seed_variance, "
+          "dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 

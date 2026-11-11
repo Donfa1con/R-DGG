@@ -32,11 +32,11 @@ import torch
 
 import _config
 from _config import BOOTSTRAP, SOURCES, SURROGATE, LSPK, _ident_key
-from _features import collect_design, load_all_motion
+from _features import collect_design, gridded_face_ok, load_all_motion
 from _granger import capture_energies
 from _bootstrap import cluster_sums
 from compute import load_corpus
-from dose_curve import build_context_and_operator, capture_column
+from dose_curve import build_context_and_operator, capture_column, intersect_masks
 
 
 # ---- columns: every model x every available seed, plus the two GT controls ----
@@ -140,6 +140,10 @@ def main():
     ap = argparse.ArgumentParser(description="R-DGG shift-correction ablation (standalone).")
     ap.add_argument("--corpus", default=os.environ.get("CORPUS", _config.CORPUS))
     ap.add_argument("--split", default=_config.SPLIT)
+    ap.add_argument("--mask", choices=["marginal", "common"], default="marginal",
+                    help="marginal (default): each column on its OWN GT&model mask. "
+                         "common: ONE shared mask = GT-reactive & every column's face_ok, "
+                         "so all columns score on IDENTICAL frames (leaderboard rule).")
     args = ap.parse_args()
     assert torch.cuda.is_available(), "GPU-only metric"
     _config.set_paths(args.corpus, args.split)
@@ -150,6 +154,21 @@ def main():
     corpus = load_corpus()
     ctx, ops, mask_gtonly, gt_cache = build_context_and_operator(source, suffix, corpus)
     print(f"  [phase1] operator built {time.time() - t0:.1f}s; NFOLD={corpus.NFOLD}", flush=True)
+
+    # Which mask every column is scored on. marginal = each column's own GT&model mask.
+    # common = GT-reactive & EVERY model-seed column's face_ok (the surrogate is excluded
+    # from the intersection, as in the leaderboard, because its seam-blinding removes rows).
+    all_dirs = [d for dirs in DYADIC_SEEDS.values() for d in dirs] + list(TALKING.values())
+    if args.mask == "common":
+        eval_mask = mask_gtonly
+        for d in all_dirs:
+            fok = gridded_face_ok(load_all_motion(f"{C}/{d}/{S}_{suffix}", source, corpus), corpus)
+            eval_mask = intersect_masks(eval_mask, fok)
+        n_fr = sum(int(v.sum()) for v in eval_mask.values())
+        print(f"  [common-mask] {len(eval_mask)} stems, {n_fr} grid frames valid in GT & all "
+              f"{len(all_dirs)} model-seed columns", flush=True)
+    else:
+        eval_mask = mask_gtonly
 
     columns = {}      # label -> record (all numbers)
     npz = {}          # flat arrays for redraw (per-dyad raw/net)
@@ -169,25 +188,25 @@ def main():
 
     # --- GT positive control ---
     print("\n  [controls] GT (positive) + GT*other surrogate (negative) ...", flush=True)
-    E_gt, own_gt = capture_energies(collect_design(gt_cache, ctx, mask_gtonly), ops, ctx)
+    E_gt, own_gt = capture_energies(collect_design(gt_cache, ctx, eval_mask), ops, ctx)
     add("GT", "GT", "GT-control", "GT", E_gt, own_gt)
 
     # --- GT*other surrogate negative control ---
     surr = build_surrogate_cache(gt_cache, corpus)
-    E_sur, own_sur = capture_energies(collect_design(surr, ctx, mask_gtonly), ops, ctx)
+    E_sur, own_sur = capture_energies(collect_design(surr, ctx, eval_mask), ops, ctx)
     add(SURROGATE, SURROGATE, "GT-control", "surrogate", E_sur, own_sur)
 
     # --- dyadic models, every seed ---
     print("\n  [dyadic] AVTR-1 / DyStream / AvatarForcing, 3 seeds each ...", flush=True)
     for model, dirs in DYADIC_SEEDS.items():
         for i, d in enumerate(dirs):
-            E, _per, r2 = capture_column(f"{C}/{d}/{S}_{suffix}", mask_gtonly, ctx, ops, corpus, source)
+            E, _per, r2 = capture_column(f"{C}/{d}/{S}_{suffix}", eval_mask, ctx, ops, corpus, source)
             add(f"{model} [{SEED_TAG[i]}]", model, "dyadic", SEED_TAG[i], E, r2)
 
     # --- talking-head models (non-dyadic model-side controls), one seed each ---
     print("\n  [non-dyadic] talking-head models, one seed each ...", flush=True)
     for model, d in TALKING.items():
-        E, _per, r2 = capture_column(f"{C}/{d}/{S}_{suffix}", mask_gtonly, ctx, ops, corpus, source)
+        E, _per, r2 = capture_column(f"{C}/{d}/{S}_{suffix}", eval_mask, ctx, ops, corpus, source)
         add(model, model, "non-dyad", "single", E, r2)
 
     # --- seed-averaged dyadic summary (mean/SD of per-seed net over the 3 seeds) ---
@@ -209,7 +228,12 @@ def main():
         "metric": "R-DGG shift-correction ablation",
         "question": "is the time-shift correction (net = g_a_m - g_shift) needed?",
         "source": source, "suffix": suffix, "split": S, "n_folds": corpus.NFOLD,
-        "mask": "each column on its OWN GT-reactive & model face_ok marginal mask (RESULTS.md-comparable)",
+        "mask_mode": args.mask,
+        "mask": ("ONE shared mask = GT-reactive & every model-seed column's face_ok; all columns "
+                 "score on IDENTICAL frames (surrogate excluded from the intersection, like the "
+                 "leaderboard; its seam-blinding then applies on top)"
+                 if args.mask == "common"
+                 else "each column on its OWN GT-reactive & model face_ok marginal mask (RESULTS.md-comparable)"),
         "arithmetic": {
             "g_a_m": "1e4 * log(mot_r/both_r)  -- aligned gain, UNCORRECTED",
             "g_shift": "1e4 * mean_k log(mot_n[k]/both_n[k])  -- mean of 100 time-shift nulls",
@@ -225,10 +249,11 @@ def main():
         "columns": columns,
         "seed_averaged_dyadic": seed_avg,
     }
-    jpath = f"{outdir}/shift_ablation__{S}.json"
+    tag = "_common" if args.mask == "common" else ""
+    jpath = f"{outdir}/shift_ablation{tag}__{S}.json"
     with open(jpath, "w") as f:
         json.dump(result, f, indent=2)
-    npz_path = f"{outdir}/shift_ablation__{S}.npz"
+    npz_path = f"{outdir}/shift_ablation{tag}__{S}.npz"
     np.savez_compressed(npz_path, **npz)
     print(f"\n  [out] {jpath}\n        {npz_path}", flush=True)
     print("SHIFT_ABLATION_DONE", flush=True)
