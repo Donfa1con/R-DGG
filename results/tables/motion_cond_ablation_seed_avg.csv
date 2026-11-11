@@ -1,0 +1,13 @@
+model,channel,n_seeds,net_x1e4,net_ci_lo_x1e4,net_ci_hi_x1e4,net_p,net_per_seed_sd_x1e4
+AVTR-1,conditional,3,0.5276,0.1913,0.8293,0.0013,0.1383
+AVTR-1,marginal,3,0.5475,0.2188,0.8436,0.0008,0.141
+AVTR-1,motion,3,0.7082,-0.1134,1.3535,0.0432,0.3159
+AVTR-1,motion_given_audio,3,0.6883,-0.1387,1.3335,0.0489,0.3084
+DyStream,conditional,3,0.6589,0.1117,1.2006,0.0072,0.198
+DyStream,marginal,3,0.6716,0.123,1.2116,0.0065,0.1958
+DyStream,motion,3,1.0467,-0.879,3.4819,0.2536,0.1465
+DyStream,motion_given_audio,3,1.0341,-0.8859,3.4626,0.2565,0.1366
+AvatarForcing,conditional,3,0.2257,-0.0375,0.4843,0.0491,0.1472
+AvatarForcing,marginal,3,0.2278,-0.0322,0.4815,0.0457,0.147
+AvatarForcing,motion,3,0.5769,-0.1877,1.3492,0.0825,0.2554
+AvatarForcing,motion_given_audio,3,0.5747,-0.1935,1.3522,0.0841,0.2556

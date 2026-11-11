@@ -559,6 +559,127 @@ separating the reactive models from each other.
 - Cost: ~4 generation + motion-extraction passes (2 DyStream + 2 AvatarForcing); the
   GT operator and the other models stay fixed.
 
+## 13. Operating-point ablations — pre-registered decision rubric [proposed]
+
+We ablate three fixed knobs: the motion conditioning, the lag window `LMAX`, and
+the HuBERT layer. We declare the decision rule HERE, before any ablation number
+is seen. We judge a variant by **construct validity**, not by a larger `net`.
+Selecting the variant with the biggest `net` is selection on the outcome; we do
+not do it. This rubric repeats the criterion the repo already used to reject
+`hubert-large` ("loses the held-out anchor") and waveform normalisation ("moves a
+control from covering zero to excluding it").
+
+### 13.0 The rubric (ordered; applied on the ONE common mask)
+
+A variant must hold ALL of these, in priority order:
+
+1. **Positive anchor holds.** GT stays significant and positive. Reference now:
+   common-mask net ≈ +0.60, p ≈ 0.003 (full basis +0.70, p < 0.001). A variant
+   that drives GT to non-significance (p ≥ 0.05), or roughly halves its net,
+   is disqualified.
+2. **Negative controls stay at zero.** The surrogate (GT×other) and every
+   talking-head (FLOAT, Ditto, SoulX) keep a CI that covers 0. Reference now:
+   surrogate +0.04 (p = 0.43); talking-heads −0.12…+0.14 (all n.s.). A variant
+   that turns any control significantly positive (one-sided p < 0.05) is
+   disqualified — a positive control means the metric credits non-dyadic coupling.
+3. **Separation holds.** The dyadic models (AVTR-1, DyStream, AvatarForcing) stay
+   positive and significant, and the dyadic−control margin does not collapse.
+4. **Minimalism tie-break.** When two settings pass 1–3 equally, keep the fixed
+   operating point. Switching the operating point re-computes the committed
+   leaderboard and every table, so the bar to switch is high.
+
+**Decision.** The expected and acceptable outcome is that the baseline (layer 9,
+`LMAX = 100`, conditional `aud|mot`) passes 1–3 at least as well as each variant.
+Then the ablation is a **robustness check**: the result is not an artifact of the
+knob. We switch the operating point ONLY when a variant **strictly dominates** on
+1–3 with a mechanistic reason, never on a bare `net` gain.
+
+### 13.1 Motion conditioning — `aud|mot` vs marginal `aud`
+
+- **Change.** Add one residual, `e_aud_only = residual_with([audio])`, beside the
+  existing `both` and `motion_only` in `capture_energies` (`rdgg/_granger.py`).
+  Report marginal `aud` net = log(e_own / e_aud_only) next to `aud|mot`. Code
+  only; no re-extraction.
+- **Pre-registered prediction (before the run).** The current target conditions
+  out the speaker's visible motion, because speaker audio and speaker motion are
+  co-speech collinear (the `SCHUR_RIDGE` note, `rdgg/_config.py`). We predicted:
+  marginal `aud` moves a control (surrogate or a talking-head) significantly
+  positive (fails rubric rule 2), because motion mimicry leaks into the audio block.
+
+- **Result (what actually happened). The prediction was FALSIFIED, and the real
+  finding is stronger, in two parts.** We report four channels (each the same net,
+  relabelled): `aud|mot` (R-DGG), marginal `aud`, marginal `mot` (motion only),
+  `mot|aud`.
+  1. **The MOTION channel does NOT discriminate, two ways.** By point estimate it
+     is large and positive for every column: surrogate `mot` +0.34, talking-heads
+     +0.35…+0.78, GT +0.92, dyadic +0.37…+1.19 (all ×1e4), and the ordering is
+     scrambled — talking-heads score as high as or above genuine dyadic seeds
+     (SoulX Pro +0.78 > AVTR-1 seed1 +0.40), so motion magnitude does not rank real
+     listeners above non-reactive ones. By significance the motion identity CIs are
+     wide and NOTHING is significant, GT included (p=0.056; surrogate p=0.12;
+     talking-heads p≥0.08). So reading reactivity off visible motion would both
+     mis-rank and certify nothing. Only the AUDIO channel separates (GT p=0.003 and
+     dyadic >0, surrogate and talking-heads ~0 and n.s.). So `aud|mot` — the audio
+     gain net of motion — IS the audio-specific definition of the metric, not a
+     bolt-on. This is the paper-relevant result of the ablation.
+  2. **Conditioning is a no-op for the NUMBER on SI-184.** `aud|mot` equals marginal
+     `aud` to |Δ|≤0.03 (GT +0.599 vs +0.590; surrogate +0.043 vs +0.045; dyadic
+     seed-averaged within +0.02; no control crosses into significance; same
+     seed-spread 0.14–0.20 and same single-seed CI width in both channels). Audio
+     and motion are near-orthogonal in the reaction: `V(both)≈V(aud)+V(mot)`, seen
+     in the symmetry `aud|mot≈aud` AND `mot|aud≈mot`. So the feared co-speech
+     collinearity does not bite the floor-corrected net HERE; the audio-specificity
+     is robust, not fragile, and the conditioning is free insurance on corpora or
+     against models where audio and motion ARE collinear in the reaction.
+
+- **Decision.** Keep the conditional `aud|mot` (rubric rule 4 — it is the
+  construct-valid definition and costs nothing here). The honest write-up leads
+  with result 1 (why the metric is audio-specific), then reports result 2 (the
+  conditioning is a no-op on this corpus — a robustness statement, not a necessity
+  one). See `results/` (`motion_cond_ablation*`, `fig_motion_cond_ablation`).
+
+### 13.2 Lag window — `LMAX` 50 / 100 / 150
+
+- **Change.** `make_lag_grid` `base` stops at 100, so `LMAX = 150` is a no-op as
+  written. `scratchpad/run_lmax_ablation.py` extends `base` with 125, 150 for the
+  6 s window, runs the same `shift_ablation.py` harness at each window in a fresh
+  process (editing `LMAX` in `_config.py` on the branch, then restoring it), and
+  tags the output `lmax_ablation__L{N}`. L100 is the production window (the committed
+  `shift_ablation` common-mask run); only L50 and L150 are run. "L50" realizes max
+  lag 48 (nearest grid node ≤50; base jumps 48→60), so the windows are 48/100/150
+  frames = 1.9/4/6 s. Code only; no re-extraction.
+- **Result (robustness confirmed; baseline kept).** All three windows pass the
+  rubric, so no conclusion depends on the window:
+  1. **Anchor (rule 1):** GT significant and positive at every window — +0.691 /
+     +0.599 / +0.492 (p = 0.001 / 0.003 / 0.007). GT net declines monotonically as
+     the window widens: most of the audio→reaction coupling sits at short lags
+     (<2 s), and the longer window dilutes it.
+  2. **Controls (rule 2):** surrogate ~0 and n.s. at every window (+0.09 / +0.04 /
+     +0.06), all talking-heads n.s. (p ≥ 0.12). None crosses into significance.
+  3. **Separation (rule 3):** dyadic seed-averaged positive at every window (AVTR-1
+     ≈ +0.48…+0.53 p ≤ 0.002; DyStream ≈ +0.65…+0.76 p ≤ 0.01; AvatarForcing
+     ≈ +0.20…+0.22). AvatarForcing is the weakest and loses p < 0.05 only at the 6 s
+     window (p = 0.08).
+  4. **Decision (rule 4):** no window strictly dominates — the short 1.9 s window
+     raises the GT anchor but also nudges the controls up, and the 6 s window shrinks
+     every column and costs AvatarForcing its significance. So keep the 4 s default
+     (switching re-computes the whole leaderboard). The mild trend argues, if
+     anything, AGAINST lengthening the window, consistent with the fixed 4 s. Report
+     as a robustness check. See `results/` (`lmax_ablation*`, `fig_lmax_ablation`).
+
+### 13.3 HuBERT layer — 6 / 9 / 12
+
+- **Change.** Re-extract **GT only** at layers 6 and 12
+  (`extractors/hubert/extract.py --layers 6 12` on `data/GT/LS_AL_hubert`), then
+  switch `HUB_LAYER` (`rdgg/_config.py`). GT is sufficient because R-DGG always
+  reads GT audio for the speaker driver AND the listener own-audio block; no path
+  reads per-model audio (§4; `rdgg/compute.py:197`). The models change only the
+  motion.
+- **What it tests.** Robustness to the layer choice. The repo already ran a layer
+  grid before it fixed layer 9, so this ablation CONFIRMS that choice. Expected
+  outcome: layer 9 passes the rubric at least as well; report as a robustness
+  check. Switch away from 9 only on strict dominance (rule 4).
+
 ---
 
 Commits to the `cvpr` branch happen only on an explicit command.

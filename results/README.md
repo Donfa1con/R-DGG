@@ -38,6 +38,10 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `shift_ablation_seed_avg.csv` | per dyadic model, seed-averaged `net` and `g_a_m` with identity CI (average the per-stem energies over the 3 seeds, then the exact identity bootstrap) + `*_per_seed_sd` (spread of the 3 single-seed points) |
 | `operator_ablation.csv` | reference-operator ablation on the SAME common mask: every column × 2 operators — `reference` (GT operator `B_GT`, = R-DGG) and `self` (fit on the column's own reaction, leave-one-identity-fold cross-fit) — `g_a_m`, `g_shift`, `net`, CI on `net` and raw, `own_r2` |
 | `operator_ablation_seed_avg.csv` | per dyadic model × operator, seed-averaged `net` with identity CI (same energy-average method) + `net_per_seed_sd` |
+| `motion_cond_ablation.csv` | motion-conditioning ablation on the SAME common mask: every column × 4 channels — `conditional` (aud\|mot = audio net of motion, = R-DGG), `marginal` (aud, motion NOT removed), `motion` (mot, the visible-motion channel), `motion_given_audio` (mot\|aud) — `g_a_m`, `g_shift`, `net`, CI on `net` and raw, `own_r2` |
+| `motion_cond_ablation_seed_avg.csv` | per dyadic model × channel (4), seed-averaged `net` with identity CI (same energy-average method) + `net_per_seed_sd` |
+| `lmax_ablation.csv` | lag-window robustness on the SAME common mask: every column × 3 windows — `L48`/`L100`/`L150` (max lag 48/100/150 frames = 1.9/4/6 s; L100 is the default, from `shift_ablation`) — `g_a_m`, `g_shift`, `net`, identity CI, p |
+| `lmax_ablation_seed_avg.csv` | per dyadic model × window, seed-averaged `net` with identity CI |
 
 > **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
 > `dystream_seeded_b1`) were re-extracted at face-detection threshold
@@ -73,6 +77,14 @@ as ~0), `fig_operator_ablation` (two panels, every model × every seed + GT cont
 the SAME common mask: `net` with the GT reference operator `B_GT` = R-DGG left vs `net`
 with each column's own cross-fit operator `B_self` right — shows the self operator
 inflates the model columns, DyStream most, so the GT reference projection is needed),
+`fig_motion_cond_ablation` (two panels. LEFT = AUDIO channel: `aud|mot` = R-DGG filled vs
+marginal `aud` hollow — dyadic/GT sit >0, controls at ~0, and the two markers coincide
+(conditioning is a no-op for the number). RIGHT = MOTION channel `mot` — positive for
+EVERY column, controls included, so the visible-motion coupling does not discriminate;
+this is why R-DGG reads the audio channel, net of motion),
+`fig_lmax_ablation` (R-DGG net per column at 3 lag windows 1.9/4/6 s, coloured by window —
+the three nearly coincide for every column, GT stays significant and controls stay ~0, so
+the metric is robust to the window; GT net declines mildly as the window widens),
 `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
@@ -109,6 +121,35 @@ the OLD subsample nuisance that the full-data default removes.
   operators. The seed-averaged reference net matches the shift ablation net to ±0.001 (a
   cross-check: both are the same R-DGG net under `B_GT`). (`operator_ablation*`,
   `fig_operator_ablation`)
+- **Reactivity must be read off the AUDIO channel, net of motion — that is the metric's
+  definition, and the MOTION channel shows why.** The speaker's visible motion is NOT a
+  usable reactivity signal, two ways. By point estimate it is large and positive for EVERY
+  column — surrogate mot +0.34, talking-heads +0.35…+0.78, GT +0.92, dyadic +0.37…+1.19 —
+  and the ordering is scrambled: talking-heads score as high as or above genuine dyadic
+  seeds (SoulX Pro +0.78 > AVTR-1 seed1 +0.40), so motion magnitude does not rank real
+  listeners above non-reactive ones. By significance the motion identity CIs are wide and
+  NOTHING is significant, GT included (p=0.056; surrogate p=0.12; talking-heads p≥0.08).
+  So reading reactivity off visible motion would both mis-rank and certify nothing. Only
+  the AUDIO channel separates: GT (p=0.003) and the dyadic models >0, surrogate and
+  talking-heads ~0 and n.s. R-DGG reports `aud|mot` = the audio gain net of motion, which
+  IS the audio-specific definition, not a bolt-on. **Second, on SI-184 conditioning is a
+  no-op for the number** — `aud|mot` equals marginal `aud` to |Δ|≤0.03 (GT +0.599 vs
+  +0.590, surrogate +0.043 vs +0.045), because audio and motion are near-orthogonal in the
+  reaction (`V(both)≈V(aud)+V(mot)`, seen in `aud|mot≈aud` AND `mot|aud≈mot`), with the
+  same seed-spread and CI in both channels. So the audio-specificity is robust here (not
+  fragile), and conditioning is free insurance where audio and motion ARE collinear. The
+  pre-registered prediction (marginal inflates a control) was NOT observed. We keep
+  `aud|mot` (rubric rule 4). (`motion_cond_ablation*`, `fig_motion_cond_ablation`, `../CVPR_zeroother_design.md` §13.1)
+- **R-DGG is robust to the lag window (1.9–6 s).** Across windows of max lag 48 / 100 / 150
+  frames (1.9 / 4 / 6 s), GT stays significant and positive (+0.691 / +0.599 / +0.492,
+  p≤0.01), every control stays ~0 and non-significant (surrogate +0.09 / +0.04 / +0.06,
+  talking-heads all n.s.), and the dyadic models stay positive and significant — so no
+  conclusion depends on the window. GT net declines mildly as the window widens, i.e. most
+  of the audio→reaction coupling sits at short lags (<2 s); the longest window slightly
+  dilutes it and costs AvatarForcing its p<0.05 (p=0.08 at 6 s). No window strictly
+  dominates (the short window raises GT but nudges the controls up too), so we keep the 4 s
+  default (rubric rule 4; switching re-computes the whole leaderboard).
+  (`lmax_ablation*`, `fig_lmax_ablation`, `../CVPR_zeroother_design.md` §13.2)
 - **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
   0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per

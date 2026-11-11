@@ -1,0 +1,46 @@
+column,model,group,seed,window,window_sec,n_stems,n_identities,g_a_m_x1e4,g_shift_x1e4,net_x1e4,net_ci_lo_x1e4,net_ci_hi_x1e4,net_p
+GT,GT,GT-control,GT,L48,1.92,177,13,3.9725,3.2816,0.6909,0.2695,1.1112,0.0008
+GT,GT,GT-control,GT,L100,4.0,177,13,3.951,3.3518,0.5992,0.1729,1.0291,0.0032
+GT,GT,GT-control,GT,L150,6.0,177,13,3.9227,3.4308,0.4919,0.0867,0.9686,0.0066
+GT×other,GT×other,GT-control,surrogate,L48,1.92,177,13,3.464,3.3724,0.0917,-0.4094,0.5828,0.3577
+GT×other,GT×other,GT-control,surrogate,L100,4.0,177,13,3.5365,3.4922,0.0443,-0.3629,0.5346,0.4305
+GT×other,GT×other,GT-control,surrogate,L150,6.0,177,13,3.5435,3.4797,0.0638,-0.2701,0.4623,0.376
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,L48,1.92,177,13,3.8509,3.3062,0.5447,0.1701,0.9172,0.0024
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,L100,4.0,177,13,3.9844,3.4217,0.5627,0.1894,0.9434,0.0018
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,L150,6.0,177,13,3.9691,3.4735,0.4956,0.1345,0.8591,0.0042
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,L48,1.92,177,13,3.4933,3.3326,0.1608,-0.1725,0.507,0.1762
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,L100,4.0,177,13,3.7716,3.3968,0.3748,-0.0956,0.8316,0.0617
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,L150,6.0,177,13,4.012,3.5096,0.5024,-0.0122,1.0126,0.0281
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,L48,1.92,177,13,4.0613,3.3178,0.7435,0.2099,1.2224,0.0042
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,L100,4.0,177,13,4.0581,3.4135,0.6446,0.1522,1.0675,0.0066
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,L150,6.0,177,13,4.0332,3.4699,0.5632,0.1401,0.9359,0.0062
+DyStream [unseeded],DyStream,dyadic,unseeded,L48,1.92,177,13,3.8432,3.3282,0.515,-0.0437,1.0931,0.0371
+DyStream [unseeded],DyStream,dyadic,unseeded,L100,4.0,177,13,3.834,3.3501,0.4839,0.004,1.0398,0.024
+DyStream [unseeded],DyStream,dyadic,unseeded,L150,6.0,177,13,3.8556,3.3912,0.4644,0.0129,0.9622,0.0214
+DyStream [seed0],DyStream,dyadic,seed0,L48,1.92,177,13,4.3128,3.2734,1.0395,0.4229,1.5727,0.0001
+DyStream [seed0],DyStream,dyadic,seed0,L100,4.0,177,13,4.1994,3.319,0.8804,0.0875,1.5222,0.015
+DyStream [seed0],DyStream,dyadic,seed0,L150,6.0,177,13,4.2269,3.3773,0.8496,0.1746,1.4008,0.0081
+DyStream [seed1],DyStream,dyadic,seed1,L48,1.92,177,13,4.0598,3.2506,0.8093,0.3417,1.206,0.0001
+DyStream [seed1],DyStream,dyadic,seed1,L100,4.0,177,13,3.9708,3.2995,0.6713,0.1035,1.2133,0.0089
+DyStream [seed1],DyStream,dyadic,seed1,L150,6.0,177,13,4.0705,3.36,0.7106,0.157,1.2346,0.0043
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,L48,1.92,177,13,3.68,3.3551,0.3248,0.0608,0.5971,0.0092
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,L100,4.0,177,13,3.7597,3.4263,0.3334,0.0158,0.5835,0.0203
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,L150,6.0,177,13,3.8276,3.5097,0.3179,-0.0395,0.6096,0.0389
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,L48,1.92,177,13,3.5025,3.3153,0.1872,-0.1375,0.4613,0.1248
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,L100,4.0,177,13,3.6651,3.3823,0.2828,-0.1542,0.6691,0.1061
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,L150,6.0,177,13,3.771,3.4872,0.2838,-0.1303,0.6284,0.0834
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,L48,1.92,177,13,3.4752,3.3545,0.1208,-0.2193,0.4488,0.2535
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,L100,4.0,177,13,3.4712,3.4161,0.0552,-0.2735,0.3657,0.3796
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,L150,6.0,177,13,3.5222,3.522,0.0002,-0.3485,0.314,0.5096
+SoulX Lite,SoulX Lite,non-dyad,single,L48,1.92,177,13,3.1962,3.2704,-0.0742,-0.4516,0.4378,0.6317
+SoulX Lite,SoulX Lite,non-dyad,single,L100,4.0,177,13,3.2581,3.3718,-0.1137,-0.4224,0.284,0.7375
+SoulX Lite,SoulX Lite,non-dyad,single,L150,6.0,177,13,3.4401,3.4484,-0.0083,-0.3892,0.4897,0.5359
+SoulX Pro,SoulX Pro,non-dyad,single,L48,1.92,177,13,3.5033,3.2803,0.223,-0.1571,0.528,0.1205
+SoulX Pro,SoulX Pro,non-dyad,single,L100,4.0,177,13,3.4833,3.3411,0.1422,-0.2813,0.5761,0.2838
+SoulX Pro,SoulX Pro,non-dyad,single,L150,6.0,177,13,3.5696,3.478,0.0916,-0.3284,0.5548,0.3821
+Ditto,Ditto,non-dyad,single,L48,1.92,177,13,3.3902,3.2812,0.109,-0.1649,0.3639,0.2091
+Ditto,Ditto,non-dyad,single,L100,4.0,177,13,3.3799,3.3289,0.051,-0.2528,0.3242,0.3594
+Ditto,Ditto,non-dyad,single,L150,6.0,177,13,3.5197,3.3598,0.1599,-0.142,0.4305,0.1448
+FLOAT,FLOAT,non-dyad,single,L48,1.92,177,13,3.3601,3.3059,0.0543,-0.2711,0.3893,0.377
+FLOAT,FLOAT,non-dyad,single,L100,4.0,177,13,3.3648,3.3973,-0.0326,-0.4423,0.3814,0.5612
+FLOAT,FLOAT,non-dyad,single,L150,6.0,177,13,3.4504,3.46,-0.0096,-0.4609,0.4583,0.5168

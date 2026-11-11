@@ -107,14 +107,15 @@ def intersect_masks(base, other):
     return out
 
 
-def capture_column(emoca_dir, eval_mask, ctx, ops, corpus, source):
+def capture_column(emoca_dir, eval_mask, ctx, ops, corpus, source, marginal_audio=False):
     """collect_design on a column with the given eval_mask (its OWN face_ok is applied inside),
-    then capture per-stem energies under the fixed GT operator. Returns (E, per_for_reuse, own_r2)."""
+    then capture per-stem energies under the fixed GT operator. Returns (E, per_for_reuse, own_r2).
+    marginal_audio just forwards to capture_energies (opt-in extra keys; default off is unchanged)."""
     cache = load_all_motion(emoca_dir, source, corpus)
     per = collect_design(cache, ctx, eval_mask)
     # capture_energies consumes `per`; keep a design snapshot for the exact additivity check.
     per_keep = {ls: tuple(v) for ls, v in per.items()}
-    E, own_r2 = capture_energies(per, ops, ctx)
+    E, own_r2 = capture_energies(per, ops, ctx, marginal_audio=marginal_audio)
     return E, per_keep, own_r2
 
 

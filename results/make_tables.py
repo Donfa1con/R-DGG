@@ -28,7 +28,8 @@ TABLES.mkdir(exist_ok=True)
 
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
         "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
-        "operator_ablation"]
+        "operator_ablation", "motion_cond_ablation",
+        "lmax_ablation__L50", "lmax_ablation__L150"]
 
 
 def load(name):
@@ -183,6 +184,82 @@ def build_operator_ablation(name="operator_ablation"):
                "net_per_seed_sd_x1e4"], rows)
 
 
+# ---- motion-conditioning ablation: conditional aud|mot vs marginal aud -----
+MOTION_COND_CHANNELS = ("conditional", "marginal", "motion", "motion_given_audio")
+
+
+def build_motion_cond_ablation(name="motion_cond_ablation"):
+    """Motion-conditioning ablation: four channels per column on one common mask —
+    conditional aud|mot (R-DGG), marginal aud (motion not removed), motion mot (the
+    visible-motion channel), and mot|aud — each with identity CI."""
+    d = load(name)
+    cols = d["columns"]
+    rows = []
+    for lbl in d["order"]:
+        c = cols[lbl]
+        for chan in MOTION_COND_CHANNELS:
+            o = c[chan]
+            rows.append([lbl, c["model"], c["group"], c["seed"], chan,
+                         o["n_stems"], o["n_identities"], o["own_r2"],
+                         o["g_a_m"], o["g_shift"], o["net"], o["floor_sd"],
+                         o["ci_net"]["lo"], o["ci_net"]["hi"], o["ci_net"]["p"],
+                         o["ci_raw"]["lo"], o["ci_raw"]["hi"], o["ci_raw"]["p"]])
+    write_csv(f"{name}.csv",
+              ["column", "model", "group", "seed", "channel",
+               "n_stems", "n_identities", "own_r2",
+               "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4", "floor_sd_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
+               "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", "raw_p"], rows)
+    # seed-averaged dyadic: seed-averaged net + identity CI for every channel.
+    sa = d["seed_averaged_dyadic"]
+    rows = []
+    for m, v in sa.items():
+        for chan in MOTION_COND_CHANNELS:
+            o = v[chan]
+            rows.append([m, chan, v["n_seeds"],
+                         o["point"], o["lo"], o["hi"], o["p"], o["per_seed_sd"]])
+    write_csv(f"{name}_seed_avg.csv",
+              ["model", "channel", "n_seeds",
+               "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
+               "net_per_seed_sd_x1e4"], rows)
+
+
+# ---- LMAX (lag-window) ablation: net at 3 windows, same common mask ---------
+# L100 is the production window (the committed shift_ablation common-mask run); L48 and
+# L150 come from scratchpad/run_lmax_ablation.py (it edits LMAX in _config on a branch and
+# re-runs the same shift_ablation harness). "L50" realizes max lag 48 (nearest grid node).
+LMAX_WINDOWS = [("L48", "lmax_ablation__L50", 1.92), ("L100", "shift_ablation", 4.0),
+                ("L150", "lmax_ablation__L150", 6.0)]
+
+
+def build_lmax_ablation(name="lmax_ablation"):
+    """Lag-window robustness: R-DGG net per column at windows 48/100/150 frames
+    (1.9/4/6 s), each on the common mask, with identity CI. One row per column×window."""
+    D = {tag: load(src) for tag, src, _ in LMAX_WINDOWS}
+    order = D["L100"]["order"]
+    rows = []
+    for lbl in order:
+        base = D["L100"]["columns"][lbl]
+        for tag, _src, sec in LMAX_WINDOWS:
+            c = D[tag]["columns"][lbl]
+            rows.append([lbl, base["model"], base["group"], base["seed"], tag, sec,
+                         c["n_stems"], c["n_identities"], c["g_a_m"], c["g_shift"], c["net"],
+                         c["ci_net"]["lo"], c["ci_net"]["hi"], c["ci_net"]["p"]])
+    write_csv(f"{name}.csv",
+              ["column", "model", "group", "seed", "window", "window_sec",
+               "n_stems", "n_identities", "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p"], rows)
+    # seed-averaged dyadic net per window
+    rows = []
+    for m in D["L100"]["seed_averaged_dyadic"]:
+        for tag, _src, sec in LMAX_WINDOWS:
+            v = D[tag]["seed_averaged_dyadic"][m]["net"]
+            rows.append([m, tag, sec, v["point"], v["lo"], v["hi"], v["p"]])
+    write_csv(f"{name}_seed_avg.csv",
+              ["model", "window", "window_sec", "net_x1e4", "net_ci_lo_x1e4",
+               "net_ci_hi_x1e4", "net_p"], rows)
+
+
 # ---- seed variance (3 stock noise realizations) ----------------------------
 def build_seed_variance():
     p1 = load("seed_variance")["part1_three_stock_seeds"]
@@ -306,6 +383,8 @@ def main():
     build_ablation()
     build_shift_ablation()
     build_operator_ablation()
+    build_motion_cond_ablation()
+    build_lmax_ablation()
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")

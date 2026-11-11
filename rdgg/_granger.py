@@ -348,13 +348,18 @@ class ControlFit:
         return torch.log(self.energy_own_per_listener.clamp_min(1e-12) / per.clamp_min(1e-12))
 
 
-def capture_energies(per, ops, ctx, timeshifts=None):
+def capture_energies(per, ops, ctx, timeshifts=None, marginal_audio=False):
     """Per-listener residual energies under the fixed GT operator -- the raw material BOTH tables share.
 
     aud|mot net = both - motion_only = log(e_mot/e_both), so the model's own-past energy cancels and the four
     per-listener sums {both_r, mot_r, both_n[K], mot_n[K]} determine every aud|mot figure (point, floor, per-video
     net, cluster bootstrap).
     Returns ({stem: {...}}, own_r2); own_r2 is a ControlFit diagnostic, not aud|mot.
+
+    marginal_audio (opt-in, default off -> existing callers get a byte-identical E): ALSO capture the energy of the
+    speaker-audio block on its OWN, with no speaker-motion partialled out. This is the marginal `aud` gain
+    log(e_own/e_aud), the counterfactual the motion-conditioning ablation needs. It adds three per-stem keys
+    (aud_r, aud_n[K], own_r) and one extra Schur solve per predict, and changes NOTHING when off.
     """
     order, XO, Y, tids, depths = pool_design(per, consume=True)
     pred = DriverPredictor(ops, ctx, order, tids, depths)
@@ -371,17 +376,34 @@ def capture_energies(per, ops, ctx, timeshifts=None):
         shat = pred.predict(ctx.corpus.pairs, off)
         e_both = fit.row_energy(fit.residual_with([shat["audio"], shat["motion"]]))
         e_mot = fit.row_energy(fit.residual_with([shat["motion"]]))
-        return per_listener(e_both), per_listener(e_mot)
+        out = [per_listener(e_both), per_listener(e_mot)]
+        if marginal_audio:                                 # speaker audio alone, speaker motion NOT partialled out
+            out.append(per_listener(fit.row_energy(fit.residual_with([shat["audio"]]))))
+        return out
 
-    both_r, mot_r = resid_energy(None)
+    r0 = resid_energy(None)
+    both_r, mot_r = r0[0], r0[1]
+    aud_r = r0[2] if marginal_audio else None
     ts = ctx.corpus.timeshifts if timeshifts is None else timeshifts   # paired 8x8 passes a reduced set (fast)
     K = len(ts)
     both_n = np.empty((K, n_ls)); mot_n = np.empty((K, n_ls))
+    aud_n = np.empty((K, n_ls)) if marginal_audio else None
     for k in range(K):                                     # one null resident at a time (K predicts, reduced on the fly)
-        both_n[k], mot_n[k] = resid_energy(ts[k])
+        rk = resid_energy(ts[k])
+        both_n[k], mot_n[k] = rk[0], rk[1]
+        if marginal_audio:
+            aud_n[k] = rk[2]
     nrows = np.bincount(rl.detach().cpu().numpy(), minlength=n_ls)
-    E = {stem: {"both_r": float(both_r[i]), "mot_r": float(mot_r[i]),
-                "both_n": both_n[:, i].astype(np.float64), "mot_n": mot_n[:, i].astype(np.float64),
-                "nrows": int(nrows[i])}
-         for i, stem in enumerate(order)}
+    own_per = fit.energy_own_per_listener.detach().cpu().numpy()   # e_own per listener = the marginal baseline
+
+    def stem_rec(i):
+        d = {"both_r": float(both_r[i]), "mot_r": float(mot_r[i]),
+             "both_n": both_n[:, i].astype(np.float64), "mot_n": mot_n[:, i].astype(np.float64),
+             "nrows": int(nrows[i])}
+        if marginal_audio:
+            d["aud_r"] = float(aud_r[i]); d["aud_n"] = aud_n[:, i].astype(np.float64)
+            d["own_r"] = float(own_per[i])
+        return d
+
+    E = {stem: stem_rec(i) for i, stem in enumerate(order)}
     return E, fit.own_r2

@@ -283,6 +283,149 @@ def fig_operator_ablation(csv="operator_ablation.csv", out="fig_operator_ablatio
     plt.close(fig)
 
 
+def fig_motion_cond_ablation(csv="motion_cond_ablation.csv", out="fig_motion_cond_ablation",
+                             footnote="All columns on ONE shared mask (identical frames): GT-reactive & every "
+                                      "model-seed column's face_ok. n≈177, 13 identities. Main point: the AUDIO "
+                                      "channel separates dyadic/GT (>0) from the controls (~0); the MOTION channel "
+                                      "is positive for EVERY column, controls included — so reactivity must be read "
+                                      "off audio, net of motion. Conditioning on motion (filled vs hollow, left) "
+                                      "barely moves the audio net (|Δ|≤0.03): audio ⊥ motion here.",
+                             xlim=(-0.8, 1.9), dy=0.15):
+    # one record per column, carrying all channels
+    d = rows(csv)
+    order, bycol = [], {}
+    for r in d:
+        c = r["column"]
+        if c not in bycol:
+            order.append(c); bycol[c] = {"group": r["group"]}
+        bycol[c][r["channel"]] = r
+    recs, labels, prev = [], [], None
+    for c in order:
+        g = bycol[c]["group"]
+        if prev is not None and g != prev:
+            recs.append(None); labels.append("")
+        recs.append(bycol[c]); labels.append(c); prev = g
+    y = list(range(len(recs)))[::-1]
+
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(9.4, 6.4), sharey=True,
+                                   gridspec_kw={"width_ratios": [1, 1], "wspace": 0.08})
+
+    def mark(ax, yi, r, hollow, off):
+        v, lo, hi = fnum(r["net_x1e4"]), fnum(r["net_ci_lo_x1e4"]), fnum(r["net_ci_hi_x1e4"])
+        gc = SHIFT_GROUP_C.get(r["group"], OK["grey"])
+        kw = dict(mfc="white", mec=gc, mew=1.4) if hollow else dict(mfc=gc, mec=gc)
+        ax.errorbar(v, yi + off, xerr=[[v - lo], [hi - v]], fmt="o", ms=5.5,
+                    ecolor=(gc if hollow else INK), elinewidth=0.9, capsize=2, zorder=3, **kw)
+
+    def frame(ax):
+        ax.set_xlim(*xlim)
+        ax.axvline(0, color=MUTE, lw=1, zorder=1)
+        ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", color=GRID, lw=0.6, zorder=0); ax.set_axisbelow(True)
+
+    gt_aud = fnum(bycol.get("GT", {}).get("conditional", {}).get("net_x1e4"))
+    gt_mot = fnum(bycol.get("GT", {}).get("motion", {}).get("net_x1e4"))
+    # LEFT: audio channel — aud|mot (filled, R-DGG) over aud marginal (hollow)
+    for yi, rc in zip(y, recs):
+        if rc is None:
+            continue
+        if "conditional" in rc:
+            mark(axL, yi, rc["conditional"], hollow=False, off=+dy)
+        if "marginal" in rc:
+            mark(axL, yi, rc["marginal"], hollow=True, off=-dy)
+    frame(axL)
+    if gt_aud is not None:
+        axL.axvline(gt_aud, color=OK["green"], lw=1, ls="--", zorder=1)
+    axL.set_xlabel("AUDIO net ×1e4   (95% identity CI)")
+    axL.set_title("AUDIO channel — separates (controls ~0)", fontsize=9.5)
+
+    # RIGHT: motion channel — mot (marginal), the visible-motion coupling
+    for yi, rc in zip(y, recs):
+        if rc is None:
+            continue
+        if "motion" in rc:
+            mark(axR, yi, rc["motion"], hollow=False, off=0.0)
+    frame(axR)
+    if gt_mot is not None:
+        axR.axvline(gt_mot, color=OK["green"], lw=1, ls="--", zorder=1)
+    axR.set_xlabel("MOTION net ×1e4   (95% identity CI)")
+    axR.set_title("MOTION channel — does NOT separate (all >0)", fontsize=9.5)
+
+    axL.set_yticks(y); axL.set_yticklabels(labels, fontsize=8)
+    handles = [Line2D([0], [0], marker="s", mfc=c, mec=c, ls="none", ms=7, label=g)
+               for g, c in SHIFT_GROUP_C.items()]
+    handles += [
+        Line2D([0], [0], marker="o", mfc=INK, mec=INK, ls="none", ms=6, label="conditional $aud|mot$ (R-DGG)"),
+        Line2D([0], [0], marker="o", mfc="white", mec=INK, mew=1.4, ls="none", ms=6, label="marginal $aud$"),
+        Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor"),
+    ]
+    axR.legend(handles=handles, frameon=False, fontsize=7.0, loc="lower right")
+    fig.suptitle("Why R-DGG reads the AUDIO channel, net of motion: motion coupling is strong but does not discriminate",
+                 fontsize=10.0, y=0.98)
+    fig.text(0.5, 0.004, footnote, ha="center", fontsize=6.4, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
+    plt.close(fig)
+
+
+LMAX_WIN_C = {"L48": OK["sky"], "L100": OK["blue"], "L150": OK["vermillion"]}
+LMAX_WIN_LABEL = {"L48": "window 48 fr (1.9 s)", "L100": "window 100 fr (4 s, default)",
+                  "L150": "window 150 fr (6 s)"}
+
+
+def fig_lmax_ablation(csv="lmax_ablation.csv", out="fig_lmax_ablation", xlim=(-0.7, 1.9), dy=0.26):
+    # one record per column, carrying the 3 windows
+    d = rows(csv)
+    order, bycol = [], {}
+    for r in d:
+        c = r["column"]
+        if c not in bycol:
+            order.append(c); bycol[c] = {"group": r["group"]}
+        bycol[c][r["window"]] = r
+    recs, labels, prev = [], [], None
+    for c in order:
+        g = bycol[c]["group"]
+        if prev is not None and g != prev:
+            recs.append(None); labels.append("")
+        recs.append(bycol[c]); labels.append(c); prev = g
+    y = list(range(len(recs)))[::-1]
+
+    fig, ax = plt.subplots(figsize=(6.8, 6.6))
+    ax.axvline(0, color=MUTE, lw=1, zorder=1)
+    gt_net = fnum(bycol.get("GT", {}).get("L100", {}).get("net_x1e4"))
+    if gt_net is not None:
+        ax.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
+
+    offs = {"L48": +dy, "L100": 0.0, "L150": -dy}
+    for yi, rc in zip(y, recs):
+        if rc is None:
+            continue
+        for win, off in offs.items():
+            r = rc.get(win)
+            if r is None:
+                continue
+            v, lo, hi = fnum(r["net_x1e4"]), fnum(r["net_ci_lo_x1e4"]), fnum(r["net_ci_hi_x1e4"])
+            gc = LMAX_WIN_C[win]
+            ax.errorbar(v, yi + off, xerr=[[v - lo], [hi - v]], fmt="o", ms=5, color=gc,
+                        ecolor=gc, elinewidth=0.8, capsize=2, zorder=3)
+    ax.set_xlim(*xlim)
+    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=8)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    ax.grid(axis="x", color=GRID, lw=0.6, zorder=0); ax.set_axisbelow(True)
+    ax.set_xlabel("net ×1e4   (95% identity CI)")
+    handles = [Line2D([0], [0], marker="o", mfc=LMAX_WIN_C[w], mec=LMAX_WIN_C[w], ls="none",
+                      ms=6, label=LMAX_WIN_LABEL[w]) for w in ("L48", "L100", "L150")]
+    handles += [Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor (default)")]
+    ax.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
+    fig.suptitle("Lag-window robustness: R-DGG net at 1.9 / 4 / 6 s windows (the three nearly coincide)",
+                 fontsize=10.0, y=0.98)
+    fig.text(0.5, 0.004, "All on the common mask (identical frames), n≈177, 13 identities. GT stays "
+             "significant and controls stay ~0 at every window; the default 4 s sits in the middle. "
+             "GT net declines mildly as the window widens (short lags carry most of the coupling).",
+             ha="center", fontsize=6.4, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
+    plt.close(fig)
+
+
 def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
                    title="Dose curve: stock → zeroother (k=0..178)", out="fig_dose_curve",
                    color=OK["blue"]):
@@ -425,6 +568,8 @@ def main():
     fig_ablation()
     fig_shift_ablation()
     fig_operator_ablation()
+    fig_motion_cond_ablation()
+    fig_lmax_ablation()
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -434,8 +579,8 @@ def main():
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
-    print("  figures: leaderboard, ablation, shift_ablation, operator_ablation, seed_variance, "
-          "dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
+    print("  figures: leaderboard, ablation, shift_ablation, operator_ablation, motion_cond_ablation, "
+          "lmax_ablation, seed_variance, dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 
