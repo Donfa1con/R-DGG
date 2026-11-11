@@ -140,10 +140,11 @@ def main():
     ap = argparse.ArgumentParser(description="R-DGG shift-correction ablation (standalone).")
     ap.add_argument("--corpus", default=os.environ.get("CORPUS", _config.CORPUS))
     ap.add_argument("--split", default=_config.SPLIT)
-    ap.add_argument("--mask", choices=["marginal", "common"], default="marginal",
-                    help="marginal (default): each column on its OWN GT&model mask. "
-                         "common: ONE shared mask = GT-reactive & every column's face_ok, "
-                         "so all columns score on IDENTICAL frames (leaderboard rule).")
+    ap.add_argument("--mask", choices=["marginal", "common"], default="common",
+                    help="common (default): ONE shared mask = GT-reactive & every column's "
+                         "face_ok, so all columns score on IDENTICAL frames (leaderboard rule); "
+                         "writes shift_ablation__<split>.*. marginal: each column on its OWN "
+                         "GT&model mask; writes shift_ablation_marginal__<split>.*.")
     args = ap.parse_args()
     assert torch.cuda.is_available(), "GPU-only metric"
     _config.set_paths(args.corpus, args.split)
@@ -249,7 +250,7 @@ def main():
         "columns": columns,
         "seed_averaged_dyadic": seed_avg,
     }
-    tag = "_common" if args.mask == "common" else ""
+    tag = "" if args.mask == "common" else f"_{args.mask}"   # common is canonical
     jpath = f"{outdir}/shift_ablation{tag}__{S}.json"
     with open(jpath, "w") as f:
         json.dump(result, f, indent=2)

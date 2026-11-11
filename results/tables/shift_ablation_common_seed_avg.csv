@@ -1,4 +1,0 @@
-model,net_mean_x1e4,net_sd_x1e4,net_min_x1e4,net_max_x1e4,g_a_m_mean_x1e4,g_a_m_sd_x1e4
-AVTR-1,0.5274,0.1374,0.3758,0.6436,3.9382,0.1479
-DyStream,0.6772,0.1991,0.4815,0.8796,4.0,0.1854
-AvatarForcing,0.2232,0.149,0.0539,0.3343,3.6316,0.148

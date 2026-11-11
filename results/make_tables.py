@@ -27,8 +27,7 @@ METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
-        "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
-        "shift_ablation_common"]
+        "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation"]
 
 
 def load(name):
@@ -110,8 +109,7 @@ def build_ablation():
 
 # ---- shift-correction ablation (every model x every seed + GT controls) -----
 def build_shift_ablation(name="shift_ablation"):
-    """name='shift_ablation' (per-column marginal mask) or 'shift_ablation_common'
-    (one shared mask, identical frames)."""
+    """Shift-correction ablation on the COMMON mask (identical frames across columns)."""
     d = load(name)
     cols = d["columns"]
     rows = []
@@ -256,7 +254,6 @@ def main():
     build_leaderboard()
     build_ablation()
     build_shift_ablation()
-    build_shift_ablation("shift_ablation_common")
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")

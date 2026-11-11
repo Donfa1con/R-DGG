@@ -131,8 +131,9 @@ SHIFT_LOWFID = set()   # all columns n~178 after the DyStream seed re-extraction
 
 
 def fig_shift_ablation(csv="shift_ablation.csv", out="fig_shift_ablation",
-                       footnote="All columns n≈178, 13 identities (same GT&model marginal mask per column).",
-                       xlim_left=(2.2, 4.7), floorband=(3.0, 3.25), xlim_right=(-0.9, 2.3)):
+                       footnote="All columns on ONE shared mask (identical frames): GT-reactive & every "
+                                "model-seed column's face_ok. n≈177, 13 identities.",
+                       xlim_left=(2.6, 5.1), floorband=(3.3, 3.5), xlim_right=(-0.7, 1.8)):
     d = rows(csv)
     recs, labels = [], []                                  # insert a spacer between groups
     prev = None
@@ -341,10 +342,6 @@ def main():
     fig_leaderboard()
     fig_ablation()
     fig_shift_ablation()
-    fig_shift_ablation(csv="shift_ablation_common.csv", out="fig_shift_ablation_common",
-                       footnote="All columns on ONE shared mask (identical frames): GT-reactive & every "
-                                "model-seed column's face_ok. n≈177, 13 identities.",
-                       xlim_left=(2.6, 5.1), floorband=(3.3, 3.5), xlim_right=(-0.7, 1.8))
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -354,8 +351,8 @@ def main():
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
-    print("  figures: leaderboard, ablation, shift_ablation(+_common), seed_variance, "
-          "dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
+    print("  figures: leaderboard, ablation, shift_ablation, seed_variance, dose_curve, "
+          "dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 
