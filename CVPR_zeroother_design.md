@@ -128,7 +128,7 @@ identity one.
 
 ---
 
-## 6. Dose-response curve [proposed]
+## 6. Dose-response curve [done]
 
 ### 6.1 Idea
 
@@ -217,7 +217,7 @@ is integrated into the point, and the plotted interval is a valid identity CI.
 
 ---
 
-## 7. Harness plan [proposed]
+## 7. Harness plan [done]
 
 **Hard constraint: do not edit existing code.** The harness is a NEW standalone
 script. It only IMPORTS the functions already written in `rdgg/` and writes new
@@ -277,35 +277,15 @@ Load zeroother by path only.
 
 ---
 
-## 8. Status
+## 8. Status [done]
 
-- [done] avtr1.py flags; zeroother generation (184/184, 0 failed).
-- [done] download mapping fix; insightface cuDNN fix.
-- [done] design validated against the code by an opus review; sections 4, 5, 6,
-  7 corrected from its findings.
-- [done] zeroother video features: insightface, emoca, liveportrait all 184/184,
-  0 fail, on GPU. The harness is unblocked.
-- [done] GT hubert/vad staleness check: a recomputed stem matches the stored
-  feature to the float16 ULP (median diff 1.2e-4, Pearson r = 1.000000), so the
-  re-downloaded wavs are content-identical and the GT audio features are valid.
-- [proposed] dose-response harness (section 7); awaits command.
-
-## 9. Highest-risk items to resolve before coding
-
-1. **Energy-additivity approximation.** The cheap sweep holds per-stem energies
-   fixed, but a true mixed column refits the pooled `ControlFit`
-   (`_granger.py:294-339,363`). Quantify the error against exact `capture_energies`
-   runs (section 7, Option A) before trusting the mid-curve.
-2. **Common capture mask.** Capture stock and zero on the shared
-   GT ∩ stock ∩ zero mask; confirm per-stem row counts match.
-3. **Features not ready.** zeroother EMOCA and LivePortrait do not exist yet; the
-   extraction is running. Do not disturb the GPU job; do not run the harness yet.
-4. **Fold count = 4, not 13.** Keep plots and text from conflating the 13
-   identity bootstrap clusters with the 4 B-fit folds.
-5. **Band semantics.** Pair the subset spread with an identity-bootstrap CI; plot
-   the number of zeroed videos as the x-axis.
-
-(The noise-seed difference is accepted by decision and is not a risk item.)
+Setup complete: avtr1.py flags + zeroother generation (184/184, 0 fail); download-mapping and
+insightface cuDNN fixes; all zeroother video features extracted (insightface/emoca/liveportrait,
+184/184). GT hubert/vad validated against the re-downloaded wavs (median diff 1.2e-4, Pearson
+r = 1.000000 — content-identical). The dose-response harness (§6/§7) is implemented; its
+pre-coding risks (energy-additivity error, the shared GT∩stock∩zero capture mask, 4 B-fit folds
+vs 13 identity clusters, band = subset spread paired with an identity CI) were resolved and the
+additivity check validated — see `results/` (`dose_curve*`, incl. `dose_curve_additivity.csv`).
 
 ---
 
@@ -494,9 +474,12 @@ New files: `rdgg/{dose_curve,cfg0_compare,seeded_4way,common4way,seed_variance,m
 
 ---
 
-## 12. QUEUED — seed-averaged leaderboard (idea, not yet done)
+## 12. Seed-averaged leaderboard [done]
 
-**Status: QUEUED. Not started. No code or data changed for this yet.**
+**Status: DONE** (commit `f0e71fe`). Implemented as the `seed_averaged_dyadic` block every
+ablation harness writes: 3 seeds per stochastic dyadic model → average each stem's energies over
+seeds → one exact identity-cluster bootstrap; used throughout §13, with `sigma_seed` reported as a
+diagnostic. The reasoning below is the record of why it is done this way.
 
 ### 12.1 How we want to compute the leaderboard
 Report each model's R-DGG as the **mean over 3 generation seeds**, with an
@@ -539,27 +522,15 @@ far less. More seeds cannot make a close pair significant; only more identities 
 Seed averaging is for a **reproducible leaderboard and an honest CI**, not for
 separating the reactive models from each other.
 
-### 12.4 How to get there (implementation path)
-- **Scope: only the stochastic diffusion dyadic models.** AVTR-1 already has 3 seeds
-  (`data/AVTR-1` unseeded, `data/AVTR-1_seeded` seed0, `data/AVTR-1_seeded_b1` seed1).
-  DyStream and AvatarForcing need **+2 seeds each**. GT (real data, no seed) and the
-  near-zero baselines stay single-run (their ordering is not significant).
-- **Seed hook.** `models/generate/avtr1.py` has the per-video reseed
-  (`--seed_per_video` / `--seed_base`, `stem_seed`). `models/generate/dystream.py`
-  and `avatarforcing.py` have **no seed** yet; add the same hook (reseed the torch
-  RNG per stem right before sampling; confirm each sampler draws from the global
-  torch RNG, else seed its own Generator). All models are diffusion/flow, so all are
-  stochastic; no generation test is needed, only a code hook.
-- **Audio is shared across seeds** (the seed changes only the generated listener
-  MOTION; the speaker audio is the real GT input). So for each new seed re-extract
-  **emoca + liveportrait only**; REUSE the existing `vad` + `hubert` audio features.
-- **Metric.** Generalise `rdgg/seed_variance.py` / the leaderboard to average the
-  per-identity values over the 3 seeds, then identity-bootstrap. Report the pooled
-  `sigma_seed` as a diagnostic.
-- Cost: ~4 generation + motion-extraction passes (2 DyStream + 2 AvatarForcing); the
-  GT operator and the other models stay fixed.
+### 12.4 How it was done
+All three stochastic diffusion dyadic models now have 3 seeds + motion features (AVTR-1, DyStream,
+AvatarForcing); per-stem reseed hooks (`--seed_per_video`/`--seed_base`, `seed = sha256("{base}:{stem}")`)
+are in each generator. Audio is shared across seeds (the seed changes only the generated listener
+motion; the speaker audio is the real GT input), so only emoca + liveportrait were re-extracted per
+seed — vad + hubert reused. The averaging + exact identity bootstrap lives in the ablation harnesses
+(`seed_averaged_dyadic`). See §14 for the general ablation workflow.
 
-## 13. Operating-point ablations — pre-registered decision rubric [proposed]
+## 13. Operating-point ablations — pre-registered decision rubric [done]
 
 We ablate three fixed knobs: the motion conditioning, the lag window `LMAX`, and
 the HuBERT layer. We declare the decision rule HERE, before any ablation number
@@ -794,6 +765,68 @@ HuBERT reduced to `K_A_TARGET = 64` PCA dims; the motion driver is EMOCA reduced
      little to recover by widening. (Caveat: K_A=96 is only 1.5×; a much wider PCA was
      not testable in 22 GiB, but +14% over +50% dims is a weak trend consistent with
      content, not budget.) See `results/` (`pca_dim_ablation*`, `fig_pca_dim_ablation`).
+
+## 14. Running a new ablation — the established workflow (repeatable after a session reset)
+
+Every ablation in §13 followed ONE recipe. Repeat it for any new knob. The drivers live in
+`scratchpad/` (gitignored, but they persist on disk across a session reset); copy the closest
+one as a template: `run_lmax_ablation.py` (one fixed constant), `run_hubert_ablation.py`
+(constant + a re-extracted GT cache, with `--layers`/`--cache-suffix`), `run_pca_dim_ablation.py`
+(two constants + transient memory fixes + a `verify64` safety gate).
+
+**The core mechanism (all drivers share it).** The metric's operating point is fixed in
+`rdgg/_config.py` (a guard even blocks `GRANGER_*` env knobs); the charter says to try an
+alternative by editing the constant on a branch. So a driver:
+1. backs up `rdgg/_config.py` (and the production `data/GT/_metrics/shift_ablation__LS_AL.{json,npz}`);
+2. for each config: transiently edits the fixed constant(s) in `_config.py` (unique string
+   anchors, each asserted present), runs `rdgg/shift_ablation.py` in a FRESH
+   `pixi run --manifest-path rdgg/pixi.toml python rdgg/shift_ablation.py` subprocess (so it
+   re-imports the edited constants), then moves the output to `<ablation>__<tag>__LS_AL.{json,npz}`;
+3. restores `_config.py` and the production output in a `finally` (so a crash can't leave the
+   metric edited; confirm `git diff --quiet rdgg/_config.py` after).
+One `shift_ablation.py` run scores the common mask = 15 columns (GT, GT×other surrogate, 3 dyadic
+× 3 seeds with seed-averaging built in, 4 talking-heads), ~25-30 min on the 22 GiB A10 with
+`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`. Reuse committed baselines (e.g. the production
+`shift_ablation` = the default operating point) instead of re-running them.
+
+**The steps.**
+1. **Pre-register** the decision rule in §13.0 terms BEFORE running (construct validity, not
+   `net` maximization): a variant must keep the GT anchor significant, the controls (surrogate +
+   talking-heads) ~0 and n.s., and the dyadic models positive; keep the baseline unless a variant
+   strictly dominates with a mechanistic reason. Add a `### 13.x` stub stating the knob + expectation.
+2. **Features.** If the knob needs new features (e.g. a HuBERT layer), re-extract **GT only** —
+   R-DGG always reads GT audio for both the speaker driver and the listener own-block (§4); no
+   path reads per-model audio. Existing GT HuBERT caches on disk: `LS_AL_hubert_l6912` (layers
+   6/9/12), `LS_AL_hubert_l7811` (7/8/10/11).
+3. **Write the driver** (copy a template). Put the per-config list at the top; support a `--tags`
+   subset filter so the most informative config can run first.
+4. **Validate the driver with a subagent BEFORE running** (standing rule). Check: guaranteed
+   `finally` restore; no cumulative patching (each config patches from the pristine backup);
+   anchor strings unique; output naming matches `make_tables` (`__LS_AL` suffix); and, for ANY
+   edit to metric code, numerical identity.
+5. **Memory (only for configs that OOM, e.g. a wider PCA).** Two transient, numerically-checked
+   `_granger.py` edits make a wide config fit 22 GiB: lower `GRAM_CHUNK` (fp64 Gram block size),
+   and rewrite `apply_lagged_standardisation` in-place (its one caller passes a throwaway gather
+   copy). Prove harmlessness with a `verify64`-style run (the default config under the edits must
+   reproduce the committed baseline to ~fp-epsilon, max |Δnet| ≈ 0.003), and use that run as the
+   chunk-matched baseline so the edit's tiny effect cancels within the sweep.
+6. **Downstream** (all clone-sufficient, no GPU): add a builder to `results/make_tables.py`
+   (and the config tags to its `JSON` list) → `results/tables/*.csv`; add a figure to
+   `results/make_figures.py`; rebuild both; **revert the timestamp-only figure PDFs**
+   (`git checkout -- results/figures/<unchanged>.pdf` for every figure whose data did not
+   change — `make_figures` rewrites all of them). Write the `### 13.x` Result and a
+   `results/README.md` headline bullet + table rows. `make_figures` reads ONLY
+   `results/tables/*.csv`, so the committed CSVs rebuild every figure without a GPU or the corpus.
+7. **Commit ONLY on an explicit user command.** Stage the specific files; EXCLUDE `pixi.lock`
+   (×2), the `models/*` submodule pointers, `models/generate/avtr1.py`, `scratchpad/`, `data/`,
+   `RESUME.md`, `R-DGG_CVPR_plan.xlsx`, `seamless_interaction_fs.log`. Author
+   `-c user.name="Dmitry Ziganshin" -c user.email="dziganshin@in3d.io"`; end the message with
+   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
+
+**Supporting analyses (offline, no GPU).** The per-stem energies are stashed in the output
+`.npz`, so re-scoring (extra channels, seed-averaging, the exact identity bootstrap) runs offline
+(see `scratchpad/rebuild_motion_cond_4ch.py`). Feature-level diagnostics (e.g. the participation
+ratio in §13.3) read the extracted caches directly.
 
 ---
 
