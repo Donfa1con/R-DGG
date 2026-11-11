@@ -136,6 +136,31 @@ def score(E, own_r2):
     return rec, arrays
 
 
+def stash_energies(npz, label, E, stems):
+    """Save per-stem residual energies so seed-averaging and the EXACT identity bootstrap
+    run offline (no GPU): both_r, mot_r (n_stems,) and both_n, mot_n (K, n_stems)."""
+    npz[f"{label}::both_r"] = np.array([E[s]["both_r"] for s in stems], dtype=np.float64)
+    npz[f"{label}::mot_r"] = np.array([E[s]["mot_r"] for s in stems], dtype=np.float64)
+    npz[f"{label}::both_n"] = np.stack([E[s]["both_n"] for s in stems], axis=1)
+    npz[f"{label}::mot_n"] = np.stack([E[s]["mot_n"] for s in stems], axis=1)
+
+
+def seed_avg_ci(E_list, corrected):
+    """Seed-average over the N seed columns, then the EXACT identity-cluster bootstrap.
+    On the common mask the seeds share stems, so average each stem's energies over the
+    seeds, then boot_ci on the averaged energies (RESUME §12: average the value over seeds,
+    THEN identity bootstrap; the seed noise lives inside this CI). corrected -> net; else raw."""
+    stems = sorted(set.intersection(*[set(E) for E in E_list]))
+    E_avg = {s: {"both_r": float(np.mean([E[s]["both_r"] for E in E_list])),
+                 "mot_r": float(np.mean([E[s]["mot_r"] for E in E_list])),
+                 "both_n": np.mean([E[s]["both_n"] for E in E_list], axis=0),
+                 "mot_n": np.mean([E[s]["mot_n"] for E in E_list], axis=0)}
+             for s in stems}
+    d = boot_ci(E_avg, stems, corrected)
+    return {"point": d["point"], "lo": d["lo"], "hi": d["hi"], "p": d["p"],
+            "n_stems": len(stems), "n_identities": d["n_clusters"]}
+
+
 def main():
     ap = argparse.ArgumentParser(description="R-DGG shift-correction ablation (standalone).")
     ap.add_argument("--corpus", default=os.environ.get("CORPUS", _config.CORPUS))
@@ -172,8 +197,9 @@ def main():
         eval_mask = mask_gtonly
 
     columns = {}      # label -> record (all numbers)
-    npz = {}          # flat arrays for redraw (per-dyad raw/net)
+    npz = {}          # flat arrays for redraw (per-dyad raw/net + raw energies)
     order = []        # presentation order
+    E_keep = {}       # retain dyadic-seed energies in RAM for the offline seed-average + CI
 
     def add(label, model, group, seed_tag, E, own_r2):
         rec, arr = score(E, own_r2)
@@ -181,6 +207,9 @@ def main():
         columns[label] = rec
         for k, v in arr.items():
             npz[f"{label}::{k}"] = v
+        stash_energies(npz, label, E, sorted(E))
+        if group == "dyadic":
+            E_keep[label] = E
         order.append(label)
         c = rec["ci_net"]; r = rec["ci_raw"]
         print(f"  [{label:22s}] n={rec['n_stems']:3d} g_a_m={rec['g_a_m']:+.3f} g_shift={rec['g_shift']:+.3f} "
@@ -210,18 +239,29 @@ def main():
         E, _per, r2 = capture_column(f"{C}/{d}/{S}_{suffix}", eval_mask, ctx, ops, corpus, source)
         add(model, model, "non-dyad", "single", E, r2)
 
-    # --- seed-averaged dyadic summary (mean/SD of per-seed net over the 3 seeds) ---
+    # --- seed-averaged dyadic summary: average each stem's energies over the 3 seeds, then
+    # the EXACT identity bootstrap -> seed-averaged net (corrected) AND raw g_a_m (uncorrected)
+    # each with its identity CI, plus the per-seed point spread. ---
     seed_avg = {}
     for model, dirs in DYADIC_SEEDS.items():
         labels = [f"{model} [{SEED_TAG[i]}]" for i in range(len(dirs))]
+        E_list = [E_keep[l] for l in labels]
         nets = np.array([columns[l]["net"] for l in labels])
         raws = np.array([columns[l]["g_a_m"] for l in labels])
+        net_ci = seed_avg_ci(E_list, corrected=True)
+        raw_ci = seed_avg_ci(E_list, corrected=False)
         seed_avg[model] = {
-            "seeds": labels,
-            "net_mean": round(float(nets.mean()), 4), "net_sd": round(float(nets.std(ddof=1)), 4),
-            "net_min": round(float(nets.min()), 4), "net_max": round(float(nets.max()), 4),
-            "g_a_m_mean": round(float(raws.mean()), 4), "g_a_m_sd": round(float(raws.std(ddof=1)), 4),
+            "seeds": labels, "n_seeds": len(labels),
+            "net": net_ci,          # seed-averaged R-DGG net + identity CI
+            "g_a_m": raw_ci,        # seed-averaged uncorrected gain + identity CI
+            "per_seed_net": [round(float(x), 4) for x in nets],
+            "per_seed_net_sd": round(float(nets.std(ddof=1)), 4),
+            "per_seed_g_a_m": [round(float(x), 4) for x in raws],
+            "per_seed_g_a_m_sd": round(float(raws.std(ddof=1)), 4),
         }
+        n = net_ci
+        print(f"  [seed-avg {model:13s}] net={n['point']:+.3f} CI[{n['lo']:+.2f},{n['hi']:+.2f}] "
+              f"p={n['p']:.3f} (per-seed SD {seed_avg[model]['per_seed_net_sd']:.3f})", flush=True)
 
     outdir = f"{C}/GT/_metrics"
     os.makedirs(outdir, exist_ok=True)

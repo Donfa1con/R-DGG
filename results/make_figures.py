@@ -201,6 +201,88 @@ def fig_shift_ablation(csv="shift_ablation.csv", out="fig_shift_ablation",
     plt.close(fig)
 
 
+def fig_operator_ablation(csv="operator_ablation.csv", out="fig_operator_ablation",
+                          footnote="All columns on ONE shared mask (identical frames): GT-reactive & every "
+                                   "model-seed column's face_ok. n≈177, 13 identities. B_self is a "
+                                   "leave-one-identity-fold cross-fit on each column's own reaction.",
+                          xlim=(-0.7, 1.8)):
+    # reshape: one record per column, carrying both operators ------------------
+    d = rows(csv)
+    order, bycol = [], {}
+    for r in d:
+        c = r["column"]
+        if c not in bycol:
+            order.append(c)
+            bycol[c] = {"group": r["group"]}
+        bycol[c][r["operator"]] = r
+    recs, labels, prev = [], [], None
+    for c in order:
+        g = bycol[c]["group"]
+        if prev is not None and g != prev:
+            recs.append(None); labels.append("")
+        recs.append(bycol[c]); labels.append(c); prev = g
+    y = list(range(len(recs)))[::-1]
+
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(9.2, 6.4), sharey=True,
+                                   gridspec_kw={"width_ratios": [1, 1], "wspace": 0.08})
+
+    def draw(ax, oper, hollow):
+        ax.axvline(0, color=MUTE, lw=1, zorder=1)
+        for yi, rc in zip(y, recs):
+            if rc is None:
+                continue
+            o = rc.get(oper)
+            gc = SHIFT_GROUP_C.get(rc["group"], OK["grey"])
+            if o is None or fnum(o["net_x1e4"]) is None:      # self operator not fit
+                ax.plot(xlim[0] + 0.04, yi, marker="x", ms=6, color=OK["grey"],
+                        clip_on=False, zorder=3)
+                continue
+            v, lo, hi = fnum(o["net_x1e4"]), fnum(o["net_ci_lo_x1e4"]), fnum(o["net_ci_hi_x1e4"])
+            if v > xlim[1]:                                   # off-scale: clip + label
+                ax.plot(xlim[1], yi, marker=">", ms=7, color=gc, clip_on=False, zorder=3)
+                ax.text(xlim[1] - 0.03, yi + 0.42, f"net={v:.1f}", ha="right",
+                        va="bottom", fontsize=6.8, color=gc)
+                continue
+            kw = dict(mfc="white", mec=gc, mew=1.4) if hollow else dict(mfc=gc, mec=gc)
+            ax.errorbar(v, yi, xerr=[[v - lo], [hi - v]], fmt="o", ms=6,
+                        ecolor=(gc if hollow else INK), elinewidth=1, capsize=2, zorder=3, **kw)
+        ax.set_xlim(*xlim)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="x", color=GRID, lw=0.6, zorder=0)
+        ax.set_axisbelow(True)
+
+    gt_net = fnum(bycol.get("GT", {}).get("reference", {}).get("net_x1e4"))
+    draw(axL, "reference", hollow=False)
+    if gt_net is not None:
+        axL.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
+    axL.set_xlabel("net with GT reference operator $B_{GT}$ ×1e4   (R-DGG)")
+    axL.set_title("REFERENCE operator (R-DGG)", fontsize=9.5)
+
+    draw(axR, "self", hollow=True)
+    if gt_net is not None:
+        axR.axvline(gt_net, color=OK["green"], lw=1, ls="--", zorder=1)
+    axR.set_xlabel("net with each column's OWN operator $B_{self}$ ×1e4")
+    axR.set_title("SELF operator (cross-fit on own reaction)", fontsize=9.5)
+
+    axL.set_yticks(y)
+    axL.set_yticklabels(labels, fontsize=8)
+    handles = [Line2D([0], [0], marker="s", mfc=c, mec=c, ls="none", ms=7, label=g)
+               for g, c in SHIFT_GROUP_C.items()]
+    handles += [
+        Line2D([0], [0], marker="o", mfc=INK, mec=INK, ls="none", ms=6, label="reference $B_{GT}$ (left)"),
+        Line2D([0], [0], marker="o", mfc="white", mec=INK, mew=1.4, ls="none", ms=6, label="self $B_{self}$ (right)"),
+        Line2D([0], [0], marker=">", color=INK, ls="none", ms=7, label="off scale (see label)"),
+        Line2D([0], [0], color=OK["green"], ls="--", lw=1, label="GT net anchor"),
+    ]
+    axR.legend(handles=handles, frameon=False, fontsize=7.0, loc="lower right")
+    fig.suptitle("Reference vs self operator: does R-DGG need the GT reference projection?",
+                 fontsize=10.5, y=0.98)
+    fig.text(0.5, 0.005, footnote, ha="center", fontsize=6.6, color=MUTE)
+    fig.savefig(FIGS / f"{out}.pdf")
+    plt.close(fig)
+
+
 def fig_dose_curve(tag="", xlabel="number of videos switched to zeroother (k)",
                    title="Dose curve: stock → zeroother (k=0..178)", out="fig_dose_curve",
                    color=OK["blue"]):
@@ -342,6 +424,7 @@ def main():
     fig_leaderboard()
     fig_ablation()
     fig_shift_ablation()
+    fig_operator_ablation()
     fig_seed_variance()
     fig_dose_curve()   # stock -> zeroother
     fig_dose_curve(tag="_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
@@ -351,8 +434,8 @@ def main():
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).
-    print("  figures: leaderboard, ablation, shift_ablation, seed_variance, dose_curve, "
-          "dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
+    print("  figures: leaderboard, ablation, shift_ablation, operator_ablation, seed_variance, "
+          "dose_curve, dose_curve_cfg0, count_sweep -> results/figures/*.pdf")
     print("done.")
 
 

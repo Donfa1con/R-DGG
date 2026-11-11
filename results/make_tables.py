@@ -27,7 +27,8 @@ METRICS.mkdir(exist_ok=True)
 TABLES.mkdir(exist_ok=True)
 
 JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgother0_rdgg",
-        "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation"]
+        "metric_seed_sweep", "count_sweep", "pca_size_sweep", "shift_ablation",
+        "operator_ablation"]
 
 
 def load(name):
@@ -124,12 +125,62 @@ def build_shift_ablation(name="shift_ablation"):
                "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4", "floor_sd_x1e4",
                "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
                "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", "raw_p"], rows)
+    # seed-averaged dyadic: per model, average the per-stem energies over the 3
+    # seeds, then the EXACT identity bootstrap -> seed-averaged net + g_a_m, each
+    # with an identity CI. per_seed_*_sd is the spread of the 3 single-seed points.
     sa = d["seed_averaged_dyadic"]
+    rows = []
+    for m, v in sa.items():
+        n, g = v["net"], v["g_a_m"]
+        rows.append([m, v["n_seeds"],
+                     n["point"], n["lo"], n["hi"], n["p"], v["per_seed_net_sd"],
+                     g["point"], g["lo"], g["hi"], g["p"], v["per_seed_g_a_m_sd"]])
     write_csv(f"{name}_seed_avg.csv",
-              ["model", "net_mean_x1e4", "net_sd_x1e4", "net_min_x1e4", "net_max_x1e4",
-               "g_a_m_mean_x1e4", "g_a_m_sd_x1e4"],
-              [[m, v["net_mean"], v["net_sd"], v["net_min"], v["net_max"],
-                v["g_a_m_mean"], v["g_a_m_sd"]] for m, v in sa.items()])
+              ["model", "n_seeds",
+               "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p", "net_per_seed_sd_x1e4",
+               "g_a_m_x1e4", "g_a_m_ci_lo_x1e4", "g_a_m_ci_hi_x1e4", "g_a_m_p",
+               "g_a_m_per_seed_sd_x1e4"], rows)
+
+
+# ---- operator ablation: GT reference operator (B_GT) vs the column's own ----
+def build_operator_ablation(name="operator_ablation"):
+    """Reference-operator ablation: R-DGG net with B_GT (reference) vs B_self (own)."""
+    d = load(name)
+    cols = d["columns"]
+    rows = []
+    for lbl in d["order"]:
+        c = cols[lbl]
+        for oper in ("reference", "self"):
+            o = c.get(oper)
+            if o is None:          # self operator could not be fit (fold too small)
+                rows.append([lbl, c["model"], c["group"], c["seed"], oper,
+                             "", "", "", "", "", "", "", "", "", "", "", "", ""])
+                continue
+            rows.append([lbl, c["model"], c["group"], c["seed"], oper,
+                         o["n_stems"], o["n_identities"], o["own_r2"],
+                         o["g_a_m"], o["g_shift"], o["net"], o["floor_sd"],
+                         o["ci_net"]["lo"], o["ci_net"]["hi"], o["ci_net"]["p"],
+                         o["ci_raw"]["lo"], o["ci_raw"]["hi"], o["ci_raw"]["p"]])
+    write_csv(f"{name}.csv",
+              ["column", "model", "group", "seed", "operator",
+               "n_stems", "n_identities", "own_r2",
+               "g_a_m_x1e4", "g_shift_x1e4", "net_x1e4", "floor_sd_x1e4",
+               "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
+               "raw_ci_lo_x1e4", "raw_ci_hi_x1e4", "raw_p"], rows)
+    # seed-averaged dyadic: seed-averaged net + identity CI for BOTH operators.
+    sa = d["seed_averaged_dyadic"]
+    rows = []
+    for m, v in sa.items():
+        for oper in ("reference", "self"):
+            o = v.get(oper)
+            if o is None:
+                continue
+            rows.append([m, oper, v["n_seeds"],
+                         o["net"], o["lo"], o["hi"], o["p"], o["per_seed_sd"]])
+    write_csv(f"{name}_seed_avg.csv",
+              ["model", "operator", "n_seeds",
+               "net_x1e4", "net_ci_lo_x1e4", "net_ci_hi_x1e4", "net_p",
+               "net_per_seed_sd_x1e4"], rows)
 
 
 # ---- seed variance (3 stock noise realizations) ----------------------------
@@ -254,6 +305,7 @@ def main():
     build_leaderboard()
     build_ablation()
     build_shift_ablation()
+    build_operator_ablation()
     build_seed_variance()
     build_dose_curve()
     build_dose_curve("dose_curve_cfg0", "_cfg0")

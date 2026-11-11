@@ -1,0 +1,7 @@
+model,operator,n_seeds,net_x1e4,net_ci_lo_x1e4,net_ci_hi_x1e4,net_p,net_per_seed_sd_x1e4
+AVTR-1,reference,3,0.5277,0.1911,0.8292,0.0013,0.1384
+AVTR-1,self,3,0.7723,0.3922,1.1054,0.0001,0.0644
+DyStream,reference,3,0.66,0.1134,1.2007,0.0071,0.1963
+DyStream,self,3,5.0263,3.5981,6.5663,0.0,0.6623
+AvatarForcing,reference,3,0.2265,-0.0368,0.4848,0.0486,0.1487
+AvatarForcing,self,3,0.083,-0.1011,0.2714,0.1908,0.151

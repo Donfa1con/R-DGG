@@ -35,7 +35,9 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `ablation_marginals.csv` | 5 AVTR-1 columns on one common mask: unseeded / seed0 / seed1 / zeroother / cfg0 — g_a_m, g_shift, net, CI, p, own_r2 |
 | `ablation_paired_deltas.csv` | identity-clustered paired Δ among those columns, with CI, p, sig |
 | `shift_ablation.csv` | shift-correction ablation on ONE shared COMMON mask (identical frames = GT-reactive & every model-seed column's face_ok, so every column has the same n≈177): every model × every seed + GT & surrogate controls — `g_a_m` (uncorrected), `g_shift`, `net` (R-DGG), and identity CI on BOTH `net` and raw `g_a_m` |
-| `shift_ablation_seed_avg.csv` | per dyadic model, mean/SD of `net` and `g_a_m` over the 3 generation seeds |
+| `shift_ablation_seed_avg.csv` | per dyadic model, seed-averaged `net` and `g_a_m` with identity CI (average the per-stem energies over the 3 seeds, then the exact identity bootstrap) + `*_per_seed_sd` (spread of the 3 single-seed points) |
+| `operator_ablation.csv` | reference-operator ablation on the SAME common mask: every column × 2 operators — `reference` (GT operator `B_GT`, = R-DGG) and `self` (fit on the column's own reaction, leave-one-identity-fold cross-fit) — `g_a_m`, `g_shift`, `net`, CI on `net` and raw, `own_r2` |
+| `operator_ablation_seed_avg.csv` | per dyadic model × operator, seed-averaged `net` with identity CI (same energy-average method) + `net_per_seed_sd` |
 
 > **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
 > `dystream_seeded_b1`) were re-extracted at face-detection threshold
@@ -67,7 +69,11 @@ coloured by system type), `fig_ablation` (5 columns + CI vs GT anchor / floor),
 `fig_shift_ablation` (two panels, every model × every seed + GT controls on ONE
 shared common mask = identical frames for every column: uncorrected `g_a_m` left vs
 corrected `net` = R-DGG right — shows the correction is needed to read the controls
-as ~0), `fig_seed_variance` (3 stock seeds + mean±SD),
+as ~0), `fig_operator_ablation` (two panels, every model × every seed + GT controls on
+the SAME common mask: `net` with the GT reference operator `B_GT` = R-DGG left vs `net`
+with each column's own cross-fit operator `B_self` right — shows the self operator
+inflates the model columns, DyStream most, so the GT reference projection is needed),
+`fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
 
@@ -91,10 +97,18 @@ the OLD subsample nuisance that the full-data default removes.
 - **No AVTR-1 ablation is a significant drop** at n=13; the speaker-audio-pathway
   contribution is not established. (`ablation_*`, and `../CVPR_zeroother_design.md` §11)
 - **The time-shift correction is necessary:** uncorrected, every column sits on a
-  common ≈+3.1×1e4 floor and reads p≈0 (GT +3.80, surrogate +3.24, FLOAT +3.13,
-  Ditto +3.02 — indistinguishable); subtracting `g_shift` collapses every control to
-  ~0 (surrogate +0.01 p=0.47; talking-heads −0.24…+0.07, all n.s.) and leaves only GT
+  common ≈+3.3…+4.0×1e4 floor and reads p≈0 (GT +3.95, surrogate +3.54, FLOAT +3.37,
+  Ditto +3.38 — indistinguishable); subtracting `g_shift` collapses every control to
+  ~0 (surrogate +0.04 p=0.43; talking-heads −0.12…+0.14, all n.s.) and leaves only GT
   and the dyadic models positive. (`shift_ablation.csv`, `fig_shift_ablation`)
+- **The GT reference operator is necessary:** with each column's OWN cross-fit operator
+  `B_self`, the model columns inflate — DyStream most (self net ≈ +5.0 vs reference
+  +0.66, seed-averaged), AVTR-1 up (+0.77 vs +0.53) — because the self operator fits the
+  model's own motion artifact as "reaction". The GT reference operator `B_GT` holds every
+  column on one scale, and the controls (surrogate, talking-heads) stay ~0 under both
+  operators. The seed-averaged reference net matches the shift ablation net to ±0.001 (a
+  cross-check: both are the same R-DGG net under `B_GT`). (`operator_ablation*`,
+  `fig_operator_ablation`)
 - **Generation seed moves R-DGG** by SD ≈ 0.13 over 3 realizations (0.45 / 0.35 /
   0.60 for the same stock model+audio). (`seed_variance*`)
 - **Metric-internal randomness** moves the net less — combined SD ≈ 0.05–0.08 per

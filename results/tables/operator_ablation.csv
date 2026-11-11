@@ -1,0 +1,31 @@
+column,model,group,seed,operator,n_stems,n_identities,own_r2,g_a_m_x1e4,g_shift_x1e4,net_x1e4,floor_sd_x1e4,net_ci_lo_x1e4,net_ci_hi_x1e4,net_p,raw_ci_lo_x1e4,raw_ci_hi_x1e4,raw_p
+GT,GT,GT-control,GT,reference,177,13,0.9619,3.9503,3.3518,0.5985,0.1337,0.172,1.0289,0.0032,3.3527,4.4413,0.0
+GT,GT,GT-control,GT,self,177,13,0.9619,3.9515,3.3519,0.5997,0.1339,0.1738,1.0297,0.0032,3.3544,4.4424,0.0
+GT×other,GT×other,GT-control,surrogate,reference,177,13,0.9098,3.5359,3.4921,0.0438,0.1655,-0.3635,0.534,0.431,2.9156,4.1142,0.0
+GT×other,GT×other,GT-control,surrogate,self,177,13,0.9098,3.5372,3.3849,0.1524,0.1822,-0.2481,0.5693,0.2333,2.9357,4.0574,0.0
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,reference,177,13,0.9417,3.9846,3.4218,0.5628,0.1546,0.1889,0.9443,0.0018,3.5697,4.3794,0.0
+AVTR-1 [unseeded],AVTR-1,dyadic,unseeded,self,177,13,0.9417,4.0706,3.2258,0.8448,0.1508,0.3579,1.2858,0.0006,3.529,4.5773,0.0
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,reference,177,13,0.9408,3.7716,3.3968,0.3748,0.1568,-0.0968,0.8327,0.0624,3.2219,4.3009,0.0
+AVTR-1 [seed0],AVTR-1,dyadic,seed0,self,177,13,0.9408,3.9594,3.2083,0.7511,0.1628,0.198,1.2466,0.0037,3.2374,4.5395,0.0
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,reference,177,13,0.9397,4.0584,3.4136,0.6448,0.1522,0.1517,1.068,0.0066,3.4155,4.6164,0.0
+AVTR-1 [seed1],AVTR-1,dyadic,seed1,self,177,13,0.9397,3.9713,3.25,0.7213,0.157,0.2698,1.1311,0.0011,3.4624,4.4072,0.0
+DyStream [unseeded],DyStream,dyadic,unseeded,reference,177,13,0.9464,3.8373,3.3504,0.4869,0.1518,0.0067,1.0417,0.0233,3.2873,4.3229,0.0
+DyStream [unseeded],DyStream,dyadic,unseeded,self,177,13,0.9464,7.3634,3.0267,4.3368,0.1311,2.9579,6.1835,0.0,5.9418,9.1258,0.0
+DyStream [seed0],DyStream,dyadic,seed0,reference,177,13,0.9499,4.1983,3.319,0.8793,0.1453,0.0858,1.521,0.015,3.1966,4.9729,0.0
+DyStream [seed0],DyStream,dyadic,seed0,self,177,13,0.9499,8.5256,3.0759,5.4497,0.1436,3.7339,7.1699,0.0,6.6856,10.2965,0.0
+DyStream [seed1],DyStream,dyadic,seed1,reference,177,13,0.9502,3.9696,3.2994,0.6702,0.1521,0.1017,1.2131,0.0089,3.2245,4.629,0.0
+DyStream [seed1],DyStream,dyadic,seed1,self,177,13,0.9502,8.5951,3.0797,5.5154,0.1504,3.9657,7.1516,0.0,6.9069,10.2818,0.0
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,reference,177,13,0.9526,3.762,3.4264,0.3356,0.1252,0.0193,0.5844,0.0197,2.807,4.402,0.0
+AvatarForcing [unseeded],AvatarForcing,dyadic,unseeded,self,177,13,0.9526,3.2542,3.2201,0.034,0.1131,-0.2501,0.3428,0.4029,2.6053,3.8326,0.0
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,reference,177,13,0.955,3.666,3.3823,0.2837,0.1186,-0.1528,0.6699,0.1047,2.9111,4.2349,0.0
+AvatarForcing [seed0],AvatarForcing,dyadic,seed0,self,177,13,0.955,3.4988,3.2453,0.2535,0.1234,0.0275,0.5063,0.0146,2.9625,3.9377,0.0
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,reference,177,13,0.9531,3.4723,3.4164,0.056,0.1334,-0.2729,0.3672,0.3774,2.8601,3.9063,0.0
+AvatarForcing [seed1],AvatarForcing,dyadic,seed1,self,177,13,0.9531,3.2023,3.2381,-0.0358,0.1238,-0.3131,0.2433,0.5893,2.7137,3.6035,0.0
+SoulX Lite,SoulX Lite,non-dyad,single,reference,177,13,0.9366,3.2561,3.3716,-0.1156,0.145,-0.4236,0.281,0.7413,2.6737,3.7073,0.0
+SoulX Lite,SoulX Lite,non-dyad,single,self,177,13,0.9366,3.4426,3.256,0.1866,0.1697,-0.3334,0.7302,0.2408,2.7237,3.9828,0.0
+SoulX Pro,SoulX Pro,non-dyad,single,reference,177,13,0.9371,3.4837,3.3412,0.1424,0.1616,-0.2805,0.5749,0.2828,2.823,4.105,0.0
+SoulX Pro,SoulX Pro,non-dyad,single,self,177,13,0.9371,3.1789,3.1972,-0.0183,0.1889,-0.4178,0.3606,0.544,2.6515,3.5957,0.0
+Ditto,Ditto,non-dyad,single,reference,177,13,0.9334,3.378,3.3291,0.0489,0.1414,-0.2548,0.3222,0.3639,3.01,3.7793,0.0
+Ditto,Ditto,non-dyad,single,self,177,13,0.9334,3.1238,3.0949,0.029,0.1276,-0.1814,0.2457,0.4077,2.8638,3.4165,0.0
+FLOAT,FLOAT,non-dyad,single,reference,177,13,0.9528,3.3658,3.3973,-0.0315,0.1703,-0.4423,0.3829,0.5597,2.9495,3.8115,0.0
+FLOAT,FLOAT,non-dyad,single,self,177,13,0.9528,3.5694,3.2061,0.3633,0.1623,-0.1872,1.0521,0.142,2.9347,4.3657,0.0
