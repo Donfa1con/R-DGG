@@ -36,6 +36,15 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `ablation_paired_deltas.csv` | identity-clustered paired Δ among those columns, with CI, p, sig |
 | `shift_ablation.csv` | shift-correction ablation: every model × every seed + GT & surrogate controls — `g_a_m` (uncorrected), `g_shift`, `net` (R-DGG), and identity CI on BOTH `net` and raw `g_a_m` |
 | `shift_ablation_seed_avg.csv` | per dyadic model, mean/SD of `net` and `g_a_m` over the 3 generation seeds |
+
+> **DyStream seed provenance.** The two seeded DyStream dirs (`dystream_seeded`,
+> `dystream_seeded_b1`) were re-extracted at face-detection threshold
+> `--det_thresh 0.1` (default is 0.5). The generated videos are fine, but SCRFD
+> scores their large frontal faces below 0.5, so the default pass detected a face on
+> only ~37% of frames and dropped most stems below the 4 s minimum (n fell to ~81,
+> with a 4× inflated time-shift floor). At 0.1 face_ok is ~1.00 and n is ~178, in
+> line with the other models. The unseeded DyStream dir and all other models detect
+> fine at 0.5 and are unchanged.
 | `seed_variance.csv` | three stock noise seeds (unseeded / base0 / base1): net, CI, own_r2 |
 | `seed_variance_summary.csv` | their mean, sample/pop SD, min, max, range |
 | `seed_variance_paired_deltas.csv` | paired Δ among the three seeds |

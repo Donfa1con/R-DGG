@@ -127,7 +127,7 @@ def fig_seed_variance():
 
 # shift-correction ablation: uncorrected g_a_m (left) vs corrected net = R-DGG (right)
 SHIFT_GROUP_C = {"GT-control": OK["green"], "dyadic": OK["blue"], "non-dyad": OK["orange"]}
-SHIFT_LOWFID = {"DyStream [seed0]", "DyStream [seed1]"}   # n~81, 4x floor -- flag, don't hide
+SHIFT_LOWFID = set()   # all columns n~178 after the DyStream seed re-extraction (det_thresh 0.1)
 
 
 def fig_shift_ablation():
@@ -192,9 +192,7 @@ def fig_shift_ablation():
     axR.legend(handles=handles, frameon=False, fontsize=7.3, loc="lower right")
     fig.suptitle("Is the time-shift correction needed? R-DGG ablation — all models, all seeds, GT controls",
                  fontsize=10.5, y=0.98)
-    fig.text(0.5, 0.005,
-             "DyStream seed0/seed1 clipped (n≈81, 4× floor — low fidelity, shown pale); "
-             "all other columns n≈178, 13 identities.",
+    fig.text(0.5, 0.005, "All columns n≈178, 13 identities (same GT&model marginal mask per column).",
              ha="center", fontsize=7, color=MUTE)
     fig.savefig(FIGS / "fig_shift_ablation.pdf")
     plt.close(fig)
