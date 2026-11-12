@@ -1,0 +1,4 @@
+quantity,value_x1e4,ci_lo_x1e4,ci_hi_x1e4,p_one_sided,n_identities
+dyadic_minus_talkinghead,0.459,0.0332,0.8326,0.0165,13
+mean_dyadic,0.4707,,,,
+mean_talking_head,0.0117,,,,

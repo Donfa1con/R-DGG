@@ -1,0 +1,919 @@
+column,offset_ms,net_x1e4
+GT,-1000,0.1893
+GT,-960,0.1088
+GT,-920,0.4189
+GT,-880,0.1903
+GT,-840,0.5032
+GT,-800,0.4171
+GT,-760,0.3629
+GT,-720,0.6434
+GT,-680,0.4159
+GT,-640,0.4623
+GT,-600,0.535
+GT,-560,0.4538
+GT,-520,0.3112
+GT,-480,0.7845
+GT,-440,0.4208
+GT,-400,0.5421
+GT,-360,0.5789
+GT,-320,0.5058
+GT,-280,0.5759
+GT,-240,0.5993
+GT,-200,0.6509
+GT,-160,0.3944
+GT,-120,0.5024
+GT,-80,0.5057
+GT,-40,0.6545
+GT,0,0.5997
+GT,40,0.5187
+GT,80,0.4987
+GT,120,0.3158
+GT,160,0.3945
+GT,200,0.4285
+GT,240,0.3223
+GT,280,0.1679
+GT,320,0.2411
+GT,360,0.2893
+GT,400,0.3952
+GT,440,0.2422
+GT,480,0.0329
+GT,520,0.3223
+GT,560,0.0557
+GT,600,0.0819
+GT,640,-0.0205
+GT,680,0.2464
+GT,720,0.0226
+GT,760,0.2322
+GT,800,0.0756
+GT,840,0.232
+GT,880,0.1399
+GT,920,-0.028
+GT,960,0.305
+GT,1000,0.0075
+GT×other,-1000,-0.1488
+GT×other,-960,-0.105
+GT×other,-920,0.2355
+GT×other,-880,0.042
+GT×other,-840,0.316
+GT×other,-800,-0.046
+GT×other,-760,0.0459
+GT×other,-720,-0.0406
+GT×other,-680,-0.1555
+GT×other,-640,0.1098
+GT×other,-600,0.1061
+GT×other,-560,-0.1783
+GT×other,-520,0.0265
+GT×other,-480,0.0521
+GT×other,-440,0.0651
+GT×other,-400,0.0757
+GT×other,-360,0.106
+GT×other,-320,-0.3071
+GT×other,-280,0.1597
+GT×other,-240,0.2883
+GT×other,-200,0.0214
+GT×other,-160,0.0085
+GT×other,-120,0.1393
+GT×other,-80,-0.1969
+GT×other,-40,-0.2852
+GT×other,0,0.0438
+GT×other,40,0.0708
+GT×other,80,0.2005
+GT×other,120,0.3019
+GT×other,160,0.0099
+GT×other,200,-0.2326
+GT×other,240,-0.2264
+GT×other,280,0.2476
+GT×other,320,0.2195
+GT×other,360,-0.2567
+GT×other,400,-0.3765
+GT×other,440,0.0656
+GT×other,480,0.141
+GT×other,520,0.1713
+GT×other,560,-0.1936
+GT×other,600,-0.084
+GT×other,640,0.1007
+GT×other,680,0.0608
+GT×other,720,-0.2
+GT×other,760,0.3615
+GT×other,800,-0.0062
+GT×other,840,-0.0495
+GT×other,880,-0.0114
+GT×other,920,-0.0378
+GT×other,960,0.0862
+GT×other,1000,0.1605
+AVTR-1 [unseeded],-1000,0.5858
+AVTR-1 [unseeded],-960,0.5697
+AVTR-1 [unseeded],-920,0.3741
+AVTR-1 [unseeded],-880,0.4529
+AVTR-1 [unseeded],-840,0.867
+AVTR-1 [unseeded],-800,0.6544
+AVTR-1 [unseeded],-760,0.7229
+AVTR-1 [unseeded],-720,0.5797
+AVTR-1 [unseeded],-680,0.4015
+AVTR-1 [unseeded],-640,0.6817
+AVTR-1 [unseeded],-600,0.3889
+AVTR-1 [unseeded],-560,0.3872
+AVTR-1 [unseeded],-520,0.6637
+AVTR-1 [unseeded],-480,0.8169
+AVTR-1 [unseeded],-440,0.6687
+AVTR-1 [unseeded],-400,0.392
+AVTR-1 [unseeded],-360,0.1986
+AVTR-1 [unseeded],-320,0.8842
+AVTR-1 [unseeded],-280,0.7135
+AVTR-1 [unseeded],-240,0.3058
+AVTR-1 [unseeded],-200,1.0651
+AVTR-1 [unseeded],-160,1.3135
+AVTR-1 [unseeded],-120,0.389
+AVTR-1 [unseeded],-80,0.523
+AVTR-1 [unseeded],-40,0.4831
+AVTR-1 [unseeded],0,0.5628
+AVTR-1 [unseeded],40,0.3215
+AVTR-1 [unseeded],80,0.6385
+AVTR-1 [unseeded],120,0.2926
+AVTR-1 [unseeded],160,0.1413
+AVTR-1 [unseeded],200,0.2893
+AVTR-1 [unseeded],240,0.1528
+AVTR-1 [unseeded],280,0.1875
+AVTR-1 [unseeded],320,0.1636
+AVTR-1 [unseeded],360,0.139
+AVTR-1 [unseeded],400,0.2901
+AVTR-1 [unseeded],440,-0.0202
+AVTR-1 [unseeded],480,0.1919
+AVTR-1 [unseeded],520,-0.0184
+AVTR-1 [unseeded],560,0.2259
+AVTR-1 [unseeded],600,0.3713
+AVTR-1 [unseeded],640,0.2067
+AVTR-1 [unseeded],680,0.2344
+AVTR-1 [unseeded],720,0.4144
+AVTR-1 [unseeded],760,0.337
+AVTR-1 [unseeded],800,0.6597
+AVTR-1 [unseeded],840,0.3101
+AVTR-1 [unseeded],880,0.3138
+AVTR-1 [unseeded],920,0.3788
+AVTR-1 [unseeded],960,0.1241
+AVTR-1 [unseeded],1000,0.1243
+AVTR-1 [seed0],-1000,0.7611
+AVTR-1 [seed0],-960,0.4354
+AVTR-1 [seed0],-920,0.3232
+AVTR-1 [seed0],-880,0.4549
+AVTR-1 [seed0],-840,0.464
+AVTR-1 [seed0],-800,0.5376
+AVTR-1 [seed0],-760,0.5794
+AVTR-1 [seed0],-720,0.6592
+AVTR-1 [seed0],-680,0.6042
+AVTR-1 [seed0],-640,0.5137
+AVTR-1 [seed0],-600,0.3698
+AVTR-1 [seed0],-560,0.43
+AVTR-1 [seed0],-520,0.7993
+AVTR-1 [seed0],-480,0.5517
+AVTR-1 [seed0],-440,0.5358
+AVTR-1 [seed0],-400,0.4604
+AVTR-1 [seed0],-360,0.2927
+AVTR-1 [seed0],-320,0.4359
+AVTR-1 [seed0],-280,0.5103
+AVTR-1 [seed0],-240,0.6211
+AVTR-1 [seed0],-200,0.3758
+AVTR-1 [seed0],-160,0.5095
+AVTR-1 [seed0],-120,0.4933
+AVTR-1 [seed0],-80,0.5786
+AVTR-1 [seed0],-40,0.5034
+AVTR-1 [seed0],0,0.3757
+AVTR-1 [seed0],40,0.4333
+AVTR-1 [seed0],80,0.2962
+AVTR-1 [seed0],120,0.331
+AVTR-1 [seed0],160,0.3032
+AVTR-1 [seed0],200,0.2544
+AVTR-1 [seed0],240,0.474
+AVTR-1 [seed0],280,0.2331
+AVTR-1 [seed0],320,0.0477
+AVTR-1 [seed0],360,-0.0685
+AVTR-1 [seed0],400,0.171
+AVTR-1 [seed0],440,0.2896
+AVTR-1 [seed0],480,0.2213
+AVTR-1 [seed0],520,0.0226
+AVTR-1 [seed0],560,0.2535
+AVTR-1 [seed0],600,0.3949
+AVTR-1 [seed0],640,0.0576
+AVTR-1 [seed0],680,-0.0475
+AVTR-1 [seed0],720,0.2042
+AVTR-1 [seed0],760,0.2036
+AVTR-1 [seed0],800,0.3135
+AVTR-1 [seed0],840,0.1438
+AVTR-1 [seed0],880,0.4387
+AVTR-1 [seed0],920,-0.0003
+AVTR-1 [seed0],960,0.0817
+AVTR-1 [seed0],1000,0.0235
+AVTR-1 [seed1],-1000,0.4402
+AVTR-1 [seed1],-960,0.9001
+AVTR-1 [seed1],-920,0.5501
+AVTR-1 [seed1],-880,0.3606
+AVTR-1 [seed1],-840,0.7876
+AVTR-1 [seed1],-800,0.7915
+AVTR-1 [seed1],-760,0.4704
+AVTR-1 [seed1],-720,0.697
+AVTR-1 [seed1],-680,0.5249
+AVTR-1 [seed1],-640,0.6086
+AVTR-1 [seed1],-600,0.3503
+AVTR-1 [seed1],-560,0.0829
+AVTR-1 [seed1],-520,0.3741
+AVTR-1 [seed1],-480,0.3259
+AVTR-1 [seed1],-440,0.531
+AVTR-1 [seed1],-400,0.4173
+AVTR-1 [seed1],-360,0.3606
+AVTR-1 [seed1],-320,0.6417
+AVTR-1 [seed1],-280,0.5681
+AVTR-1 [seed1],-240,0.5984
+AVTR-1 [seed1],-200,0.6866
+AVTR-1 [seed1],-160,0.7595
+AVTR-1 [seed1],-120,0.4811
+AVTR-1 [seed1],-80,0.674
+AVTR-1 [seed1],-40,0.8775
+AVTR-1 [seed1],0,0.6453
+AVTR-1 [seed1],40,0.5055
+AVTR-1 [seed1],80,0.2605
+AVTR-1 [seed1],120,0.6221
+AVTR-1 [seed1],160,0.3907
+AVTR-1 [seed1],200,0.1712
+AVTR-1 [seed1],240,0.3694
+AVTR-1 [seed1],280,0.2683
+AVTR-1 [seed1],320,0.2777
+AVTR-1 [seed1],360,0.165
+AVTR-1 [seed1],400,0.3025
+AVTR-1 [seed1],440,0.1511
+AVTR-1 [seed1],480,0.3298
+AVTR-1 [seed1],520,0.4928
+AVTR-1 [seed1],560,0.2756
+AVTR-1 [seed1],600,0.3328
+AVTR-1 [seed1],640,0.0071
+AVTR-1 [seed1],680,0.2753
+AVTR-1 [seed1],720,0.2432
+AVTR-1 [seed1],760,0.2002
+AVTR-1 [seed1],800,0.2373
+AVTR-1 [seed1],840,0.0725
+AVTR-1 [seed1],880,0.1421
+AVTR-1 [seed1],920,0.0816
+AVTR-1 [seed1],960,0.1097
+AVTR-1 [seed1],1000,0.1707
+DyStream [unseeded],-1000,0.9311
+DyStream [unseeded],-960,0.875
+DyStream [unseeded],-920,1.0274
+DyStream [unseeded],-880,1.1234
+DyStream [unseeded],-840,1.2612
+DyStream [unseeded],-800,0.8489
+DyStream [unseeded],-760,0.8327
+DyStream [unseeded],-720,1.236
+DyStream [unseeded],-680,1.0266
+DyStream [unseeded],-640,1.0212
+DyStream [unseeded],-600,1.0585
+DyStream [unseeded],-560,1.1466
+DyStream [unseeded],-520,1.4917
+DyStream [unseeded],-480,1.2048
+DyStream [unseeded],-440,1.3853
+DyStream [unseeded],-400,1.474
+DyStream [unseeded],-360,1.3341
+DyStream [unseeded],-320,1.4343
+DyStream [unseeded],-280,1.3704
+DyStream [unseeded],-240,1.5637
+DyStream [unseeded],-200,1.5522
+DyStream [unseeded],-160,1.5062
+DyStream [unseeded],-120,1.0073
+DyStream [unseeded],-80,1.0033
+DyStream [unseeded],-40,0.7725
+DyStream [unseeded],0,0.4836
+DyStream [unseeded],40,0.8643
+DyStream [unseeded],80,0.5371
+DyStream [unseeded],120,0.6384
+DyStream [unseeded],160,0.6178
+DyStream [unseeded],200,0.3246
+DyStream [unseeded],240,0.2008
+DyStream [unseeded],280,0.1399
+DyStream [unseeded],320,0.304
+DyStream [unseeded],360,0.1708
+DyStream [unseeded],400,0.2092
+DyStream [unseeded],440,0.5835
+DyStream [unseeded],480,0.055
+DyStream [unseeded],520,0.003
+DyStream [unseeded],560,0.1488
+DyStream [unseeded],600,0.121
+DyStream [unseeded],640,-0.0684
+DyStream [unseeded],680,-0.0316
+DyStream [unseeded],720,-0.1793
+DyStream [unseeded],760,0.118
+DyStream [unseeded],800,-0.0023
+DyStream [unseeded],840,0.0401
+DyStream [unseeded],880,-0.0055
+DyStream [unseeded],920,0.1734
+DyStream [unseeded],960,-0.0386
+DyStream [unseeded],1000,-0.0587
+DyStream [seed0],-1000,1.577
+DyStream [seed0],-960,1.2939
+DyStream [seed0],-920,1.4706
+DyStream [seed0],-880,2.0828
+DyStream [seed0],-840,1.5029
+DyStream [seed0],-800,1.0343
+DyStream [seed0],-760,1.2464
+DyStream [seed0],-720,1.3895
+DyStream [seed0],-680,1.3943
+DyStream [seed0],-640,1.256
+DyStream [seed0],-600,1.4743
+DyStream [seed0],-560,1.465
+DyStream [seed0],-520,1.7615
+DyStream [seed0],-480,1.9769
+DyStream [seed0],-440,1.494
+DyStream [seed0],-400,1.702
+DyStream [seed0],-360,1.8617
+DyStream [seed0],-320,1.9092
+DyStream [seed0],-280,1.8235
+DyStream [seed0],-240,1.664
+DyStream [seed0],-200,1.7171
+DyStream [seed0],-160,1.7903
+DyStream [seed0],-120,1.5668
+DyStream [seed0],-80,1.3644
+DyStream [seed0],-40,1.2163
+DyStream [seed0],0,0.8797
+DyStream [seed0],40,0.9095
+DyStream [seed0],80,0.7475
+DyStream [seed0],120,0.6103
+DyStream [seed0],160,0.6455
+DyStream [seed0],200,0.5329
+DyStream [seed0],240,0.5533
+DyStream [seed0],280,0.5435
+DyStream [seed0],320,0.1782
+DyStream [seed0],360,0.5772
+DyStream [seed0],400,0.3579
+DyStream [seed0],440,0.6768
+DyStream [seed0],480,0.1568
+DyStream [seed0],520,0.0264
+DyStream [seed0],560,0.0101
+DyStream [seed0],600,0.0235
+DyStream [seed0],640,0.282
+DyStream [seed0],680,0.091
+DyStream [seed0],720,0.211
+DyStream [seed0],760,0.22
+DyStream [seed0],800,-0.1618
+DyStream [seed0],840,0.2216
+DyStream [seed0],880,0.0341
+DyStream [seed0],920,0.3595
+DyStream [seed0],960,-0.0277
+DyStream [seed0],1000,0.3946
+DyStream [seed1],-1000,1.2925
+DyStream [seed1],-960,1.3099
+DyStream [seed1],-920,1.3969
+DyStream [seed1],-880,1.5752
+DyStream [seed1],-840,1.3453
+DyStream [seed1],-800,1.3231
+DyStream [seed1],-760,1.4513
+DyStream [seed1],-720,1.2161
+DyStream [seed1],-680,1.3346
+DyStream [seed1],-640,1.3584
+DyStream [seed1],-600,1.9667
+DyStream [seed1],-560,1.7092
+DyStream [seed1],-520,1.833
+DyStream [seed1],-480,1.5445
+DyStream [seed1],-440,1.8876
+DyStream [seed1],-400,1.6453
+DyStream [seed1],-360,1.8621
+DyStream [seed1],-320,1.8485
+DyStream [seed1],-280,1.8608
+DyStream [seed1],-240,1.6205
+DyStream [seed1],-200,1.695
+DyStream [seed1],-160,1.7669
+DyStream [seed1],-120,1.5646
+DyStream [seed1],-80,1.3599
+DyStream [seed1],-40,1.0492
+DyStream [seed1],0,0.6716
+DyStream [seed1],40,0.9578
+DyStream [seed1],80,0.822
+DyStream [seed1],120,0.6645
+DyStream [seed1],160,0.6778
+DyStream [seed1],200,0.7279
+DyStream [seed1],240,0.5183
+DyStream [seed1],280,0.3491
+DyStream [seed1],320,0.4009
+DyStream [seed1],360,0.2549
+DyStream [seed1],400,0.3988
+DyStream [seed1],440,0.3957
+DyStream [seed1],480,0.341
+DyStream [seed1],520,0.4169
+DyStream [seed1],560,0.0223
+DyStream [seed1],600,-0.0286
+DyStream [seed1],640,0.2845
+DyStream [seed1],680,-0.0045
+DyStream [seed1],720,-0.0743
+DyStream [seed1],760,0.2456
+DyStream [seed1],800,0.2599
+DyStream [seed1],840,0.0648
+DyStream [seed1],880,0.0416
+DyStream [seed1],920,-0.0697
+DyStream [seed1],960,0.3281
+DyStream [seed1],1000,0.214
+AvatarForcing [unseeded],-1000,0.3187
+AvatarForcing [unseeded],-960,0.2557
+AvatarForcing [unseeded],-920,0.2996
+AvatarForcing [unseeded],-880,0.3111
+AvatarForcing [unseeded],-840,0.3389
+AvatarForcing [unseeded],-800,0.451
+AvatarForcing [unseeded],-760,0.276
+AvatarForcing [unseeded],-720,0.2515
+AvatarForcing [unseeded],-680,0.2038
+AvatarForcing [unseeded],-640,0.1005
+AvatarForcing [unseeded],-600,0.4164
+AvatarForcing [unseeded],-560,0.2059
+AvatarForcing [unseeded],-520,0.2861
+AvatarForcing [unseeded],-480,0.2249
+AvatarForcing [unseeded],-440,0.3648
+AvatarForcing [unseeded],-400,0.4334
+AvatarForcing [unseeded],-360,0.1798
+AvatarForcing [unseeded],-320,0.0829
+AvatarForcing [unseeded],-280,0.383
+AvatarForcing [unseeded],-240,0.2225
+AvatarForcing [unseeded],-200,0.2913
+AvatarForcing [unseeded],-160,0.2396
+AvatarForcing [unseeded],-120,0.0905
+AvatarForcing [unseeded],-80,0.1446
+AvatarForcing [unseeded],-40,0.4118
+AvatarForcing [unseeded],0,0.3327
+AvatarForcing [unseeded],40,0.1112
+AvatarForcing [unseeded],80,0.0158
+AvatarForcing [unseeded],120,0.0402
+AvatarForcing [unseeded],160,0.0478
+AvatarForcing [unseeded],200,0.1731
+AvatarForcing [unseeded],240,0.0281
+AvatarForcing [unseeded],280,-0.0953
+AvatarForcing [unseeded],320,0.0464
+AvatarForcing [unseeded],360,0.0103
+AvatarForcing [unseeded],400,0.2235
+AvatarForcing [unseeded],440,0.113
+AvatarForcing [unseeded],480,0.1629
+AvatarForcing [unseeded],520,-0.0312
+AvatarForcing [unseeded],560,-0.0255
+AvatarForcing [unseeded],600,0.1094
+AvatarForcing [unseeded],640,0.0686
+AvatarForcing [unseeded],680,0.0671
+AvatarForcing [unseeded],720,-0.0618
+AvatarForcing [unseeded],760,0.2174
+AvatarForcing [unseeded],800,-0.0533
+AvatarForcing [unseeded],840,0.0247
+AvatarForcing [unseeded],880,0.1638
+AvatarForcing [unseeded],920,0.1361
+AvatarForcing [unseeded],960,0.0431
+AvatarForcing [unseeded],1000,0.1551
+AvatarForcing [seed0],-1000,0.1333
+AvatarForcing [seed0],-960,0.2489
+AvatarForcing [seed0],-920,0.1988
+AvatarForcing [seed0],-880,0.2273
+AvatarForcing [seed0],-840,0.2542
+AvatarForcing [seed0],-800,0.4811
+AvatarForcing [seed0],-760,0.2622
+AvatarForcing [seed0],-720,0.4702
+AvatarForcing [seed0],-680,0.2541
+AvatarForcing [seed0],-640,0.4599
+AvatarForcing [seed0],-600,0.3505
+AvatarForcing [seed0],-560,0.2856
+AvatarForcing [seed0],-520,0.345
+AvatarForcing [seed0],-480,0.2819
+AvatarForcing [seed0],-440,0.1958
+AvatarForcing [seed0],-400,0.3144
+AvatarForcing [seed0],-360,0.0669
+AvatarForcing [seed0],-320,0.3138
+AvatarForcing [seed0],-280,0.1053
+AvatarForcing [seed0],-240,0.5322
+AvatarForcing [seed0],-200,0.1527
+AvatarForcing [seed0],-160,0.364
+AvatarForcing [seed0],-120,0.2635
+AvatarForcing [seed0],-80,0.1693
+AvatarForcing [seed0],-40,0.4539
+AvatarForcing [seed0],0,0.2818
+AvatarForcing [seed0],40,0.3679
+AvatarForcing [seed0],80,0.2499
+AvatarForcing [seed0],120,0.0832
+AvatarForcing [seed0],160,0.1939
+AvatarForcing [seed0],200,0.3168
+AvatarForcing [seed0],240,0.3436
+AvatarForcing [seed0],280,0.0338
+AvatarForcing [seed0],320,0.0415
+AvatarForcing [seed0],360,0.3032
+AvatarForcing [seed0],400,-0.0411
+AvatarForcing [seed0],440,0.2045
+AvatarForcing [seed0],480,0.0531
+AvatarForcing [seed0],520,0.1448
+AvatarForcing [seed0],560,-0.0074
+AvatarForcing [seed0],600,-0.0516
+AvatarForcing [seed0],640,0.0497
+AvatarForcing [seed0],680,0.191
+AvatarForcing [seed0],720,0.0942
+AvatarForcing [seed0],760,-0.0052
+AvatarForcing [seed0],800,-0.0705
+AvatarForcing [seed0],840,0.1454
+AvatarForcing [seed0],880,0.0015
+AvatarForcing [seed0],920,-0.0257
+AvatarForcing [seed0],960,0.0226
+AvatarForcing [seed0],1000,-0.1134
+AvatarForcing [seed1],-1000,0.426
+AvatarForcing [seed1],-960,0.2333
+AvatarForcing [seed1],-920,0.3318
+AvatarForcing [seed1],-880,0.2585
+AvatarForcing [seed1],-840,0.3131
+AvatarForcing [seed1],-800,0.2466
+AvatarForcing [seed1],-760,0.2078
+AvatarForcing [seed1],-720,0.2326
+AvatarForcing [seed1],-680,0.2661
+AvatarForcing [seed1],-640,0.3952
+AvatarForcing [seed1],-600,0.4558
+AvatarForcing [seed1],-560,0.3345
+AvatarForcing [seed1],-520,0.2792
+AvatarForcing [seed1],-480,0.3084
+AvatarForcing [seed1],-440,0.4586
+AvatarForcing [seed1],-400,0.1439
+AvatarForcing [seed1],-360,0.147
+AvatarForcing [seed1],-320,0.2037
+AvatarForcing [seed1],-280,0.2746
+AvatarForcing [seed1],-240,0.1837
+AvatarForcing [seed1],-200,0.3533
+AvatarForcing [seed1],-160,0.2351
+AvatarForcing [seed1],-120,0.0387
+AvatarForcing [seed1],-80,0.3465
+AvatarForcing [seed1],-40,0.1743
+AvatarForcing [seed1],0,0.0547
+AvatarForcing [seed1],40,0.023
+AvatarForcing [seed1],80,0.0027
+AvatarForcing [seed1],120,0.1446
+AvatarForcing [seed1],160,0.1283
+AvatarForcing [seed1],200,0.188
+AvatarForcing [seed1],240,-0.0941
+AvatarForcing [seed1],280,0.127
+AvatarForcing [seed1],320,0.1547
+AvatarForcing [seed1],360,0.1268
+AvatarForcing [seed1],400,0.2011
+AvatarForcing [seed1],440,-0.1213
+AvatarForcing [seed1],480,0.0222
+AvatarForcing [seed1],520,0.1957
+AvatarForcing [seed1],560,0.0916
+AvatarForcing [seed1],600,0.0029
+AvatarForcing [seed1],640,0.0193
+AvatarForcing [seed1],680,0.1671
+AvatarForcing [seed1],720,0.1543
+AvatarForcing [seed1],760,0.1799
+AvatarForcing [seed1],800,-0.1758
+AvatarForcing [seed1],840,0.2073
+AvatarForcing [seed1],880,0.2248
+AvatarForcing [seed1],920,0.0704
+AvatarForcing [seed1],960,0.1817
+AvatarForcing [seed1],1000,0.1043
+SoulX Lite,-1000,0.2998
+SoulX Lite,-960,0.4446
+SoulX Lite,-920,0.439
+SoulX Lite,-880,0.251
+SoulX Lite,-840,0.4478
+SoulX Lite,-800,0.4169
+SoulX Lite,-760,0.2457
+SoulX Lite,-720,0.5847
+SoulX Lite,-680,0.3616
+SoulX Lite,-640,0.2813
+SoulX Lite,-600,0.1767
+SoulX Lite,-560,0.1138
+SoulX Lite,-520,0.2577
+SoulX Lite,-480,0.0324
+SoulX Lite,-440,0.0199
+SoulX Lite,-400,0.4878
+SoulX Lite,-360,0.1235
+SoulX Lite,-320,-0.0668
+SoulX Lite,-280,-0.0348
+SoulX Lite,-240,0.4118
+SoulX Lite,-200,0.2589
+SoulX Lite,-160,0.0116
+SoulX Lite,-120,0.7153
+SoulX Lite,-80,0.3608
+SoulX Lite,-40,0.2716
+SoulX Lite,0,-0.1161
+SoulX Lite,40,0.2348
+SoulX Lite,80,0.0526
+SoulX Lite,120,0.2142
+SoulX Lite,160,0.1206
+SoulX Lite,200,-0.1765
+SoulX Lite,240,-0.0975
+SoulX Lite,280,0.1465
+SoulX Lite,320,0.0022
+SoulX Lite,360,0.1257
+SoulX Lite,400,0.0467
+SoulX Lite,440,0.4572
+SoulX Lite,480,0.176
+SoulX Lite,520,-0.2068
+SoulX Lite,560,-0.1664
+SoulX Lite,600,-0.0147
+SoulX Lite,640,0.2627
+SoulX Lite,680,0.3804
+SoulX Lite,720,0.3305
+SoulX Lite,760,-0.1129
+SoulX Lite,800,0.1747
+SoulX Lite,840,-0.2442
+SoulX Lite,880,0.1514
+SoulX Lite,920,0.1681
+SoulX Lite,960,-0.2718
+SoulX Lite,1000,0.0152
+SoulX Pro,-1000,0.151
+SoulX Pro,-960,0.1058
+SoulX Pro,-920,0.1716
+SoulX Pro,-880,-0.1565
+SoulX Pro,-840,0.2474
+SoulX Pro,-800,0.0999
+SoulX Pro,-760,0.1004
+SoulX Pro,-720,0.4281
+SoulX Pro,-680,-0.0327
+SoulX Pro,-640,0.4403
+SoulX Pro,-600,0.1438
+SoulX Pro,-560,0.4657
+SoulX Pro,-520,0.2727
+SoulX Pro,-480,0.1837
+SoulX Pro,-440,0.0941
+SoulX Pro,-400,0.3499
+SoulX Pro,-360,0.2595
+SoulX Pro,-320,-0.0297
+SoulX Pro,-280,0.2411
+SoulX Pro,-240,0.2914
+SoulX Pro,-200,0.1374
+SoulX Pro,-160,0.5433
+SoulX Pro,-120,0.1837
+SoulX Pro,-80,0.0778
+SoulX Pro,-40,0.1795
+SoulX Pro,0,0.1413
+SoulX Pro,40,-0.1882
+SoulX Pro,80,-0.1506
+SoulX Pro,120,0.1068
+SoulX Pro,160,-0.0856
+SoulX Pro,200,0.2725
+SoulX Pro,240,0.2257
+SoulX Pro,280,0.0751
+SoulX Pro,320,0.2233
+SoulX Pro,360,-0.3063
+SoulX Pro,400,-0.0655
+SoulX Pro,440,0.1145
+SoulX Pro,480,0.0867
+SoulX Pro,520,0.1805
+SoulX Pro,560,0.2943
+SoulX Pro,600,0.1319
+SoulX Pro,640,0.271
+SoulX Pro,680,0.1198
+SoulX Pro,720,-0.1078
+SoulX Pro,760,0.1263
+SoulX Pro,800,0.079
+SoulX Pro,840,0.0169
+SoulX Pro,880,0.1448
+SoulX Pro,920,0.1205
+SoulX Pro,960,0.125
+SoulX Pro,1000,0.046
+Ditto,-1000,0.1637
+Ditto,-960,-0.0955
+Ditto,-920,0.2943
+Ditto,-880,0.095
+Ditto,-840,0.1787
+Ditto,-800,0.1841
+Ditto,-760,0.0495
+Ditto,-720,0.3458
+Ditto,-680,0.1037
+Ditto,-640,0.2109
+Ditto,-600,0.0744
+Ditto,-560,0.1325
+Ditto,-520,-0.0819
+Ditto,-480,-0.1718
+Ditto,-440,-0.1073
+Ditto,-400,0.0112
+Ditto,-360,0.1537
+Ditto,-320,0.3562
+Ditto,-280,0.1645
+Ditto,-240,0.3055
+Ditto,-200,0.1663
+Ditto,-160,0.2113
+Ditto,-120,-0.2111
+Ditto,-80,-0.0937
+Ditto,-40,0.2053
+Ditto,0,0.0481
+Ditto,40,0.0858
+Ditto,80,0.2103
+Ditto,120,0.4766
+Ditto,160,0.131
+Ditto,200,-0.1402
+Ditto,240,-0.1267
+Ditto,280,0.0315
+Ditto,320,-0.1477
+Ditto,360,0.0635
+Ditto,400,0.3444
+Ditto,440,-0.0283
+Ditto,480,-0.0261
+Ditto,520,-0.1121
+Ditto,560,0.1061
+Ditto,600,-0.2814
+Ditto,640,-0.015
+Ditto,680,-0.1201
+Ditto,720,0.0707
+Ditto,760,0.1256
+Ditto,800,0.0313
+Ditto,840,0.0168
+Ditto,880,-0.0782
+Ditto,920,-0.0203
+Ditto,960,0.0391
+Ditto,1000,0.2679
+FLOAT,-1000,0.555
+FLOAT,-960,0.2556
+FLOAT,-920,0.1517
+FLOAT,-880,0.4813
+FLOAT,-840,0.4997
+FLOAT,-800,0.2733
+FLOAT,-760,0.425
+FLOAT,-720,0.3742
+FLOAT,-680,0.6056
+FLOAT,-640,0.4637
+FLOAT,-600,0.189
+FLOAT,-560,0.3552
+FLOAT,-520,0.374
+FLOAT,-480,0.4997
+FLOAT,-440,0.1726
+FLOAT,-400,0.0407
+FLOAT,-360,0.3466
+FLOAT,-320,0.055
+FLOAT,-280,0.3354
+FLOAT,-240,0.1134
+FLOAT,-200,0.2522
+FLOAT,-160,0.5103
+FLOAT,-120,0.5154
+FLOAT,-80,0.5073
+FLOAT,-40,-0.0665
+FLOAT,0,-0.0309
+FLOAT,40,-0.0053
+FLOAT,80,0.185
+FLOAT,120,-0.0206
+FLOAT,160,0.0761
+FLOAT,200,0.1151
+FLOAT,240,-0.0036
+FLOAT,280,0.355
+FLOAT,320,0.2963
+FLOAT,360,-0.1552
+FLOAT,400,-0.0429
+FLOAT,440,0.075
+FLOAT,480,-0.1916
+FLOAT,520,-0.1371
+FLOAT,560,0.1157
+FLOAT,600,0.2447
+FLOAT,640,-0.0573
+FLOAT,680,0.0713
+FLOAT,720,-0.0425
+FLOAT,760,0.0428
+FLOAT,800,0.0888
+FLOAT,840,0.1639
+FLOAT,880,-0.096
+FLOAT,920,0.0228
+FLOAT,960,0.1673
+FLOAT,1000,-0.0239
+AVTR-1 [seed-avg],-1000,0.5954
+AVTR-1 [seed-avg],-960,0.6356
+AVTR-1 [seed-avg],-920,0.416
+AVTR-1 [seed-avg],-880,0.4227
+AVTR-1 [seed-avg],-840,0.7062
+AVTR-1 [seed-avg],-800,0.6614
+AVTR-1 [seed-avg],-760,0.5906
+AVTR-1 [seed-avg],-720,0.6455
+AVTR-1 [seed-avg],-680,0.5103
+AVTR-1 [seed-avg],-640,0.6013
+AVTR-1 [seed-avg],-600,0.3696
+AVTR-1 [seed-avg],-560,0.2996
+AVTR-1 [seed-avg],-520,0.6119
+AVTR-1 [seed-avg],-480,0.5642
+AVTR-1 [seed-avg],-440,0.5783
+AVTR-1 [seed-avg],-400,0.4232
+AVTR-1 [seed-avg],-360,0.2842
+AVTR-1 [seed-avg],-320,0.6538
+AVTR-1 [seed-avg],-280,0.5972
+AVTR-1 [seed-avg],-240,0.5087
+AVTR-1 [seed-avg],-200,0.7089
+AVTR-1 [seed-avg],-160,0.8603
+AVTR-1 [seed-avg],-120,0.4545
+AVTR-1 [seed-avg],-80,0.5921
+AVTR-1 [seed-avg],-40,0.6219
+AVTR-1 [seed-avg],0,0.5281
+AVTR-1 [seed-avg],40,0.4203
+AVTR-1 [seed-avg],80,0.398
+AVTR-1 [seed-avg],120,0.4157
+AVTR-1 [seed-avg],160,0.2787
+AVTR-1 [seed-avg],200,0.2382
+AVTR-1 [seed-avg],240,0.3323
+AVTR-1 [seed-avg],280,0.2297
+AVTR-1 [seed-avg],320,0.1632
+AVTR-1 [seed-avg],360,0.0786
+AVTR-1 [seed-avg],400,0.2546
+AVTR-1 [seed-avg],440,0.1403
+AVTR-1 [seed-avg],480,0.2479
+AVTR-1 [seed-avg],520,0.1664
+AVTR-1 [seed-avg],560,0.2517
+AVTR-1 [seed-avg],600,0.3663
+AVTR-1 [seed-avg],640,0.0902
+AVTR-1 [seed-avg],680,0.1542
+AVTR-1 [seed-avg],720,0.2871
+AVTR-1 [seed-avg],760,0.2468
+AVTR-1 [seed-avg],800,0.403
+AVTR-1 [seed-avg],840,0.1752
+AVTR-1 [seed-avg],880,0.2979
+AVTR-1 [seed-avg],920,0.1531
+AVTR-1 [seed-avg],960,0.1052
+AVTR-1 [seed-avg],1000,0.1063
+DyStream [seed-avg],-1000,1.234
+DyStream [seed-avg],-960,1.1319
+DyStream [seed-avg],-920,1.2719
+DyStream [seed-avg],-880,1.5477
+DyStream [seed-avg],-840,1.3591
+DyStream [seed-avg],-800,1.0476
+DyStream [seed-avg],-760,1.1434
+DyStream [seed-avg],-720,1.2761
+DyStream [seed-avg],-680,1.2299
+DyStream [seed-avg],-640,1.1934
+DyStream [seed-avg],-600,1.4573
+DyStream [seed-avg],-560,1.4119
+DyStream [seed-avg],-520,1.6756
+DyStream [seed-avg],-480,1.539
+DyStream [seed-avg],-440,1.5695
+DyStream [seed-avg],-400,1.5941
+DyStream [seed-avg],-360,1.6517
+DyStream [seed-avg],-320,1.7018
+DyStream [seed-avg],-280,1.6543
+DyStream [seed-avg],-240,1.6109
+DyStream [seed-avg],-200,1.6447
+DyStream [seed-avg],-160,1.6701
+DyStream [seed-avg],-120,1.3433
+DyStream [seed-avg],-80,1.2193
+DyStream [seed-avg],-40,0.9892
+DyStream [seed-avg],0,0.6592
+DyStream [seed-avg],40,0.9061
+DyStream [seed-avg],80,0.6862
+DyStream [seed-avg],120,0.6378
+DyStream [seed-avg],160,0.6442
+DyStream [seed-avg],200,0.5088
+DyStream [seed-avg],240,0.4024
+DyStream [seed-avg],280,0.3241
+DyStream [seed-avg],320,0.2955
+DyStream [seed-avg],360,0.3181
+DyStream [seed-avg],400,0.311
+DyStream [seed-avg],440,0.5549
+DyStream [seed-avg],480,0.1718
+DyStream [seed-avg],520,0.1349
+DyStream [seed-avg],560,0.069
+DyStream [seed-avg],600,0.0466
+DyStream [seed-avg],640,0.1433
+DyStream [seed-avg],680,0.0134
+DyStream [seed-avg],720,-0.0305
+DyStream [seed-avg],760,0.1871
+DyStream [seed-avg],800,0.0289
+DyStream [seed-avg],840,0.102
+DyStream [seed-avg],880,0.0206
+DyStream [seed-avg],920,0.1559
+DyStream [seed-avg],960,0.0753
+DyStream [seed-avg],1000,0.1596
+AvatarForcing [seed-avg],-1000,0.2932
+AvatarForcing [seed-avg],-960,0.2461
+AvatarForcing [seed-avg],-920,0.2772
+AvatarForcing [seed-avg],-880,0.2663
+AvatarForcing [seed-avg],-840,0.3027
+AvatarForcing [seed-avg],-800,0.3935
+AvatarForcing [seed-avg],-760,0.249
+AvatarForcing [seed-avg],-720,0.317
+AvatarForcing [seed-avg],-680,0.2408
+AvatarForcing [seed-avg],-640,0.3154
+AvatarForcing [seed-avg],-600,0.4078
+AvatarForcing [seed-avg],-560,0.2744
+AvatarForcing [seed-avg],-520,0.3031
+AvatarForcing [seed-avg],-480,0.2711
+AvatarForcing [seed-avg],-440,0.3403
+AvatarForcing [seed-avg],-400,0.299
+AvatarForcing [seed-avg],-360,0.132
+AvatarForcing [seed-avg],-320,0.1984
+AvatarForcing [seed-avg],-280,0.2562
+AvatarForcing [seed-avg],-240,0.3113
+AvatarForcing [seed-avg],-200,0.2663
+AvatarForcing [seed-avg],-160,0.2789
+AvatarForcing [seed-avg],-120,0.1302
+AvatarForcing [seed-avg],-80,0.2192
+AvatarForcing [seed-avg],-40,0.3474
+AvatarForcing [seed-avg],0,0.2244
+AvatarForcing [seed-avg],40,0.1664
+AvatarForcing [seed-avg],80,0.0882
+AvatarForcing [seed-avg],120,0.0887
+AvatarForcing [seed-avg],160,0.1222
+AvatarForcing [seed-avg],200,0.2251
+AvatarForcing [seed-avg],240,0.0913
+AvatarForcing [seed-avg],280,0.0203
+AvatarForcing [seed-avg],320,0.0805
+AvatarForcing [seed-avg],360,0.1447
+AvatarForcing [seed-avg],400,0.1293
+AvatarForcing [seed-avg],440,0.0658
+AvatarForcing [seed-avg],480,0.0805
+AvatarForcing [seed-avg],520,0.1013
+AvatarForcing [seed-avg],560,0.019
+AvatarForcing [seed-avg],600,0.0215
+AvatarForcing [seed-avg],640,0.0462
+AvatarForcing [seed-avg],680,0.1407
+AvatarForcing [seed-avg],720,0.0606
+AvatarForcing [seed-avg],760,0.132
+AvatarForcing [seed-avg],800,-0.0993
+AvatarForcing [seed-avg],840,0.1244
+AvatarForcing [seed-avg],880,0.1306
+AvatarForcing [seed-avg],920,0.0614
+AvatarForcing [seed-avg],960,0.082
+AvatarForcing [seed-avg],1000,0.0503

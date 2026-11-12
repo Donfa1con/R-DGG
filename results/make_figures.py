@@ -682,6 +682,48 @@ def fig_pca_size():
     plt.close(fig)
 
 
+def fig_power():
+    d = rows("power_analysis.csv")
+    k = [fnum(r["k_identities"]) for r in d]
+    w = [fnum(r["contrast_ci_width_x1e4"]) for r in d]
+    fig, ax = plt.subplots(figsize=(5.0, 3.1))
+    ax.plot(k, w, "o-", color=OK["blue"], lw=2, markersize=5, label="main contrast")
+    # the 3 pairwise dyadic widths, if present
+    pair_cols = [c for c in d[0] if c.startswith("pair_ci_width__")]
+    for c in pair_cols:
+        ax.plot(k, [fnum(r[c]) for r in d], lw=1, alpha=0.6, label=c.replace("pair_ci_width__", ""))
+    ax.set_xlabel("number of identity clusters (k)")
+    ax.set_ylabel("95% CI width ×1e4")
+    ax.set_title("Power: CI width vs identities (subsamples of 13)", fontsize=9)
+    tidy(ax)
+    ax.legend(frameon=False, fontsize=7.5)
+    fig.savefig(FIGS / "fig_power.pdf")
+    plt.close(fig)
+
+
+def fig_model_x_other():
+    """Aligned (shift_ablation seed-avg) vs scrambled (model x other seed-avg) net per dyadic model."""
+    al = {r["model"]: fnum(r["net_x1e4"]) for r in rows("shift_ablation_seed_avg.csv")}
+    sc = {r["model"]: (fnum(r["net_x1e4"]), fnum(r["ci_lo_x1e4"]), fnum(r["ci_hi_x1e4"]))
+          for r in rows("model_x_other_seed_avg.csv")}
+    models = [m for m in al if m in sc]
+    x = range(len(models)); w = 0.38
+    fig, ax = plt.subplots(figsize=(5.2, 3.2))
+    ax.axhline(0, color=MUTE, lw=1)
+    ax.bar([i - w / 2 for i in x], [al[m] for m in models], w, color=OK["blue"], label="aligned (true partner)")
+    scv = [sc[m][0] for m in models]
+    lo = [sc[m][0] - sc[m][1] for m in models]; hi = [sc[m][2] - sc[m][0] for m in models]
+    ax.bar([i + w / 2 for i in x], scv, w, color=OK["vermillion"], label="model × other (scrambled)")
+    ax.errorbar([i + w / 2 for i in x], scv, yerr=[lo, hi], fmt="none", ecolor=INK, elinewidth=1, capsize=3)
+    ax.set_xticks(list(x)); ax.set_xticklabels(models, fontsize=8)
+    ax.set_ylabel("R-DGG net ×1e4")
+    ax.set_title("Specificity: aligned vs scrambled partner", fontsize=9)
+    tidy(ax)
+    ax.legend(frameon=False, fontsize=8)
+    fig.savefig(FIGS / "fig_model_x_other.pdf")
+    plt.close(fig)
+
+
 def main():
     fig_leaderboard()
     fig_ablation()
@@ -697,6 +739,15 @@ def main():
                    title="Dose curve: stock → cfg0 (k=0..178)", out="fig_dose_curve_cfg0",
                    color=OK["vermillion"])
     fig_count_sweep()
+    # night validation suite (2026-11)
+    fig_dose_curve(tag="_seedavg_zeroother", xlabel="number of videos switched to zeroother (k)",
+                   title="Dose curve (seed-avg baseline): stock → zeroother", out="fig_dose_curve_seedavg_zeroother")
+    fig_dose_curve(tag="_seedavg_cfg0", xlabel="number of videos switched to cfg_other=0 (k)",
+                   title="Dose curve (seed-avg baseline): stock → cfg0", out="fig_dose_curve_seedavg_cfg0",
+                   color=OK["vermillion"])
+    fig_power()
+    fig_model_x_other()
+    # latency figure is built by rdgg/figures/plot_latency.py (reads latency_curves.json) -> rdgg/latency.pdf
     # fig_metric_seed() and fig_pca_size() are retained above as code + their CSVs stay
     # as provenance for the full-data PCA default, but are NOT rendered into the paper
     # figure set (the PCA seed no longer affects the deterministic full-data basis).

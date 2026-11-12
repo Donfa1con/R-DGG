@@ -1,0 +1,4 @@
+model,peak_offset_ms,net_x1e4,ci_lo_x1e4,ci_hi_x1e4,p
+AVTR-1,-160,0.8603,0.4884,1.1711,0.0
+DyStream,-320,1.7018,1.0251,2.3419,0.0
+AvatarForcing,-600,0.4078,0.2107,0.5954,0.0

@@ -1,0 +1,16 @@
+column,group,net_x1e4,ci_lo_x1e4,ci_hi_x1e4,p
+GT,GT-control,0.535,0.1304,0.8858,0.0037
+GT×other,GT-control,0.0866,-0.1647,0.4043,0.2874
+AVTR-1 [unseeded],dyadic,0.6322,0.3112,0.8721,0.0003
+AVTR-1 [seed0],dyadic,0.5535,0.2403,0.8692,0.0
+AVTR-1 [seed1],dyadic,0.6349,0.2213,1.0557,0.0025
+DyStream [unseeded],dyadic,0.0838,-0.4006,0.7238,0.3397
+DyStream [seed0],dyadic,0.5794,0.1909,0.9146,0.0021
+DyStream [seed1],dyadic,0.9133,0.5283,1.2286,0.0
+AvatarForcing [unseeded],dyadic,0.0553,-0.2428,0.3021,0.3547
+AvatarForcing [seed0],dyadic,-0.0387,-0.3032,0.2243,0.6344
+AvatarForcing [seed1],dyadic,-0.1698,-0.4085,0.1615,0.8278
+SoulX Lite,non-dyad,0.1218,-0.1779,0.4039,0.1987
+SoulX Pro,non-dyad,0.0723,-0.1289,0.2772,0.2319
+Ditto,non-dyad,0.0491,-0.2923,0.3718,0.3835
+FLOAT,non-dyad,0.1128,-0.158,0.407,0.2149

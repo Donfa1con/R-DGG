@@ -34,7 +34,11 @@ JSON = ["common4way", "seed_variance", "dose_curve", "dose_curve_cfg0", "cfgothe
         "hubert_ablation__l9", "hubert_ablation__l10", "hubert_ablation__l11",
         "hubert_ablation__l12",
         "pca_dim_ablation__verify64", "pca_dim_ablation__ka32", "pca_dim_ablation__ka96",
-        "pca_dim_ablation__kmv16", "pca_dim_ablation__kmv64", "pca_dim_ablation__l12_ka96"]
+        "pca_dim_ablation__kmv16", "pca_dim_ablation__kmv64", "pca_dim_ablation__l12_ka96",
+        # night validation suite (2026-11)
+        "main_contrast", "power_analysis", "seed_variance_dyadic", "model_x_other",
+        "repr_ablation__emoca", "repr_ablation__lp",
+        "dose_curve_seedavg__zeroother", "dose_curve_seedavg__cfg0", "latency_curve"]
 
 
 def load(name):
@@ -460,19 +464,142 @@ def build_pca_size_sweep():
 
 
 def build_count_sweep():
+    """REWRITTEN count_sweep: per-column dim1 (timeshift N) + dim2 (bootstrap B) + slopes."""
     d = load("count_sweep")
     rows = []
-    for col, rr in d["dim1_timeshift_count"]["per_column"].items():
-        for r in rr:
-            rows.append([col, r["N"], r["sd_floor_net_empirical"], r["sd_theory_1_over_sqrtN"]])
+    for col, c in d["columns"].items():
+        for r in c["dim1_timeshift"]["per_N"]:
+            rows.append([col, r["N"], r["sd_floor_net_empirical"], r["sd_theory_1_over_sqrtN"],
+                         r["sd_theory_finite_pool"], c["dim1_timeshift"]["loglog_slope_Nle100"]])
     write_csv("count_sweep_timeshift.csv",
-              ["column", "n_nulls", "sd_net_empirical_x1e4", "sd_theory_1_over_sqrtN_x1e4"], rows)
+              ["column", "n_nulls", "sd_net_empirical_x1e4", "sd_theory_1_over_sqrtN_x1e4",
+               "sd_theory_finite_pool_x1e4", "loglog_slope_Nle100"], rows)
     rows = []
-    for col, rr in d["dim2_bootstrap_count"]["per_column"].items():
-        for r in rr:
-            rows.append([col, r["B"], r["sd_ci_lo"], r["sd_ci_hi"], r.get("point_sd", 0)])
+    for col, c in d["columns"].items():
+        for r in c["dim2_bootstrap"]["per_B"]:
+            rows.append([col, r["B"], r["sd_ci_lo"], r["sd_ci_hi"], r.get("point_sd", 0),
+                         c["dim2_bootstrap"]["loglog_slope_lo"], c["dim2_bootstrap"]["loglog_slope_hi"]])
     write_csv("count_sweep_bootstrap.csv",
-              ["column", "n_bootstrap", "sd_ci_lo_x1e4", "sd_ci_hi_x1e4", "point_sd_x1e4"], rows)
+              ["column", "n_bootstrap", "sd_ci_lo_x1e4", "sd_ci_hi_x1e4", "point_sd_x1e4",
+               "loglog_slope_lo", "loglog_slope_hi"], rows)
+
+
+# ---- night validation suite (2026-11) -------------------------------------
+def build_main_contrast():
+    d = load("main_contrast")
+    c = d["contrast"]
+    write_csv("main_contrast.csv",
+              ["quantity", "value_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p_one_sided", "n_identities"],
+              [["dyadic_minus_talkinghead", c["point"], c["lo"], c["hi"], c["p_one_sided"], d["n_identities"]],
+               ["mean_dyadic", d["mean_dyadic_net"], "", "", "", ""],
+               ["mean_talking_head", d["mean_talking_head_net"], "", "", "", ""]])
+
+
+def build_power():
+    d = load("power_analysis")
+    write_csv("power_analysis.csv",
+              ["k_identities", "contrast_ci_width_x1e4", "contrast_ci_width_sd"]
+              + [f"pair_ci_width__{k}" for k in d["per_k"][0]["pair_ci_width_mean"]],
+              [[r["k"], r["contrast_ci_width_mean"], r.get("contrast_ci_width_sd", "")]
+               + [r["pair_ci_width_mean"][k] for k in r["pair_ci_width_mean"]] for r in d["per_k"]])
+    th = d["identities_for_contrast_width_THEORY_1oversqrtk"]
+    write_csv("power_extrapolation.csv", ["target_ci_width", "identities_needed_1oversqrtk"],
+              [[t, th[t]] for t in th])
+
+
+def build_seed_variance_dyadic():
+    d = load("seed_variance_dyadic")
+    rows = []
+    for m, v in d["per_model"].items():
+        ps = v["per_seed_net"]
+        rows.append([m, ps.get("unseeded", ""), ps.get("seed0", ""), ps.get("seed1", ""),
+                     v["mean_net"], v["sd_net_n3"], v["range_net"]])
+    write_csv("seed_variance_dyadic.csv",
+              ["model", "net_unseeded_x1e4", "net_seed0_x1e4", "net_seed1_x1e4",
+               "mean_net_x1e4", "sd_net_n3_x1e4", "range_net_x1e4"], rows)
+    rows = []
+    for m, v in d["per_model"].items():
+        for p in v["pairwise_seed_deltas"]:
+            rows.append([m, p["pair"], p["delta_net"], p["lo"], p["hi"], p["p_two_sided"]])
+    write_csv("seed_variance_dyadic_deltas.csv",
+              ["model", "pair", "delta_net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p_two_sided"], rows)
+
+
+def _column_rows(d):
+    """(label, group, net, lo, hi, p) rows from a columns-dict harness output."""
+    out = []
+    for lbl, c in d["columns"].items():
+        ci = c["ci_net"]
+        out.append([lbl, c.get("group", ""), c["net"], ci["lo"], ci["hi"], ci["p"]])
+    return out
+
+
+def build_model_x_other():
+    d = load("model_x_other")
+    write_csv("model_x_other.csv",
+              ["column", "group", "net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p"], _column_rows(d))
+    write_csv("model_x_other_seed_avg.csv",
+              ["model", "net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p"],
+              [[m, v["net"]["point"], v["net"]["lo"], v["net"]["hi"], v["net"]["p"]]
+               for m, v in d["seed_averaged_dyadic"].items()])
+
+
+def build_repr_ablation():
+    for rep in ["emoca", "lp"]:
+        d = load(f"repr_ablation__{rep}")
+        write_csv(f"repr_ablation_{rep}.csv",
+                  ["column", "group", "net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p"], _column_rows(d))
+        write_csv(f"repr_ablation_{rep}_seed_avg.csv",
+                  ["model", "net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p"],
+                  [[m, v["net"]["point"], v["net"]["lo"], v["net"]["hi"], v["net"]["p"]]
+                   for m, v in d["seed_averaged_dyadic"].items()])
+
+
+def build_dose_curve_seedavg():
+    for abl in ["zeroother", "cfg0"]:
+        d = load(f"dose_curve_seedavg__{abl}")
+        cf = d["closed_form_curve"]
+        write_csv(f"dose_curve_seedavg_{abl}_closedform.csv", ["k", "net_x1e4"],
+                  list(zip(cf["k"], cf["net"])))
+        write_csv(f"dose_curve_seedavg_{abl}_identity_ci.csv",
+                  ["k", "point_x1e4", "ci_lo_x1e4", "ci_hi_x1e4"],
+                  [[int(k), v["point"], v["lo"], v["hi"]] for k, v in d["identity_ci"].items()])
+
+
+def build_latency():
+    d = load("latency_curve")
+    # per-column curve (long form)
+    rows = []
+    for lbl, cur in d["curves"].items():
+        if cur is None:
+            continue
+        for ms, net in cur:
+            rows.append([lbl, ms, net])
+    write_csv("latency_curve.csv", ["column", "offset_ms", "net_x1e4"], rows)
+    # peaks
+    write_csv("latency_peaks.csv", ["column", "peak_offset_ms", "net_at_peak_x1e4", "net_at_0_x1e4"],
+              [[lbl, p["offset_ms"], p["net_at_peak"], p["net_at_0"]] for lbl, p in d["peaks"].items()])
+    # seed-avg dyadic peaks with CI
+    write_csv("latency_seed_avg_peaks.csv",
+              ["model", "peak_offset_ms", "net_x1e4", "ci_lo_x1e4", "ci_hi_x1e4", "p"],
+              [[m, v["peak"]["offset_ms"], v["peak"]["point"], v["peak"]["lo"], v["peak"]["hi"], v["peak"]["p"]]
+               for m, v in d["seed_averaged_dyadic"].items()])
+
+
+def build_classic_on_rdgg():
+    d = json.load(open(SRC / "classic_metrics_si184_table.json"))
+    shutil.copy2(SRC / "classic_metrics_si184_table.json", METRICS / "classic_metrics_si184_table.json")
+    rows = []
+    for src, variants in d.items():
+        for variant, models in variants.items():
+            for model, mr in models.items():
+                for key, val in mr.items():
+                    if val is None:
+                        continue
+                    metric, _, region = key.partition("_")
+                    rows.append([src, variant, model, metric, region, val])
+    write_csv("classic_on_rdgg_rows.csv",
+              ["feature_source", "variant", "model", "metric", "region", "value"], rows)
 
 
 def main():
@@ -493,6 +620,15 @@ def main():
     build_metric_seed_sweep()
     build_count_sweep()
     build_pca_size_sweep()
+    # night validation suite (2026-11)
+    build_main_contrast()
+    build_power()
+    build_seed_variance_dyadic()
+    build_model_x_other()
+    build_repr_ablation()
+    build_dose_curve_seedavg()
+    build_latency()
+    build_classic_on_rdgg()
     print("done.")
 
 

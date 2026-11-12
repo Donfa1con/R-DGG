@@ -1,0 +1,10 @@
+model,pair,delta_net_x1e4,ci_lo_x1e4,ci_hi_x1e4,p_two_sided
+AVTR-1,unseeded-seed0,0.1879,-0.2153,0.6122,0.3583
+AVTR-1,unseeded-seed1,-0.0819,-0.5222,0.3926,0.7398
+AVTR-1,seed0-seed1,-0.2698,-0.9226,0.3534,0.4046
+DyStream,unseeded-seed0,-0.3964,-0.8438,0.2495,0.221
+DyStream,unseeded-seed1,-0.1874,-0.5468,0.2809,0.4366
+DyStream,seed0-seed1,0.209,-0.215,0.5061,0.2964
+AvatarForcing,unseeded-seed0,0.0505,-0.2631,0.407,0.7852
+AvatarForcing,unseeded-seed1,0.2782,-0.1307,0.6964,0.1852
+AvatarForcing,seed0-seed1,0.2277,-0.1751,0.6157,0.2577

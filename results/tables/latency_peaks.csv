@@ -1,0 +1,16 @@
+column,peak_offset_ms,net_at_peak_x1e4,net_at_0_x1e4
+GT,-480,0.7845,0.5997
+GT×other,760,0.3615,0.0438
+AVTR-1 [unseeded],-160,1.3135,0.5628
+AVTR-1 [seed0],-520,0.7993,0.3757
+AVTR-1 [seed1],-960,0.9001,0.6453
+DyStream [unseeded],-240,1.5637,0.4836
+DyStream [seed0],-880,2.0828,0.8797
+DyStream [seed1],-600,1.9667,0.6716
+AvatarForcing [unseeded],-800,0.451,0.3327
+AvatarForcing [seed0],-240,0.5322,0.2818
+AvatarForcing [seed1],-440,0.4586,0.0547
+SoulX Lite,-120,0.7153,-0.1161
+SoulX Pro,-160,0.5433,0.1413
+Ditto,120,0.4766,0.0481
+FLOAT,-680,0.6056,-0.0309

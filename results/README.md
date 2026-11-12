@@ -72,6 +72,19 @@ The large / regenerable artifacts stay out of git (video + feature dirs under
 | `count_sweep_bootstrap.csv` | SD(CI bound) vs number of bootstrap resamples B |
 | `pca_size_stem.csv` / `pca_size_row.csv` | net SD + basis overlap vs PCA subsample SIZE (stems / rows) |
 
+### Night validation suite (2026-11)
+| csv | what |
+|---|---|
+| `main_contrast.csv` | pre-registered dyadic − talking-head contrast + mean components, one identity bootstrap (=+0.459, p=0.017) |
+| `power_analysis.csv` / `power_extrapolation.csv` | contrast + pairwise dyadic CI width vs k identities (4..13); 1/√k identities-needed (~34 for width 0.5) |
+| `seed_variance_dyadic.csv` / `seed_variance_dyadic_deltas.csv` | 3 dyadic × 3 seeds: per-seed nets, SD, range; pairwise seed deltas with CI (all n.s.; pooled SD 0.164) |
+| `model_x_other.csv` / `model_x_other_seed_avg.csv` | specificity control: each model's net under a scrambled (wrong) partner — dyadic drop toward 0 |
+| `repr_ablation_{emoca,lp}.csv` / `_seed_avg.csv` | R-DGG rebuilt on EMOCA-only / LP-only motion (GT>0 + contrast>0 in both) |
+| `dose_curve_seedavg_{zeroother,cfg0}_{closedform,identity_ci}.csv` | dose curves with a SEED-AVERAGED stock baseline (+0.47) |
+| `latency_curve.csv` / `latency_peaks.csv` / `latency_seed_avg_peaks.csv` | R-DGG net vs speaker-driver offset ±1 s; peaks + seed-avg peaks with CI |
+| `classic_on_rdgg_rows.csv` | classic metrics (rPCC/PFD/SID/Var/TLCC) × full/listening/rdgg variants on the EXACT R-DGG rows (classic does NOT separate dyadic from talking-head) |
+| `count_sweep_{timeshift,bootstrap}.csv` | REWRITTEN: all 15 columns + seed-avg dyadic, even log-grids, slopes ≈ −0.5 (defaults adequate) |
+
 ## Figures (`make_figures.py`)
 
 Paper set (rendered by `make_figures.py` `main()`): `fig_leaderboard` (bar + CI,
@@ -100,6 +113,12 @@ inflates the controls, wide drops GT and turns a talking-head control significan
 `fig_seed_variance` (3 stock seeds + mean±SD),
 `fig_dose_curve` (stock→zeroother, k=0..178), `fig_dose_curve_cfg0` (stock→cfg0,
 declines), `fig_count_sweep` (Monte-Carlo noise vs count, ∝ 1/√count).
+
+Night validation suite (2026-11): `fig_dose_curve_seedavg_zeroother` /
+`fig_dose_curve_seedavg_cfg0` (dose with the seed-averaged stock baseline), `fig_power`
+(contrast CI width vs number of identities), `fig_model_x_other` (aligned vs scrambled
+partner per dyadic model). The latency curve is `rdgg/latency.pdf`, built by
+`rdgg/figures/plot_latency.py` (reads `latency_curves.json`), NOT by `make_figures.py`.
 
 Provenance only (builders kept, CSVs kept, NOT rendered into the paper set):
 `fig_metric_seed` (metric-seed net SD per knob vs the generation-seed SD) and

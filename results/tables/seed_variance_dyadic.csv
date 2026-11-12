@@ -1,0 +1,4 @@
+model,net_unseeded_x1e4,net_seed0_x1e4,net_seed1_x1e4,mean_net_x1e4,sd_net_n3_x1e4,range_net_x1e4
+AVTR-1,0.5627,0.3748,0.6446,0.5273,0.1383,0.2698
+DyStream,0.4839,0.8804,0.6713,0.6785,0.1983,0.3964
+AvatarForcing,0.3334,0.2828,0.0552,0.2238,0.1482,0.2782
