@@ -1,0 +1,109 @@
+{
+  "metric": "R-DGG per-run (generation-seed) variance, 3 dyadic x 3 seeds (list item 8)",
+  "definition": "per model: 3 per-seed nets on one common mask, their SD(n=3) and range; 3 pairwise seed-delta nets each with an identity-cluster CI (two-sided p). No pairwise seed delta is expected significant (seed noise sits inside the identity CI); the pooled SD is the reproducibility nuisance (RESUME 11.1).",
+  "n_stems": 177,
+  "n_identities": 13,
+  "bootstrap": 20000,
+  "per_model": {
+    "AVTR-1": {
+      "per_seed_net": {
+        "unseeded": 0.5627,
+        "seed0": 0.3748,
+        "seed1": 0.6446
+      },
+      "mean_net": 0.5273,
+      "sd_net_n3": 0.1383,
+      "range_net": 0.2698,
+      "pairwise_seed_deltas": [
+        {
+          "pair": "unseeded-seed0",
+          "delta_net": 0.1879,
+          "lo": -0.2153,
+          "hi": 0.6122,
+          "p_two_sided": 0.3583
+        },
+        {
+          "pair": "unseeded-seed1",
+          "delta_net": -0.0819,
+          "lo": -0.5222,
+          "hi": 0.3926,
+          "p_two_sided": 0.7398
+        },
+        {
+          "pair": "seed0-seed1",
+          "delta_net": -0.2698,
+          "lo": -0.9226,
+          "hi": 0.3534,
+          "p_two_sided": 0.4046
+        }
+      ]
+    },
+    "DyStream": {
+      "per_seed_net": {
+        "unseeded": 0.4839,
+        "seed0": 0.8804,
+        "seed1": 0.6713
+      },
+      "mean_net": 0.6785,
+      "sd_net_n3": 0.1983,
+      "range_net": 0.3964,
+      "pairwise_seed_deltas": [
+        {
+          "pair": "unseeded-seed0",
+          "delta_net": -0.3964,
+          "lo": -0.8438,
+          "hi": 0.2495,
+          "p_two_sided": 0.221
+        },
+        {
+          "pair": "unseeded-seed1",
+          "delta_net": -0.1874,
+          "lo": -0.5468,
+          "hi": 0.2809,
+          "p_two_sided": 0.4366
+        },
+        {
+          "pair": "seed0-seed1",
+          "delta_net": 0.209,
+          "lo": -0.215,
+          "hi": 0.5061,
+          "p_two_sided": 0.2964
+        }
+      ]
+    },
+    "AvatarForcing": {
+      "per_seed_net": {
+        "unseeded": 0.3334,
+        "seed0": 0.2828,
+        "seed1": 0.0552
+      },
+      "mean_net": 0.2238,
+      "sd_net_n3": 0.1482,
+      "range_net": 0.2782,
+      "pairwise_seed_deltas": [
+        {
+          "pair": "unseeded-seed0",
+          "delta_net": 0.0505,
+          "lo": -0.2631,
+          "hi": 0.407,
+          "p_two_sided": 0.7852
+        },
+        {
+          "pair": "unseeded-seed1",
+          "delta_net": 0.2782,
+          "lo": -0.1307,
+          "hi": 0.6964,
+          "p_two_sided": 0.1852
+        },
+        {
+          "pair": "seed0-seed1",
+          "delta_net": 0.2277,
+          "lo": -0.1751,
+          "hi": 0.6157,
+          "p_two_sided": 0.2577
+        }
+      ]
+    }
+  },
+  "pooled_seed_sd_rms": 0.1637
+}
