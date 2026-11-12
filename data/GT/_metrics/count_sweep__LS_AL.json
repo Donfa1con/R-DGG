@@ -1,0 +1,1598 @@
+{
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "n_folds": 4,
+  "n_stems": 177,
+  "n_identities": 13,
+  "M_pool": 500,
+  "N_grid": [
+    10,
+    20,
+    50,
+    100,
+    200
+  ],
+  "B_grid": [
+    125,
+    500,
+    2000,
+    8000,
+    20000,
+    32000
+  ],
+  "K_subsets": 200,
+  "K_seeds": 100,
+  "default_N_timeshift": 100,
+  "default_bootstrap": 20000,
+  "expected_slope": -0.5,
+  "columns": {
+    "GT": {
+      "raw_x1e4": 3.951,
+      "pool_floor_x1e4": 3.3554,
+      "pool_null_gain_SD_x1e4": 0.1377,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.04309,
+            "sd_theory_1_over_sqrtN": 0.04355,
+            "sd_theory_finite_pool": 0.04315,
+            "mean_floor": 3.3574
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03214,
+            "sd_theory_1_over_sqrtN": 0.03079,
+            "sd_theory_finite_pool": 0.0302,
+            "mean_floor": 3.3559
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01732,
+            "sd_theory_1_over_sqrtN": 0.01947,
+            "sd_theory_finite_pool": 0.01849,
+            "mean_floor": 3.3544
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01321,
+            "sd_theory_1_over_sqrtN": 0.01377,
+            "sd_theory_finite_pool": 0.01233,
+            "mean_floor": 3.3561
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00763,
+            "sd_theory_1_over_sqrtN": 0.00974,
+            "sd_theory_finite_pool": 0.00755,
+            "mean_floor": 3.3556
+          }
+        ],
+        "loglog_slope_Nle100": -0.5355
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04916,
+            "sd_ci_hi": 0.05473,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02648,
+            "sd_ci_hi": 0.02726,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01397,
+            "sd_ci_hi": 0.01423,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00637,
+            "sd_ci_hi": 0.00592,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00414,
+            "sd_ci_hi": 0.00413,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00331,
+            "sd_ci_hi": 0.00337,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4935,
+        "loglog_slope_hi": -0.5118
+      }
+    },
+    "GT\u00d7other": {
+      "raw_x1e4": 3.5347,
+      "pool_floor_x1e4": 3.4625,
+      "pool_null_gain_SD_x1e4": 0.1673,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05203,
+            "sd_theory_1_over_sqrtN": 0.05292,
+            "sd_theory_finite_pool": 0.05244,
+            "mean_floor": 3.462
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03742,
+            "sd_theory_1_over_sqrtN": 0.03742,
+            "sd_theory_finite_pool": 0.0367,
+            "mean_floor": 3.4616
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02386,
+            "sd_theory_1_over_sqrtN": 0.02367,
+            "sd_theory_finite_pool": 0.02247,
+            "mean_floor": 3.4636
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01502,
+            "sd_theory_1_over_sqrtN": 0.01673,
+            "sd_theory_finite_pool": 0.01498,
+            "mean_floor": 3.4621
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00882,
+            "sd_theory_1_over_sqrtN": 0.01183,
+            "sd_theory_finite_pool": 0.00917,
+            "mean_floor": 3.4625
+          }
+        ],
+        "loglog_slope_Nle100": -0.533
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04831,
+            "sd_ci_hi": 0.0589,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02069,
+            "sd_ci_hi": 0.03461,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01177,
+            "sd_ci_hi": 0.01774,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00551,
+            "sd_ci_hi": 0.00863,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.0032,
+            "sd_ci_hi": 0.00512,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.0028,
+            "sd_ci_hi": 0.00397,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.5139,
+        "loglog_slope_hi": -0.493
+      }
+    },
+    "AVTR-1 [unseeded]": {
+      "raw_x1e4": 3.9838,
+      "pool_floor_x1e4": 3.4231,
+      "pool_null_gain_SD_x1e4": 0.164,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05201,
+            "sd_theory_1_over_sqrtN": 0.05186,
+            "sd_theory_finite_pool": 0.05139,
+            "mean_floor": 3.4138
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03275,
+            "sd_theory_1_over_sqrtN": 0.03667,
+            "sd_theory_finite_pool": 0.03597,
+            "mean_floor": 3.4232
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02162,
+            "sd_theory_1_over_sqrtN": 0.02319,
+            "sd_theory_finite_pool": 0.02203,
+            "mean_floor": 3.42
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01563,
+            "sd_theory_1_over_sqrtN": 0.0164,
+            "sd_theory_finite_pool": 0.01468,
+            "mean_floor": 3.4224
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00957,
+            "sd_theory_1_over_sqrtN": 0.0116,
+            "sd_theory_finite_pool": 0.00899,
+            "mean_floor": 3.4236
+          }
+        ],
+        "loglog_slope_Nle100": -0.5127
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04741,
+            "sd_ci_hi": 0.04314,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02355,
+            "sd_ci_hi": 0.02422,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01211,
+            "sd_ci_hi": 0.01394,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00557,
+            "sd_ci_hi": 0.0063,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00325,
+            "sd_ci_hi": 0.00388,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00294,
+            "sd_ci_hi": 0.00321,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.5149,
+        "loglog_slope_hi": -0.4781
+      }
+    },
+    "AVTR-1 [seed0]": {
+      "raw_x1e4": 3.7714,
+      "pool_floor_x1e4": 3.4173,
+      "pool_null_gain_SD_x1e4": 0.1663,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05259,
+            "sd_theory_1_over_sqrtN": 0.05259,
+            "sd_theory_finite_pool": 0.05211,
+            "mean_floor": 3.4176
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03754,
+            "sd_theory_1_over_sqrtN": 0.03718,
+            "sd_theory_finite_pool": 0.03647,
+            "mean_floor": 3.4168
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02407,
+            "sd_theory_1_over_sqrtN": 0.02352,
+            "sd_theory_finite_pool": 0.02233,
+            "mean_floor": 3.4173
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01551,
+            "sd_theory_1_over_sqrtN": 0.01663,
+            "sd_theory_finite_pool": 0.01489,
+            "mean_floor": 3.4165
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00901,
+            "sd_theory_1_over_sqrtN": 0.01176,
+            "sd_theory_finite_pool": 0.00912,
+            "mean_floor": 3.4173
+          }
+        ],
+        "loglog_slope_Nle100": -0.5241
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04585,
+            "sd_ci_hi": 0.05793,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02614,
+            "sd_ci_hi": 0.02665,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01336,
+            "sd_ci_hi": 0.01228,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00676,
+            "sd_ci_hi": 0.00586,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00455,
+            "sd_ci_hi": 0.0043,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00352,
+            "sd_ci_hi": 0.0035,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4661,
+        "loglog_slope_hi": -0.5086
+      }
+    },
+    "AVTR-1 [seed1]": {
+      "raw_x1e4": 4.0585,
+      "pool_floor_x1e4": 3.4241,
+      "pool_null_gain_SD_x1e4": 0.1648,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05312,
+            "sd_theory_1_over_sqrtN": 0.05213,
+            "sd_theory_finite_pool": 0.05165,
+            "mean_floor": 3.4162
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03433,
+            "sd_theory_1_over_sqrtN": 0.03686,
+            "sd_theory_finite_pool": 0.03615,
+            "mean_floor": 3.4217
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02259,
+            "sd_theory_1_over_sqrtN": 0.02331,
+            "sd_theory_finite_pool": 0.02214,
+            "mean_floor": 3.4248
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01501,
+            "sd_theory_1_over_sqrtN": 0.01648,
+            "sd_theory_finite_pool": 0.01476,
+            "mean_floor": 3.4228
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00831,
+            "sd_theory_1_over_sqrtN": 0.01166,
+            "sd_theory_finite_pool": 0.00904,
+            "mean_floor": 3.4241
+          }
+        ],
+        "loglog_slope_Nle100": -0.5363
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.05156,
+            "sd_ci_hi": 0.04843,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.03266,
+            "sd_ci_hi": 0.0257,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.0187,
+            "sd_ci_hi": 0.01206,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00882,
+            "sd_ci_hi": 0.00612,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00502,
+            "sd_ci_hi": 0.00424,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00416,
+            "sd_ci_hi": 0.0034,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4677,
+        "loglog_slope_hi": -0.4839
+      }
+    },
+    "DyStream [unseeded]": {
+      "raw_x1e4": 3.8342,
+      "pool_floor_x1e4": 3.3528,
+      "pool_null_gain_SD_x1e4": 0.1592,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05087,
+            "sd_theory_1_over_sqrtN": 0.05036,
+            "sd_theory_finite_pool": 0.0499,
+            "mean_floor": 3.3492
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.0363,
+            "sd_theory_1_over_sqrtN": 0.03561,
+            "sd_theory_finite_pool": 0.03492,
+            "mean_floor": 3.3502
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02135,
+            "sd_theory_1_over_sqrtN": 0.02252,
+            "sd_theory_finite_pool": 0.02139,
+            "mean_floor": 3.3534
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01473,
+            "sd_theory_1_over_sqrtN": 0.01592,
+            "sd_theory_finite_pool": 0.01426,
+            "mean_floor": 3.3537
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00889,
+            "sd_theory_1_over_sqrtN": 0.01126,
+            "sd_theory_finite_pool": 0.00873,
+            "mean_floor": 3.3529
+          }
+        ],
+        "loglog_slope_Nle100": -0.5439
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04335,
+            "sd_ci_hi": 0.06695,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02638,
+            "sd_ci_hi": 0.03251,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01239,
+            "sd_ci_hi": 0.01665,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00618,
+            "sd_ci_hi": 0.00839,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00418,
+            "sd_ci_hi": 0.00569,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00298,
+            "sd_ci_hi": 0.00427,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4856,
+        "loglog_slope_hi": -0.4897
+      }
+    },
+    "DyStream [seed0]": {
+      "raw_x1e4": 4.2,
+      "pool_floor_x1e4": 3.3137,
+      "pool_null_gain_SD_x1e4": 0.1467,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.04389,
+            "sd_theory_1_over_sqrtN": 0.04638,
+            "sd_theory_finite_pool": 0.04596,
+            "mean_floor": 3.3153
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03114,
+            "sd_theory_1_over_sqrtN": 0.03279,
+            "sd_theory_finite_pool": 0.03216,
+            "mean_floor": 3.3115
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01866,
+            "sd_theory_1_over_sqrtN": 0.02074,
+            "sd_theory_finite_pool": 0.0197,
+            "mean_floor": 3.3165
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01386,
+            "sd_theory_1_over_sqrtN": 0.01467,
+            "sd_theory_finite_pool": 0.01313,
+            "mean_floor": 3.3141
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00811,
+            "sd_theory_1_over_sqrtN": 0.01037,
+            "sd_theory_finite_pool": 0.00804,
+            "mean_floor": 3.3131
+          }
+        ],
+        "loglog_slope_Nle100": -0.5086
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.08586,
+            "sd_ci_hi": 0.07534,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.04232,
+            "sd_ci_hi": 0.03527,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.02405,
+            "sd_ci_hi": 0.0174,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.01163,
+            "sd_ci_hi": 0.00883,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00642,
+            "sd_ci_hi": 0.00587,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00498,
+            "sd_ci_hi": 0.00481,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.5094,
+        "loglog_slope_hi": -0.4955
+      }
+    },
+    "DyStream [seed1]": {
+      "raw_x1e4": 3.9698,
+      "pool_floor_x1e4": 3.3183,
+      "pool_null_gain_SD_x1e4": 0.1492,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.04982,
+            "sd_theory_1_over_sqrtN": 0.04717,
+            "sd_theory_finite_pool": 0.04674,
+            "mean_floor": 3.3192
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03137,
+            "sd_theory_1_over_sqrtN": 0.03335,
+            "sd_theory_finite_pool": 0.03271,
+            "mean_floor": 3.3139
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02009,
+            "sd_theory_1_over_sqrtN": 0.02109,
+            "sd_theory_finite_pool": 0.02003,
+            "mean_floor": 3.3215
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01352,
+            "sd_theory_1_over_sqrtN": 0.01492,
+            "sd_theory_finite_pool": 0.01335,
+            "mean_floor": 3.318
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.0085,
+            "sd_theory_1_over_sqrtN": 0.01055,
+            "sd_theory_finite_pool": 0.00818,
+            "mean_floor": 3.3183
+          }
+        ],
+        "loglog_slope_Nle100": -0.5555
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.05708,
+            "sd_ci_hi": 0.05775,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02802,
+            "sd_ci_hi": 0.03687,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01618,
+            "sd_ci_hi": 0.01883,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00883,
+            "sd_ci_hi": 0.00743,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00425,
+            "sd_ci_hi": 0.005,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00358,
+            "sd_ci_hi": 0.00428,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4961,
+        "loglog_slope_hi": -0.4968
+      }
+    },
+    "AvatarForcing [unseeded]": {
+      "raw_x1e4": 3.7599,
+      "pool_floor_x1e4": 3.4433,
+      "pool_null_gain_SD_x1e4": 0.1277,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.03976,
+            "sd_theory_1_over_sqrtN": 0.04037,
+            "sd_theory_finite_pool": 0.04,
+            "mean_floor": 3.4466
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.02741,
+            "sd_theory_1_over_sqrtN": 0.02854,
+            "sd_theory_finite_pool": 0.028,
+            "mean_floor": 3.4425
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01842,
+            "sd_theory_1_over_sqrtN": 0.01805,
+            "sd_theory_finite_pool": 0.01714,
+            "mean_floor": 3.4423
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01183,
+            "sd_theory_1_over_sqrtN": 0.01277,
+            "sd_theory_finite_pool": 0.01143,
+            "mean_floor": 3.4436
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00691,
+            "sd_theory_1_over_sqrtN": 0.00903,
+            "sd_theory_finite_pool": 0.007,
+            "mean_floor": 3.4435
+          }
+        ],
+        "loglog_slope_Nle100": -0.5138
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.03993,
+            "sd_ci_hi": 0.02922,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02181,
+            "sd_ci_hi": 0.0149,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01143,
+            "sd_ci_hi": 0.00719,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00531,
+            "sd_ci_hi": 0.00334,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00374,
+            "sd_ci_hi": 0.00209,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00304,
+            "sd_ci_hi": 0.00171,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4725,
+        "loglog_slope_hi": -0.5198
+      }
+    },
+    "AvatarForcing [seed0]": {
+      "raw_x1e4": 3.664,
+      "pool_floor_x1e4": 3.4032,
+      "pool_null_gain_SD_x1e4": 0.1172,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.03467,
+            "sd_theory_1_over_sqrtN": 0.03706,
+            "sd_theory_finite_pool": 0.03673,
+            "mean_floor": 3.4052
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.027,
+            "sd_theory_1_over_sqrtN": 0.02621,
+            "sd_theory_finite_pool": 0.0257,
+            "mean_floor": 3.4003
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01624,
+            "sd_theory_1_over_sqrtN": 0.01658,
+            "sd_theory_finite_pool": 0.01574,
+            "mean_floor": 3.4053
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01018,
+            "sd_theory_1_over_sqrtN": 0.01172,
+            "sd_theory_finite_pool": 0.01049,
+            "mean_floor": 3.4029
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00692,
+            "sd_theory_1_over_sqrtN": 0.00829,
+            "sd_theory_finite_pool": 0.00643,
+            "mean_floor": 3.4035
+          }
+        ],
+        "loglog_slope_Nle100": -0.5353
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04835,
+            "sd_ci_hi": 0.03365,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02351,
+            "sd_ci_hi": 0.01688,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01168,
+            "sd_ci_hi": 0.00903,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00632,
+            "sd_ci_hi": 0.00503,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00398,
+            "sd_ci_hi": 0.00299,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00305,
+            "sd_ci_hi": 0.00247,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4912,
+        "loglog_slope_hi": -0.4681
+      }
+    },
+    "AvatarForcing [seed1]": {
+      "raw_x1e4": 3.4725,
+      "pool_floor_x1e4": 3.448,
+      "pool_null_gain_SD_x1e4": 0.1253,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.03937,
+            "sd_theory_1_over_sqrtN": 0.03964,
+            "sd_theory_finite_pool": 0.03928,
+            "mean_floor": 3.4483
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.02834,
+            "sd_theory_1_over_sqrtN": 0.02803,
+            "sd_theory_finite_pool": 0.02749,
+            "mean_floor": 3.4483
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01645,
+            "sd_theory_1_over_sqrtN": 0.01773,
+            "sd_theory_finite_pool": 0.01683,
+            "mean_floor": 3.4476
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01079,
+            "sd_theory_1_over_sqrtN": 0.01253,
+            "sd_theory_finite_pool": 0.01122,
+            "mean_floor": 3.4487
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00711,
+            "sd_theory_1_over_sqrtN": 0.00886,
+            "sd_theory_finite_pool": 0.00687,
+            "mean_floor": 3.4475
+          }
+        ],
+        "loglog_slope_Nle100": -0.5665
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.03838,
+            "sd_ci_hi": 0.03399,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02276,
+            "sd_ci_hi": 0.01843,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01122,
+            "sd_ci_hi": 0.00857,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00511,
+            "sd_ci_hi": 0.00384,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00307,
+            "sd_ci_hi": 0.00267,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00222,
+            "sd_ci_hi": 0.00226,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.5195,
+        "loglog_slope_hi": -0.5048
+      }
+    },
+    "SoulX Lite": {
+      "raw_x1e4": 3.2567,
+      "pool_floor_x1e4": 3.3671,
+      "pool_null_gain_SD_x1e4": 0.1625,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.05209,
+            "sd_theory_1_over_sqrtN": 0.05139,
+            "sd_theory_finite_pool": 0.05092,
+            "mean_floor": 3.3703
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03621,
+            "sd_theory_1_over_sqrtN": 0.03634,
+            "sd_theory_finite_pool": 0.03564,
+            "mean_floor": 3.3697
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02303,
+            "sd_theory_1_over_sqrtN": 0.02298,
+            "sd_theory_finite_pool": 0.02182,
+            "mean_floor": 3.3668
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01528,
+            "sd_theory_1_over_sqrtN": 0.01625,
+            "sd_theory_finite_pool": 0.01455,
+            "mean_floor": 3.367
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00867,
+            "sd_theory_1_over_sqrtN": 0.01149,
+            "sd_theory_finite_pool": 0.00891,
+            "mean_floor": 3.3679
+          }
+        ],
+        "loglog_slope_Nle100": -0.5273
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.03142,
+            "sd_ci_hi": 0.05354,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.01668,
+            "sd_ci_hi": 0.02757,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.00888,
+            "sd_ci_hi": 0.01254,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00372,
+            "sd_ci_hi": 0.00742,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00236,
+            "sd_ci_hi": 0.00444,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00206,
+            "sd_ci_hi": 0.00353,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.5081,
+        "loglog_slope_hi": -0.4875
+      }
+    },
+    "SoulX Pro": {
+      "raw_x1e4": 3.4824,
+      "pool_floor_x1e4": 3.3611,
+      "pool_null_gain_SD_x1e4": 0.1832,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.06086,
+            "sd_theory_1_over_sqrtN": 0.05794,
+            "sd_theory_finite_pool": 0.05742,
+            "mean_floor": 3.361
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.04011,
+            "sd_theory_1_over_sqrtN": 0.04097,
+            "sd_theory_finite_pool": 0.04019,
+            "mean_floor": 3.3596
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02574,
+            "sd_theory_1_over_sqrtN": 0.02591,
+            "sd_theory_finite_pool": 0.02461,
+            "mean_floor": 3.3588
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01596,
+            "sd_theory_1_over_sqrtN": 0.01832,
+            "sd_theory_finite_pool": 0.01641,
+            "mean_floor": 3.3613
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00971,
+            "sd_theory_1_over_sqrtN": 0.01296,
+            "sd_theory_finite_pool": 0.01005,
+            "mean_floor": 3.3617
+          }
+        ],
+        "loglog_slope_Nle100": -0.568
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.0433,
+            "sd_ci_hi": 0.04839,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02103,
+            "sd_ci_hi": 0.02599,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01126,
+            "sd_ci_hi": 0.01371,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00626,
+            "sd_ci_hi": 0.00665,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00389,
+            "sd_ci_hi": 0.0047,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00293,
+            "sd_ci_hi": 0.00352,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4739,
+        "loglog_slope_hi": -0.4713
+      }
+    },
+    "Ditto": {
+      "raw_x1e4": 3.3781,
+      "pool_floor_x1e4": 3.3325,
+      "pool_null_gain_SD_x1e4": 0.1434,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.04307,
+            "sd_theory_1_over_sqrtN": 0.04533,
+            "sd_theory_finite_pool": 0.04492,
+            "mean_floor": 3.3266
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.02885,
+            "sd_theory_1_over_sqrtN": 0.03206,
+            "sd_theory_finite_pool": 0.03144,
+            "mean_floor": 3.3304
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01882,
+            "sd_theory_1_over_sqrtN": 0.02027,
+            "sd_theory_finite_pool": 0.01925,
+            "mean_floor": 3.3319
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01309,
+            "sd_theory_1_over_sqrtN": 0.01434,
+            "sd_theory_finite_pool": 0.01284,
+            "mean_floor": 3.3336
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00806,
+            "sd_theory_1_over_sqrtN": 0.01014,
+            "sd_theory_finite_pool": 0.00786,
+            "mean_floor": 3.3325
+          }
+        ],
+        "loglog_slope_Nle100": -0.5103
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.03052,
+            "sd_ci_hi": 0.02551,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.01776,
+            "sd_ci_hi": 0.01418,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.00877,
+            "sd_ci_hi": 0.00706,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.0044,
+            "sd_ci_hi": 0.00367,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00292,
+            "sd_ci_hi": 0.00254,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00218,
+            "sd_ci_hi": 0.0019,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4786,
+        "loglog_slope_hi": -0.4672
+      }
+    },
+    "FLOAT": {
+      "raw_x1e4": 3.3655,
+      "pool_floor_x1e4": 3.384,
+      "pool_null_gain_SD_x1e4": 0.1638,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.04366,
+            "sd_theory_1_over_sqrtN": 0.05179,
+            "sd_theory_finite_pool": 0.05132,
+            "mean_floor": 3.3888
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.03247,
+            "sd_theory_1_over_sqrtN": 0.03662,
+            "sd_theory_finite_pool": 0.03591,
+            "mean_floor": 3.3843
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.02238,
+            "sd_theory_1_over_sqrtN": 0.02316,
+            "sd_theory_finite_pool": 0.02199,
+            "mean_floor": 3.3815
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01507,
+            "sd_theory_1_over_sqrtN": 0.01638,
+            "sd_theory_finite_pool": 0.01466,
+            "mean_floor": 3.3847
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00873,
+            "sd_theory_1_over_sqrtN": 0.01158,
+            "sd_theory_finite_pool": 0.00898,
+            "mean_floor": 3.3826
+          }
+        ],
+        "loglog_slope_Nle100": -0.4543
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04615,
+            "sd_ci_hi": 0.04251,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02257,
+            "sd_ci_hi": 0.02286,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01148,
+            "sd_ci_hi": 0.01152,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00575,
+            "sd_ci_hi": 0.00612,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00365,
+            "sd_ci_hi": 0.00403,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00298,
+            "sd_ci_hi": 0.00327,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4951,
+        "loglog_slope_hi": -0.465
+      }
+    },
+    "AVTR-1 [seed-avg]": {
+      "raw_x1e4": 3.9381,
+      "pool_floor_x1e4": 3.4215,
+      "pool_null_gain_SD_x1e4": 0.0993,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.02939,
+            "sd_theory_1_over_sqrtN": 0.03139,
+            "sd_theory_finite_pool": 0.03111,
+            "mean_floor": 3.4159
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.02067,
+            "sd_theory_1_over_sqrtN": 0.0222,
+            "sd_theory_finite_pool": 0.02177,
+            "mean_floor": 3.4205
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01228,
+            "sd_theory_1_over_sqrtN": 0.01404,
+            "sd_theory_finite_pool": 0.01333,
+            "mean_floor": 3.4207
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01005,
+            "sd_theory_1_over_sqrtN": 0.00993,
+            "sd_theory_finite_pool": 0.00889,
+            "mean_floor": 3.4206
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.0056,
+            "sd_theory_1_over_sqrtN": 0.00702,
+            "sd_theory_finite_pool": 0.00544,
+            "mean_floor": 3.4217
+          }
+        ],
+        "loglog_slope_Nle100": -0.48
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.03552,
+            "sd_ci_hi": 0.02978,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02057,
+            "sd_ci_hi": 0.01615,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01054,
+            "sd_ci_hi": 0.00889,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00503,
+            "sd_ci_hi": 0.00413,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00287,
+            "sd_ci_hi": 0.00271,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.0025,
+            "sd_ci_hi": 0.00202,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4947,
+        "loglog_slope_hi": -0.4849
+      }
+    },
+    "DyStream [seed-avg]": {
+      "raw_x1e4": 3.9849,
+      "pool_floor_x1e4": 3.3307,
+      "pool_null_gain_SD_x1e4": 0.1142,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.03751,
+            "sd_theory_1_over_sqrtN": 0.03612,
+            "sd_theory_finite_pool": 0.03579,
+            "mean_floor": 3.33
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.02485,
+            "sd_theory_1_over_sqrtN": 0.02554,
+            "sd_theory_finite_pool": 0.02505,
+            "mean_floor": 3.3276
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.01526,
+            "sd_theory_1_over_sqrtN": 0.01615,
+            "sd_theory_finite_pool": 0.01534,
+            "mean_floor": 3.3327
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.01067,
+            "sd_theory_1_over_sqrtN": 0.01142,
+            "sd_theory_finite_pool": 0.01023,
+            "mean_floor": 3.3311
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00622,
+            "sd_theory_1_over_sqrtN": 0.00808,
+            "sd_theory_finite_pool": 0.00626,
+            "mean_floor": 3.3305
+          }
+        ],
+        "loglog_slope_Nle100": -0.5441
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.04995,
+            "sd_ci_hi": 0.05963,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.02813,
+            "sd_ci_hi": 0.03597,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.01373,
+            "sd_ci_hi": 0.01656,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.00752,
+            "sd_ci_hi": 0.00766,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00421,
+            "sd_ci_hi": 0.00548,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.0031,
+            "sd_ci_hi": 0.00444,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4981,
+        "loglog_slope_hi": -0.4847
+      }
+    },
+    "AvatarForcing [seed-avg]": {
+      "raw_x1e4": 3.6338,
+      "pool_floor_x1e4": 3.4317,
+      "pool_null_gain_SD_x1e4": 0.0713,
+      "dim1_timeshift": {
+        "per_N": [
+          {
+            "N": 10,
+            "sd_floor_net_empirical": 0.0205,
+            "sd_theory_1_over_sqrtN": 0.02255,
+            "sd_theory_finite_pool": 0.02234,
+            "mean_floor": 3.4336
+          },
+          {
+            "N": 20,
+            "sd_floor_net_empirical": 0.01822,
+            "sd_theory_1_over_sqrtN": 0.01594,
+            "sd_theory_finite_pool": 0.01564,
+            "mean_floor": 3.4306
+          },
+          {
+            "N": 50,
+            "sd_floor_net_empirical": 0.00999,
+            "sd_theory_1_over_sqrtN": 0.01008,
+            "sd_theory_finite_pool": 0.00958,
+            "mean_floor": 3.4319
+          },
+          {
+            "N": 100,
+            "sd_floor_net_empirical": 0.00619,
+            "sd_theory_1_over_sqrtN": 0.00713,
+            "sd_theory_finite_pool": 0.00638,
+            "mean_floor": 3.4319
+          },
+          {
+            "N": 200,
+            "sd_floor_net_empirical": 0.00404,
+            "sd_theory_1_over_sqrtN": 0.00504,
+            "sd_theory_finite_pool": 0.00391,
+            "mean_floor": 3.4317
+          }
+        ],
+        "loglog_slope_Nle100": -0.5386
+      },
+      "dim2_bootstrap": {
+        "per_B": [
+          {
+            "B": 125,
+            "sd_ci_lo": 0.02845,
+            "sd_ci_hi": 0.0282,
+            "point_sd": 0.0
+          },
+          {
+            "B": 500,
+            "sd_ci_lo": 0.01348,
+            "sd_ci_hi": 0.01174,
+            "point_sd": 0.0
+          },
+          {
+            "B": 2000,
+            "sd_ci_lo": 0.00659,
+            "sd_ci_hi": 0.00682,
+            "point_sd": 0.0
+          },
+          {
+            "B": 8000,
+            "sd_ci_lo": 0.0036,
+            "sd_ci_hi": 0.00346,
+            "point_sd": 0.0
+          },
+          {
+            "B": 20000,
+            "sd_ci_lo": 0.00228,
+            "sd_ci_hi": 0.00218,
+            "point_sd": 0.0
+          },
+          {
+            "B": 32000,
+            "sd_ci_lo": 0.00192,
+            "sd_ci_hi": 0.00172,
+            "point_sd": 0.0
+          }
+        ],
+        "loglog_slope_lo": -0.4854,
+        "loglog_slope_hi": -0.4908
+      }
+    }
+  },
+  "note": "per-column convergence of the timeshift floor (N) and identity bootstrap (B). Default N=100 / B=20000 sit on the grids. Energies stashed to npz for offline re-aggregation (seed subsets etc)."
+}

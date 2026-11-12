@@ -1,0 +1,132 @@
+{
+  "metric": "R-DGG power analysis (plan task 11)",
+  "definition": "95% identity-bootstrap CI width of the main dyadic-vs-talking-head contrast and of the 3 pairwise dyadic differences, vs number of identity clusters k=4..13; mean over up to 120 random k-subsets of the 13 clusters, inner bootstrap B=4000",
+  "n_stems": 177,
+  "n_identities_full": 13,
+  "per_k": [
+    {
+      "k": 4,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 1.0287,
+      "contrast_ci_width_sd": 0.3647,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.5857,
+        "AVTR-1-AvatarForcing": 1.313,
+        "DyStream-AvatarForcing": 1.4456
+      }
+    },
+    {
+      "k": 5,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 1.078,
+      "contrast_ci_width_sd": 0.2981,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.4767,
+        "AVTR-1-AvatarForcing": 1.1585,
+        "DyStream-AvatarForcing": 1.2935
+      }
+    },
+    {
+      "k": 6,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 1.0175,
+      "contrast_ci_width_sd": 0.261,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.3763,
+        "AVTR-1-AvatarForcing": 1.0719,
+        "DyStream-AvatarForcing": 1.2572
+      }
+    },
+    {
+      "k": 7,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 0.9902,
+      "contrast_ci_width_sd": 0.1984,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.232,
+        "AVTR-1-AvatarForcing": 0.9605,
+        "DyStream-AvatarForcing": 1.2056
+      }
+    },
+    {
+      "k": 8,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 0.9264,
+      "contrast_ci_width_sd": 0.177,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.2251,
+        "AVTR-1-AvatarForcing": 0.9042,
+        "DyStream-AvatarForcing": 1.1996
+      }
+    },
+    {
+      "k": 9,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 0.9194,
+      "contrast_ci_width_sd": 0.1425,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.1937,
+        "AVTR-1-AvatarForcing": 0.8675,
+        "DyStream-AvatarForcing": 1.1884
+      }
+    },
+    {
+      "k": 10,
+      "n_subsets": 120,
+      "contrast_ci_width_mean": 0.8826,
+      "contrast_ci_width_sd": 0.1045,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.0961,
+        "AVTR-1-AvatarForcing": 0.7989,
+        "DyStream-AvatarForcing": 1.0964
+      }
+    },
+    {
+      "k": 11,
+      "n_subsets": 78,
+      "contrast_ci_width_mean": 0.849,
+      "contrast_ci_width_sd": 0.0809,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.0532,
+        "AVTR-1-AvatarForcing": 0.7689,
+        "DyStream-AvatarForcing": 1.0634
+      }
+    },
+    {
+      "k": 12,
+      "n_subsets": 13,
+      "contrast_ci_width_mean": 0.8194,
+      "contrast_ci_width_sd": 0.0536,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 1.0149,
+        "AVTR-1-AvatarForcing": 0.7367,
+        "DyStream-AvatarForcing": 1.0389
+      }
+    },
+    {
+      "k": 13,
+      "n_subsets": 1,
+      "contrast_ci_width_mean": 0.8026,
+      "contrast_ci_width_sd": 0.0,
+      "pair_ci_width_mean": {
+        "AVTR-1-DyStream": 0.977,
+        "AVTR-1-AvatarForcing": 0.7167,
+        "DyStream-AvatarForcing": 1.0056
+      }
+    }
+  ],
+  "contrast_width_loglog_slope": -0.2477,
+  "expected_slope": -0.5,
+  "contrast_width_at_full": 0.8026,
+  "identities_for_contrast_width_THEORY_1oversqrtk": {
+    "0.5": 33.5,
+    "0.4": 52.3,
+    "0.3": 93.0
+  },
+  "identities_for_contrast_width_empirical_fittedslope": {
+    "0.5": 87.9,
+    "0.4": 216.3,
+    "0.3": 691.0
+  },
+  "extrapolation_note": "CI width shrinks ~1/sqrt(n_identities) asymptotically. The in-range empirical slope is shallower (-0.25) because subsampling k<=13 from a FINITE 13-cluster population hits a finite-population ceiling near k=13; that regime does NOT govern extrapolation beyond 13. The THEORY_1oversqrtk row (anchored at k=13, width=0.803) is the standard power extrapolation and the one to quote; the empirical fitted-slope row is in-range descriptive only."
+}

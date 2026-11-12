@@ -1,0 +1,125 @@
+{
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "n_folds": 4,
+  "scoring_audio": "real GT hubert/vad (never zeroed) for ALL columns",
+  "columns": {
+    "seeded_stock": "AVTR-1_seeded (real audio, cfg_other=3, seed_per_video SEED_BASE=0)",
+    "zeroother": "AVTR-1_zeroother (waveform zeroed, same seeds)",
+    "cfg0": "AVTR-1_cfgother0 (real audio, cfg_other=0, same seeds)",
+    "unseeded_stock": "AVTR-1 (real audio, cfg_other=3, unseeded) -- cross-check only"
+  },
+  "note": "seeded_stock, zeroother, cfg0 share IDENTICAL per-video seeds (noise realization matched)",
+  "mask": "GT reactive & seeded & zero & cfg0 face_ok (paired-cell trick; identical frames per stem)",
+  "n_stems": 178,
+  "n_identities": 13,
+  "nrow_mismatch": 0,
+  "marginals": {
+    "seeded_stock": {
+      "g_a_m": 3.5426,
+      "g_shift": 3.1394,
+      "net": 0.4033,
+      "ci": {
+        "point": 0.4033,
+        "lo": 0.0488,
+        "hi": 0.7241,
+        "p": 0.0127,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9416
+    },
+    "zeroother": {
+      "g_a_m": 3.7044,
+      "g_shift": 3.2069,
+      "net": 0.4974,
+      "ci": {
+        "point": 0.4974,
+        "lo": -0.0088,
+        "hi": 0.9393,
+        "p": 0.0272,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9418
+    },
+    "cfg0": {
+      "g_a_m": 3.4172,
+      "g_shift": 3.1583,
+      "net": 0.2589,
+      "ci": {
+        "point": 0.2589,
+        "lo": -0.1987,
+        "hi": 0.7264,
+        "p": 0.1399,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9374
+    }
+  },
+  "unseeded_cross_check": {
+    "g_a_m": 3.7363,
+    "g_shift": 3.1725,
+    "net": 0.5638,
+    "ci": {
+      "point": 0.5638,
+      "lo": 0.163,
+      "hi": 0.9887,
+      "p": 0.0029,
+      "n_clusters": 13
+    },
+    "own_r2": 0.9424,
+    "n_stems": 178
+  },
+  "paired_deltas": {
+    "seeded_minus_cfg0": {
+      "delta": 0.144,
+      "lo": -0.275,
+      "hi": 0.563,
+      "p": 0.486,
+      "sig": false,
+      "ci_width": 0.838,
+      "prior_ci_width": 0.908,
+      "tightened": true,
+      "prior_delta": 0.307,
+      "prior_p": 0.159
+    },
+    "seeded_minus_zero": {
+      "delta": -0.094,
+      "lo": -0.604,
+      "hi": 0.572,
+      "p": 0.697,
+      "sig": false,
+      "ci_width": 1.176
+    },
+    "zero_minus_cfg0": {
+      "delta": 0.238,
+      "lo": -0.415,
+      "hi": 0.841,
+      "p": 0.438,
+      "sig": false,
+      "ci_width": 1.256,
+      "prior_ci_width": 1.255,
+      "tightened": false,
+      "prior_delta": 0.241,
+      "prior_p": 0.433
+    }
+  },
+  "prior_unseeded_deltas": {
+    "seeded_minus_cfg0": {
+      "delta": 0.307,
+      "lo": -0.114,
+      "hi": 0.794,
+      "p": 0.159
+    },
+    "zero_minus_cfg0": {
+      "delta": 0.241,
+      "lo": -0.412,
+      "hi": 0.843,
+      "p": 0.433
+    }
+  },
+  "reference_marginals": {
+    "GT": 0.695,
+    "non_dyad_floor": "~0 (FLOAT +0.03, Ditto 0.00, SoulX-L -0.21)"
+  }
+}

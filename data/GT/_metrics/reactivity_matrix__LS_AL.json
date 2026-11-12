@@ -1,0 +1,665 @@
+{
+ "systems": [
+  "GT",
+  "AVTR-1",
+  "SoulX Lite",
+  "SoulX Pro",
+  "Ditto",
+  "DyStream",
+  "FLOAT",
+  "AvatarForcing"
+ ],
+ "marginal": {
+  "GT": {
+   "point": 0.7037869128300437,
+   "lo": 0.28157884464218497,
+   "p50": 0.7020895890546088,
+   "hi": 1.1150118637144448,
+   "p": 0.0012,
+   "n_clusters": 13
+  },
+  "AVTR-1": {
+   "point": 0.44703163096338894,
+   "lo": 0.06373193543049269,
+   "p50": 0.4491641995482966,
+   "hi": 0.8524756623684926,
+   "p": 0.02,
+   "n_clusters": 13
+  },
+  "SoulX Lite": {
+   "point": -0.23788020915635932,
+   "lo": -0.5635806913783994,
+   "p50": -0.24959786995197028,
+   "hi": 0.18648427788216457,
+   "p": 0.241,
+   "n_clusters": 13
+  },
+  "SoulX Pro": {
+   "point": 0.07007195408504545,
+   "lo": -0.3623412557307076,
+   "p50": 0.06595479451852217,
+   "hi": 0.46724770662507153,
+   "p": 0.7513,
+   "n_clusters": 13
+  },
+  "Ditto": {
+   "point": -0.053075483091630155,
+   "lo": -0.2717436461810737,
+   "p50": -0.05118645579021259,
+   "hi": 0.1548259728779634,
+   "p": 0.6372,
+   "n_clusters": 13
+  },
+  "DyStream": {
+   "point": 0.50047216534123,
+   "lo": 0.07266772323001057,
+   "p50": 0.5022576663983095,
+   "hi": 1.0040242666363979,
+   "p": 0.0172,
+   "n_clusters": 13
+  },
+  "FLOAT": {
+   "point": -0.0096165203576084,
+   "lo": -0.32860289688059563,
+   "p50": -0.010682045743774415,
+   "hi": 0.3608431265512943,
+   "p": 0.9536,
+   "n_clusters": 13
+  },
+  "AvatarForcing": {
+   "point": 0.30106153116705525,
+   "lo": 0.05297518979111311,
+   "p50": 0.29811212242781215,
+   "hi": 0.5155233669377276,
+   "p": 0.0196,
+   "n_clusters": 13
+  }
+ },
+ "B": 20000,
+ "matrix": {
+  "GT": {
+   "GT": null,
+   "AVTR-1": {
+    "delta": 0.245,
+    "lo": -0.16,
+    "p50": 0.243,
+    "hi": 0.605,
+    "p": 0.216,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.938,
+    "lo": 0.415,
+    "p50": 0.942,
+    "hi": 1.383,
+    "p": 0.001,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": 0.615,
+    "lo": 0.028,
+    "p50": 0.609,
+    "hi": 1.267,
+    "p": 0.04,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": 0.733,
+    "lo": 0.281,
+    "p50": 0.731,
+    "hi": 1.167,
+    "p": 0.002,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": 0.225,
+    "lo": -0.373,
+    "p50": 0.227,
+    "hi": 0.711,
+    "p": 0.438,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": 0.718,
+    "lo": 0.109,
+    "p50": 0.723,
+    "hi": 1.23,
+    "p": 0.024,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": 0.383,
+    "lo": -0.13,
+    "p50": 0.381,
+    "hi": 0.936,
+    "p": 0.141,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "AVTR-1": {
+   "GT": {
+    "delta": -0.245,
+    "lo": -0.605,
+    "p50": -0.243,
+    "hi": 0.16,
+    "p": 0.216,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": null,
+   "SoulX Lite": {
+    "delta": 0.692,
+    "lo": 0.269,
+    "p50": 0.686,
+    "hi": 1.143,
+    "p": 0.001,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": 0.369,
+    "lo": -0.265,
+    "p50": 0.378,
+    "hi": 1.035,
+    "p": 0.242,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": 0.487,
+    "lo": 0.035,
+    "p50": 0.485,
+    "hi": 0.973,
+    "p": 0.035,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": -0.032,
+    "lo": -0.477,
+    "p50": -0.041,
+    "hi": 0.419,
+    "p": 0.849,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": 0.474,
+    "lo": -0.035,
+    "p50": 0.476,
+    "hi": 0.959,
+    "p": 0.066,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": 0.141,
+    "lo": -0.323,
+    "p50": 0.148,
+    "hi": 0.67,
+    "p": 0.538,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "SoulX Lite": {
+   "GT": {
+    "delta": -0.938,
+    "lo": -1.383,
+    "p50": -0.942,
+    "hi": -0.415,
+    "p": 0.001,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": -0.692,
+    "lo": -1.143,
+    "p50": -0.686,
+    "hi": -0.269,
+    "p": 0.001,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": null,
+   "SoulX Pro": {
+    "delta": -0.323,
+    "lo": -0.97,
+    "p50": -0.335,
+    "hi": 0.456,
+    "p": 0.394,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": -0.205,
+    "lo": -0.597,
+    "p50": -0.211,
+    "hi": 0.255,
+    "p": 0.348,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": -0.758,
+    "lo": -1.111,
+    "p50": -0.762,
+    "hi": -0.42,
+    "p": 0.0,
+    "sig": true,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": -0.218,
+    "lo": -0.655,
+    "p50": -0.227,
+    "hi": 0.245,
+    "p": 0.339,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": -0.554,
+    "lo": -0.94,
+    "p50": -0.557,
+    "hi": -0.065,
+    "p": 0.028,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "SoulX Pro": {
+   "GT": {
+    "delta": -0.615,
+    "lo": -1.267,
+    "p50": -0.609,
+    "hi": -0.028,
+    "p": 0.04,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": -0.369,
+    "lo": -1.035,
+    "p50": -0.378,
+    "hi": 0.265,
+    "p": 0.242,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.323,
+    "lo": -0.456,
+    "p50": 0.335,
+    "hi": 0.97,
+    "p": 0.394,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": null,
+   "Ditto": {
+    "delta": 0.12,
+    "lo": -0.373,
+    "p50": 0.112,
+    "hi": 0.596,
+    "p": 0.647,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": -0.388,
+    "lo": -1.289,
+    "p50": -0.397,
+    "hi": 0.387,
+    "p": 0.343,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": 0.104,
+    "lo": -0.422,
+    "p50": 0.097,
+    "hi": 0.565,
+    "p": 0.703,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": -0.234,
+    "lo": -0.786,
+    "p50": -0.238,
+    "hi": 0.337,
+    "p": 0.408,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "Ditto": {
+   "GT": {
+    "delta": -0.733,
+    "lo": -1.167,
+    "p50": -0.731,
+    "hi": -0.281,
+    "p": 0.002,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": -0.487,
+    "lo": -0.973,
+    "p50": -0.485,
+    "hi": -0.035,
+    "p": 0.035,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.205,
+    "lo": -0.255,
+    "p50": 0.211,
+    "hi": 0.597,
+    "p": 0.348,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": -0.12,
+    "lo": -0.596,
+    "p50": -0.112,
+    "hi": 0.373,
+    "p": 0.647,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": null,
+   "DyStream": {
+    "delta": -0.498,
+    "lo": -1.027,
+    "p50": -0.503,
+    "hi": -0.032,
+    "p": 0.034,
+    "sig": true,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": -0.014,
+    "lo": -0.458,
+    "p50": -0.009,
+    "hi": 0.359,
+    "p": 0.963,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": -0.35,
+    "lo": -0.615,
+    "p50": -0.349,
+    "hi": -0.017,
+    "p": 0.041,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "DyStream": {
+   "GT": {
+    "delta": -0.225,
+    "lo": -0.711,
+    "p50": -0.227,
+    "hi": 0.373,
+    "p": 0.438,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": 0.032,
+    "lo": -0.419,
+    "p50": 0.041,
+    "hi": 0.477,
+    "p": 0.849,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.758,
+    "lo": 0.42,
+    "p50": 0.762,
+    "hi": 1.111,
+    "p": 0.0,
+    "sig": true,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": 0.388,
+    "lo": -0.387,
+    "p50": 0.397,
+    "hi": 1.289,
+    "p": 0.343,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": 0.498,
+    "lo": 0.032,
+    "p50": 0.503,
+    "hi": 1.027,
+    "p": 0.034,
+    "sig": true,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "DyStream": null,
+   "FLOAT": {
+    "delta": 0.528,
+    "lo": -0.022,
+    "p50": 0.529,
+    "hi": 1.134,
+    "p": 0.062,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "AvatarForcing": {
+    "delta": 0.169,
+    "lo": -0.277,
+    "p50": 0.179,
+    "hi": 0.708,
+    "p": 0.471,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   }
+  },
+  "FLOAT": {
+   "GT": {
+    "delta": -0.718,
+    "lo": -1.23,
+    "p50": -0.723,
+    "hi": -0.109,
+    "p": 0.024,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": -0.474,
+    "lo": -0.959,
+    "p50": -0.476,
+    "hi": 0.035,
+    "p": 0.066,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.218,
+    "lo": -0.245,
+    "p50": 0.227,
+    "hi": 0.655,
+    "p": 0.339,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": -0.104,
+    "lo": -0.565,
+    "p50": -0.097,
+    "hi": 0.422,
+    "p": 0.703,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": 0.014,
+    "lo": -0.359,
+    "p50": 0.009,
+    "hi": 0.458,
+    "p": 0.963,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": -0.528,
+    "lo": -1.134,
+    "p50": -0.529,
+    "hi": 0.022,
+    "p": 0.062,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": null,
+   "AvatarForcing": {
+    "delta": -0.338,
+    "lo": -0.804,
+    "p50": -0.333,
+    "hi": 0.216,
+    "p": 0.218,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   }
+  },
+  "AvatarForcing": {
+   "GT": {
+    "delta": -0.383,
+    "lo": -0.936,
+    "p50": -0.381,
+    "hi": 0.13,
+    "p": 0.141,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AVTR-1": {
+    "delta": -0.141,
+    "lo": -0.67,
+    "p50": -0.148,
+    "hi": 0.323,
+    "p": 0.538,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Lite": {
+    "delta": 0.554,
+    "lo": 0.065,
+    "p50": 0.557,
+    "hi": 0.94,
+    "p": 0.028,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "SoulX Pro": {
+    "delta": 0.234,
+    "lo": -0.337,
+    "p50": 0.238,
+    "hi": 0.786,
+    "p": 0.408,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "Ditto": {
+    "delta": 0.35,
+    "lo": 0.017,
+    "p50": 0.349,
+    "hi": 0.615,
+    "p": 0.041,
+    "sig": true,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "DyStream": {
+    "delta": -0.169,
+    "lo": -0.708,
+    "p50": -0.179,
+    "hi": 0.277,
+    "p": 0.471,
+    "sig": false,
+    "n_listeners": 177,
+    "n_clusters": 13
+   },
+   "FLOAT": {
+    "delta": 0.338,
+    "lo": -0.216,
+    "p50": 0.333,
+    "hi": 0.804,
+    "p": 0.218,
+    "sig": false,
+    "n_listeners": 178,
+    "n_clusters": 13
+   },
+   "AvatarForcing": null
+  }
+ }
+}

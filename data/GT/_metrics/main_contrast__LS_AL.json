@@ -1,0 +1,27 @@
+{
+  "metric": "R-DGG main pre-registered contrast (plan task 4)",
+  "definition": "C = mean net over 3 dyadic (seed-averaged) - mean net over 4 talking-head; ONE identity-cluster bootstrap, all systems share the resampled clusters; one-sided p = P(draw <= 0); NO multiplicity correction (separate systems descriptive)",
+  "n_stems": 177,
+  "n_identities": 13,
+  "bootstrap": 20000,
+  "dyadic": [
+    "AVTR-1",
+    "DyStream",
+    "AvatarForcing"
+  ],
+  "talking_head": [
+    "SoulX Lite",
+    "SoulX Pro",
+    "Ditto",
+    "FLOAT"
+  ],
+  "mean_dyadic_net": 0.4707,
+  "mean_talking_head_net": 0.0117,
+  "contrast": {
+    "point": 0.459,
+    "lo": 0.0332,
+    "p50": 0.4614,
+    "hi": 0.8326,
+    "p_one_sided": 0.0165
+  }
+}

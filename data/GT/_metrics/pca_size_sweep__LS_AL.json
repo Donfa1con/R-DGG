@@ -1,0 +1,219 @@
+{
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "n_folds": 4,
+  "n_speakers_motion": 184,
+  "columns": [
+    "GT",
+    "AVTR-1_seeded (base0 stock)",
+    "AVTR-1_zeroother"
+  ],
+  "note": "overlap is vs the FULL-set (deterministic) basis; net_SD is across K seeds at that size",
+  "default_metric_seed_net_SD_ref": {
+    "GT": 0.0534,
+    "seeded": 0.0775,
+    "zero": 0.0634
+  },
+  "generation_seed_SD_for_comparison": 0.111,
+  "dimA_stem_subsample_size": {
+    "rows_fixed": 40000,
+    "per_size": [
+      {
+        "size": 30,
+        "label": "n=30",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.06696,
+          "seeded": 0.06749,
+          "zero": 0.03267
+        },
+        "net_mean": {
+          "GT": 0.6838,
+          "seeded": 0.322,
+          "zero": 0.4957
+        },
+        "aud_overlap_mean": 0.92634,
+        "mot_overlap_mean": 0.92649,
+        "aud_max_angle_mean": 79.799,
+        "mot_max_angle_mean": 65.31
+      },
+      {
+        "size": 60,
+        "label": "n=60 (default)",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.08135,
+          "seeded": 0.06831,
+          "zero": 0.06719
+        },
+        "net_mean": {
+          "GT": 0.6792,
+          "seeded": 0.3596,
+          "zero": 0.4876
+        },
+        "aud_overlap_mean": 0.9442,
+        "mot_overlap_mean": 0.94218,
+        "aud_max_angle_mean": 74.426,
+        "mot_max_angle_mean": 66.421
+      },
+      {
+        "size": 90,
+        "label": "n=90",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.04934,
+          "seeded": 0.07361,
+          "zero": 0.00597
+        },
+        "net_mean": {
+          "GT": 0.7018,
+          "seeded": 0.3086,
+          "zero": 0.4623
+        },
+        "aud_overlap_mean": 0.95233,
+        "mot_overlap_mean": 0.95452,
+        "aud_max_angle_mean": 67.392,
+        "mot_max_angle_mean": 57.578
+      },
+      {
+        "size": 120,
+        "label": "n=120",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.04367,
+          "seeded": 0.04356,
+          "zero": 0.05017
+        },
+        "net_mean": {
+          "GT": 0.7156,
+          "seeded": 0.3073,
+          "zero": 0.4628
+        },
+        "aud_overlap_mean": 0.9558,
+        "mot_overlap_mean": 0.96496,
+        "aud_max_angle_mean": 65.248,
+        "mot_max_angle_mean": 51.15
+      },
+      {
+        "size": 184,
+        "label": "n=184 (ALL)",
+        "K": 1,
+        "net_SD": {
+          "GT": 0.0,
+          "seeded": 0.0,
+          "zero": 0.0
+        },
+        "net_mean": {
+          "GT": 0.7771,
+          "seeded": 0.3572,
+          "zero": 0.5258
+        },
+        "aud_overlap_mean": 1.0,
+        "mot_overlap_mean": 1.0,
+        "aud_max_angle_mean": 0.0,
+        "mot_max_angle_mean": 0.0
+      }
+    ]
+  },
+  "dimB_row_subsample_size": {
+    "stems_fixed": 60,
+    "per_size": [
+      {
+        "size": 10000,
+        "label": "r=10k",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.06165,
+          "seeded": 0.08115,
+          "zero": 0.10931
+        },
+        "net_mean": {
+          "GT": 0.6711,
+          "seeded": 0.3785,
+          "zero": 0.4359
+        },
+        "aud_overlap_mean": 0.93318,
+        "mot_overlap_mean": 0.96029,
+        "aud_max_angle_mean": 78.435,
+        "mot_max_angle_mean": 55.466
+      },
+      {
+        "size": 20000,
+        "label": "r=20k",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.04312,
+          "seeded": 0.07472,
+          "zero": 0.04797
+        },
+        "net_mean": {
+          "GT": 0.7006,
+          "seeded": 0.382,
+          "zero": 0.4766
+        },
+        "aud_overlap_mean": 0.95947,
+        "mot_overlap_mean": 0.96608,
+        "aud_max_angle_mean": 70.287,
+        "mot_max_angle_mean": 60.785
+      },
+      {
+        "size": 40000,
+        "label": "r=40k (default)",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.04973,
+          "seeded": 0.01884,
+          "zero": 0.06322
+        },
+        "net_mean": {
+          "GT": 0.6883,
+          "seeded": 0.3864,
+          "zero": 0.4879
+        },
+        "aud_overlap_mean": 0.9758,
+        "mot_overlap_mean": 0.98203,
+        "aud_max_angle_mean": 57.735,
+        "mot_max_angle_mean": 36.872
+      },
+      {
+        "size": 80000,
+        "label": "r=80k",
+        "K": 5,
+        "net_SD": {
+          "GT": 0.04209,
+          "seeded": 0.04223,
+          "zero": 0.03968
+        },
+        "net_mean": {
+          "GT": 0.6982,
+          "seeded": 0.4142,
+          "zero": 0.4946
+        },
+        "aud_overlap_mean": 0.98364,
+        "mot_overlap_mean": 0.99309,
+        "aud_max_angle_mean": 59.124,
+        "mot_max_angle_mean": 19.227
+      },
+      {
+        "size": 1000000000,
+        "label": "r=ALL",
+        "K": 1,
+        "net_SD": {
+          "GT": 0.0,
+          "seeded": 0.0,
+          "zero": 0.0
+        },
+        "net_mean": {
+          "GT": 0.7313,
+          "seeded": 0.3958,
+          "zero": 0.529
+        },
+        "aud_overlap_mean": 1.0,
+        "mot_overlap_mean": 1.0,
+        "aud_max_angle_mean": 0.0,
+        "mot_max_angle_mean": 0.0
+      }
+    ]
+  }
+}

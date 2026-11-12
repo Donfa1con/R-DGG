@@ -1,0 +1,99 @@
+{
+  "source": "combo",
+  "suffix": "emoca",
+  "split": "LS_AL",
+  "scoring_audio": "real GT hubert/vad (never zeroed) for ALL columns",
+  "columns": {
+    "stock": "AVTR-1 (unseeded)",
+    "zeroother": "AVTR-1_zeroother (waveform zeroed, seed-matched to cfg0)",
+    "cfg0": "AVTR-1_cfgother0 (real audio, cfg_other_audio=0, seed-matched to zeroother)"
+  },
+  "n_folds": 4,
+  "task1_cfg0_marginal": {
+    "mask": "GT reactive & cfg0 face_ok (own GT&model mask; RESULTS.md-comparable)",
+    "n_stems": 178,
+    "own_r2": 0.9374,
+    "g_a_m": 3.4164,
+    "g_shift": 3.1584,
+    "net": 0.258,
+    "ci": {
+      "point": 0.258,
+      "lo": -0.1992,
+      "hi": 0.7259,
+      "p": 0.1406,
+      "n_clusters": 13
+    }
+  },
+  "task2_shared_mask": {
+    "mask": "GT reactive & stock face_ok & zero face_ok & cfg0 face_ok",
+    "n_stems": 178,
+    "n_identities": 13,
+    "stock": {
+      "g_a_m": 3.7367,
+      "g_shift": 3.1726,
+      "net": 0.5642,
+      "ci": {
+        "point": 0.5642,
+        "lo": 0.1633,
+        "hi": 0.9893,
+        "p": 0.0029,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9424
+    },
+    "zeroother": {
+      "g_a_m": 3.705,
+      "g_shift": 3.2069,
+      "net": 0.4981,
+      "ci": {
+        "point": 0.4981,
+        "lo": -0.0077,
+        "hi": 0.9393,
+        "p": 0.027,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9418
+    },
+    "cfg0": {
+      "g_a_m": 3.4158,
+      "g_shift": 3.1584,
+      "net": 0.2575,
+      "ci": {
+        "point": 0.2575,
+        "lo": -0.2006,
+        "hi": 0.7246,
+        "p": 0.1417,
+        "n_clusters": 13
+      },
+      "own_r2": 0.9374
+    },
+    "delta_stock_minus_cfg0": {
+      "delta": 0.307,
+      "lo": -0.114,
+      "p50": 0.309,
+      "hi": 0.794,
+      "p": 0.159,
+      "sig": false,
+      "n_listeners": 178,
+      "n_clusters": 13
+    },
+    "delta_zero_minus_cfg0": {
+      "delta": 0.241,
+      "lo": -0.412,
+      "p50": 0.261,
+      "hi": 0.843,
+      "p": 0.433,
+      "sig": false,
+      "n_listeners": 178,
+      "n_clusters": 13
+    }
+  },
+  "results_md_reference_marginals": {
+    "GT": 0.695,
+    "AVTR-1": 0.565,
+    "zeroother": 0.497,
+    "FLOAT": 0.026,
+    "Ditto": 0.003,
+    "SoulX-Lite": -0.206
+  }
+}

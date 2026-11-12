@@ -1,0 +1,2 @@
+source,n_gt_frames,n_pred_frames,sid_overall,sid_rot,sid_exp,k_overall,k_rot,k_exp
+FLOAT,292514,292563,4.009755,3.133638,4.362868,40,20,40
