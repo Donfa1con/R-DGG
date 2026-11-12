@@ -23,7 +23,7 @@ used in the paper.
 | `make_tables.py` | rebuilds `metrics/` + `tables/` from `../data/GT/_metrics/*.json` and `../RESULTS.md` |
 | `make_figures.py` | rebuilds `figures/*.pdf` from `tables/*.csv` (matplotlib; edit to restyle) |
 | `figures/*.pdf` | rendered figures — regenerable from the CSVs |
-| `make_report.py` → `ablation_report.html` | one paper-style page: all 15 ablations/validations, each with a chart + table + verdict (self-contained, Chart.js; open in a browser) |
+| `make_report.py` | builds `ablation_report.html` on demand — one paper-style page of all 15 ablations/validations (chart + table + verdict each, self-contained Chart.js). The HTML itself is NOT committed; regenerate with `python3 results/make_report.py`, then publish as a Claude artifact. |
 
 The large / regenerable artifacts stay out of git (video + feature dirs under
 `data/`, and the `*.npz` under `data/GT/_metrics/`).
