@@ -828,6 +828,127 @@ One `shift_ablation.py` run scores the common mask = 15 columns (GT, GT×other s
 (see `scratchpad/rebuild_motion_cond_4ch.py`). Feature-level diagnostics (e.g. the participation
 ratio in §13.3) read the extracted caches directly.
 
+## 15. Latency curve — R-DGG net vs speaker-driver offset, ±1 s [done]
+
+The paper's "when does it react" result. `rdgg/latency_curve.py` (new standalone; imports the
+R-DGG blocks + shift_ablation/dose_curve helpers, edits no metric code) sweeps a constant
+speaker-driver offset δ over **OFFSETS = −25..+25 slots × 40 ms = ±1 s** (user decision; the
+shipped `figures/latency_sweep.py` swept only ±5 slots = ±200 ms), for all 15 columns on the one
+shared common mask, plus **seed-averaged** dyadic curves (per-stem energy average over the 3 seeds
+at each δ, then one identity bootstrap). `net(δ) = g_a_m(δ) − g_shift`, same fixed time-shift floor
+as the reported number, so **net(0) reproduces the committed shift_ablation net per column** — a
+built-in verify gate that PASSED on all 15 columns (max |Δ| ≤ 0.003). The offset is a circular
+wrap modulo speaker length in `gather_driver`, so the design-row set is identical at every δ (the
+tails are directly comparable) and large ±25 shifts are as safe as the time-shift-floor nulls.
+
+- **Mechanism safety (verified by subagent + the net(0) gate).** `gather_driver` applies the
+  offset as `(frames − row_off) % row_n` — a circular wrap, never out of bounds, so ±1 s is fine.
+
+- **Result (peaks, seed-averaged where dyadic).** Every dyadic and GT peak sits at a NEGATIVE
+  offset (the speaker driver shifted EARLIER maximises the gain — anticipatory / look-ahead):
+  - **GT +0.784 @ −480 ms** (aligned net@0 +0.600).
+  - **AVTR-1 (seed-avg) peak +0.860 @ −160 ms**, CI [+0.49, +1.17], p = 0.000.
+  - **DyStream (seed-avg) peak +1.702 @ −320 ms**, CI [+1.03, +2.34], p = 0.000.
+  - **AvatarForcing (seed-avg) peak +0.408 @ −600 ms**, CI [+0.21, +0.60], p = 0.000.
+  - Surrogate (GT×other): essentially flat, noisy peak +0.361 @ +760 ms (net@0 +0.044) — no true
+    link, so no coherent peak. Talking-heads: small shallow peaks, net@0 ~0.
+
+- **Single-seed scatter → seed-avg is load-bearing.** The 3 AVTR-1 seeds peak at −160 / −520 /
+  −960 ms individually; DyStream seeds at −240 / −880 / −600 ms. A single-run peak is a seed
+  lottery; only the seed-averaged curve gives a stable peak. (This is the latency analogue of the
+  §11.1 single-run net noise.)
+
+- **OPEN QUESTIONS for the user (discuss before writing the paper claim).**
+  1. **GT peaks at −480 ms, NOT within ±80 ms** of zero (the xlsx pre-registration expected the GT
+     peak near 0). So the negative-offset peak is NOT merely a model look-ahead artefact — real
+     human listener motion also peaks at a negative speaker-driver offset. The R-DGG latency curve
+     has a systematic negative bias that needs an explanation (floor-correction interaction?
+     anticipatory co-adaptation? grid/lag indexing?). The user said the xlsx description is wrong,
+     so the ±80 ms prediction may already be discounted — but the GT −480 ms magnitude is worth a
+     look.
+  2. The absolute peak positions (−160…−600 ms) order the dyadic models but do not obviously map to
+     a known model look-ahead (AVTR-1's 200 ms). Interpret cautiously.
+
+- **Outputs.** `data/GT/_metrics/latency_curve__LS_AL.{json,npz}` (per-column curves + per-δ
+  energies for offline re-aggregation), `rdgg/figures/latency_curves.json`, `rdgg/latency.{png,pdf}`
+  (9 headline curves: GT, surrogate, 3 seed-avg dyadic, 4 talking-head; the 9 per-seed dyadic
+  curves are kept in the json for diagnostics).
+
+## 16. Night validation suite (2026-11-11→12) [done unless noted]
+
+Standalone harnesses, import-only, no operating-point change. All numbers on the common 15-column
+mask (177–178 stems, 13 identities) unless stated. Offline items read the committed `shift_ablation`
+energies; GPU items re-capture. For the user to discuss in the morning: the latency §15 open
+questions, and the DyStream specificity note (§16.4).
+
+### 16.1 Main pre-registered contrast (plan task 4) [done]
+`scratchpad/offline_main_test.py` → `main_contrast__LS_AL.json`. ONE contrast = mean net over the 3
+dyadic (seed-averaged) − mean net over the 4 talking-head, one identity bootstrap, shared clusters,
+NO multiplicity correction (user decision). **Contrast = +0.459, CI [0.033, 0.833], one-sided
+p = 0.0165** — the interval EXCLUDES 0, so the pre-registered test PASSES: R-DGG separates dyadic
+from talking-head even though single systems are underpowered. Self-verify reproduced every
+committed seed-avg / TH net to |Δ| = 0.000.
+
+### 16.2 Power analysis (plan task 11) [done]
+`scratchpad/offline_power.py` → `power_analysis__LS_AL.json`. Contrast CI width vs k identities
+(subsample k=4..13): 1.03 (k=4) → 0.80 (k=13). The in-range log-log slope is −0.25 (a finite-
+population ceiling: at k→13 the subsample is nearly the whole 13-cluster population), so it does NOT
+govern extrapolation beyond 13. By the asymptotic 1/√k (anchored at k=13, width 0.80): **~34
+identities for contrast CI width 0.5**, ~52 for 0.4, ~93 for 0.3. Report the 1/√k row; the empirical
+slope is in-range descriptive only.
+
+### 16.3 Generation-seed variance (list item 8) [done]
+`scratchpad/offline_seed_variance.py` → `seed_variance_dyadic__LS_AL.json`. Per dyadic model, 3
+per-seed nets + SD + 3 pairwise seed-delta nets with identity CIs. **Pooled seed SD = 0.164 ×1e4**
+(RMS over the 3 models). Every pairwise seed delta is non-significant (p 0.18–0.79) — seed noise
+sits inside the identity CI, confirming §12 (average seeds, do not add a seed term to the CI).
+
+### 16.4 model × other — specificity control (plan task 9c) [done]
+`rdgg/model_x_other.py` → `model_x_other__LS_AL.{json,npz}`. Each model's listener motion scrambled
+by SURRPERM (another conversation's motion, same model), scored vs real GT audio — the direct
+specificity test. GT/surrogate reproduce shift_ablation (cross-check). **All dyadic xOther CIs
+include 0** (criterion met): AVTR-1 +0.527→+0.089 (p=0.34), AvatarForcing +0.225→−0.192 (p=0.83).
+**DyStream +0.659→+0.478 (p=0.094) drops only weakly** — its gain is partly NOT specific to the true
+partner (candidate: it tracks generic turn-taking structure). Talking-head xOther all ~0. DISCUSS.
+
+### 16.5 R-DGG on a single representation (plan task 10) [done]
+`rdgg/repr_ablation.py` → `repr_ablation__{emoca,lp}__LS_AL.{json,npz}`. Whole pipeline rebuilt on
+EMOCA-only and LP-only motion (LP via a transient `load_regions_full` monkeypatch, restored;
+suffix=liveportrait so `_src_fok` reads LP face_ok). **Criterion holds in BOTH:** EMOCA GT +0.779
+(p=0.005), contrast +0.262; LP GT +0.535 (p=0.004), contrast +0.210; surrogate ~0 in both. EMOCA is
+stronger for GT/DyStream, LP for AVTR-1 — the combo default is the compromise, not a cherry-pick.
+
+### 16.6 Dose curve, seed-averaged baseline (list item 11) [done]
+`rdgg/dose_curve_seedavg.py` → `dose_curve_seedavg__{zeroother,cfg0}__LS_AL.json`. k=0 is now the
+SEED-AVERAGED stock baseline (3 AVTR-1 seeds, per-stem energy average; CI [0.15, 0.77]) instead of a
+single-seed lottery. **zeroother:** +0.466 → +0.521 (flat — silence is a weak ablation, §11).
+**cfg0:** +0.467 → +0.153 (falls — cfg_other=0 removes the speaker-audio pathway). Mask = GT-reactive
+∩ face_ok(3 stock seeds) ∩ face_ok(ablation); CI = expected-over-schedules identity bootstrap.
+
+### 16.7 Classic metrics on the exact R-DGG rows (plan task 6 / item 13) [done]
+**Result (the paper-relevant one): on the EXACT R-DGG rows, the classic metrics still do NOT separate
+dyadic from talking-head** — emoca/pose rdgg variant: rPCC best is SoulX Pro 0.152 (talking-head),
+below every dyadic (AVTR-1 0.161, DyStream 0.156); PFD best is FLOAT 0.051 (talking-head), below all
+dyadic. So even on identical frames the classic metrics rank talking-heads at or above the dyadic
+systems, while R-DGG cleanly separates them — the honest "classic vs R-DGG" motivation (R2). 240/240
+runs OK, 0 failures; tables in `classic_metrics_si184_table.json` (full/listening/rdgg). Mechanics:
+Per user: keep the REPO's classic code (`classic_metrics/*/compute.py`, loader + formulas
+untouched); only add `--rdgg_mask`. `rdgg/export_rdgg_rows.py` exports the per-stem R-DGG keep mask
+(= collect_design tid on the common mask) to `rdgg_rows_mask__LS_AL.npz`; the classic side aligns it
+by min-length (axes near-identical: face_ok ~full, GT 30→25 resample ≤1-frame slack — user OK'd).
+`scratchpad/run_classic_3variant.sh` runs full + listening + rdgg on the same 177 stems;
+`aggregate_si184.py` extended with the `rdgg` variant. Smoke-test passed (n_kept = R-DGG keep
+exactly). The grid-loader `rdgg/classic_on_rdgg_mask.py` was DROPPED (would not match repo numbers).
+
+### 16.8 Monte-Carlo count sweep, rewritten (list item 7) [done]
+`rdgg/count_sweep.py` rewritten (user spec): all 15 columns + 3 seed-avg dyadic (18 total), even
+log-grids (N {10,20,50,100,200}, B {125,500,2000,8000,20000,32000} incl. the 20000 default),
+K_seeds=100, per-stem/per-null energies stashed to npz for offline re-aggregation. **Result:
+defaults are adequate** — dim1 (timeshift N) slopes −0.45…−0.57 and dim2 (bootstrap B) slopes
+−0.47…−0.52 across all 18 columns, all ≈ the −0.5 theory. The even B-grid fixed the old "strange
+scale" (the earlier 10000→20000 crunch); at B=20000 the CI-bound noise is ~0.004 (negligible), at
+N=100 likewise. `count_sweep__LS_AL.{json,npz}`.
+
 ---
 
 Commits to the `cvpr` branch happen only on an explicit command.

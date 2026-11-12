@@ -270,6 +270,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--vad_dir", type=Path, default=None,
                    help="Optional VAD npz dir (see extractors/vad). Used "
                         "with --vad_mode to mask features before TLCC.")
+    p.add_argument("--rdgg_mask", type=Path, default=None,
+                   help="npz of per-stem R-DGG keep masks (keyed by listener stem); overrides --vad.")
     p.add_argument("--vad_mode", choices=("none", "silence", "speech"),
                    default="none",
                    help="`silence` keeps frames where the LISTENER is "
@@ -285,6 +287,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    rdgg = dict(np.load(args.rdgg_mask)) if args.rdgg_mask else None
     pairing_mode, pairs = parse_pairing_arg(args.pairing)
     out_path = args.out or default_out(args.listener, args.feature_source)
     header = csv_header(args.feature_source)
@@ -337,7 +340,12 @@ def main() -> None:
             failed += 1; continue
         T = min(len(sp_g["overall"]), len(ls_g["overall"]))
         keep = None
-        if args.vad_mode != "none" and args.vad_dir is not None:
+        if rdgg is not None:
+            if stem not in rdgg:
+                skipped_no_speaker += 1; continue   # stem not in the R-DGG row set
+            _k = rdgg[stem].astype(bool)
+            keep = np.pad(_k, (0, max(0, T - len(_k))))[:T]   # align to classic length (±1-frame slack)
+        elif args.vad_mode != "none" and args.vad_dir is not None:
             keep = per_frame_keep_mask(args.vad_dir / f"{stem}.npz",
                                        args.vad_mode, T)
         n_kept = int(np.asarray(keep[:T]).sum()) if keep is not None else T

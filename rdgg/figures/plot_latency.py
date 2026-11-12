@@ -27,7 +27,11 @@ OUT_PDF = os.path.join(HERE, "..", "latency.pdf")
 
 GT = "GT"
 SURR = "GT×other"
-DYADIC = {"AVTR-1", "DyStream", "AvatarForcing"}
+DYADIC = {"AVTR-1 [seed-avg]", "DyStream [seed-avg]", "AvatarForcing [seed-avg]"}
+# show only the 9 headline curves: GT, surrogate, the 3 SEED-AVERAGED dyadic, 4 talking-head.
+# (the 9 individual per-seed dyadic curves are in the json for diagnostics but clutter the figure.)
+DISPLAY = {GT, SURR, "SoulX Lite", "SoulX Pro", "Ditto", "FLOAT"} | DYADIC
+LABEL = {k: k.replace(" [seed-avg]", "") for k in DYADIC}   # clean legend labels
 # seaborn "colorblind" palette, inlined so the script depends only on matplotlib
 CB = ["#0173B2", "#DE8F05", "#029E73", "#D55E00", "#CC78BC",
       "#CA9161", "#FBAFE4", "#949494", "#ECE133", "#56B4E9"]
@@ -37,7 +41,7 @@ def v0(k):
     return dict((int(p[0]), p[1]) for p in CURVES[k]).get(0, 0.0)
 
 
-systems = sorted(CURVES, key=lambda k: -v0(k))  # legend order: gain at zero offset, descending
+systems = [k for k in sorted(CURVES, key=lambda k: -v0(k)) if k in DISPLAY]  # headline curves only
 
 plt.rcParams.update({
     "font.family": "Nimbus Sans", "font.size": 9,
@@ -75,11 +79,11 @@ xmax = max(int(p[0]) for k in CURVES for p in CURVES[k])
 for k in systems:
     pts = sorted(CURVES[k], key=lambda p: p[0])
     ax.plot([p[0] for p in pts], [p[1] for p in pts],
-            label=("ground truth" if k == GT else k), **style(k))
+            label=("ground truth" if k == GT else LABEL.get(k, k)), **style(k))
 
 ax.set_xlabel("speaker-driver offset (ms)")
 ax.set_ylabel(r"$G_{a\mid m}\ \ (\times 10^{-4}\ \mathrm{nats})$")
-ax.set_xticks(range(-xmax, xmax + 1, 40))
+ax.set_xticks(range(-xmax, xmax + 1, 200))
 ax.margins(x=0.02)
 ax.set_ylim(top=ax.get_ylim()[1] + 0.18)   # headroom so the in-plot legend clears the curves
 ax.legend(loc="upper right", ncol=2, frameon=True, framealpha=0.9, edgecolor="0.85",

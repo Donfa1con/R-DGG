@@ -230,6 +230,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--out", type=Path, default=None,
                    help="output CSV; default: <gen_parent>/_metrics/rpcc_<source>__<split>.csv")
     p.add_argument("--overwrite", action="store_true")
+    p.add_argument("--rdgg_mask", type=Path, default=None,
+                   help="npz of per-stem R-DGG keep masks (keyed by listener stem); when set, "
+                        "overrides --vad and restricts to the exact R-DGG rows (aligned by min-length).")
     p.add_argument("--target_fps", type=float, default=25.0,
                    help="Resample every source to this fps before "
                         "correlation. DEFAULT 25 — this re-creates the "
@@ -251,6 +254,7 @@ def _load_vad_mask(vad_dir: Path | None, stem: str, mode: str,
 
 def main() -> None:
     args = parse_args()
+    rdgg = dict(np.load(args.rdgg_mask)) if args.rdgg_mask else None
     pairing_mode, pairs = parse_pairing_arg(args.pairing)
     out_path = args.out or default_out_path(args.gen_listener,
                                             args.feature_source,
@@ -286,8 +290,14 @@ def main() -> None:
             failed += 1; continue
         T = int(min(len(sp_g["overall"]), len(gt_g["overall"]),
                     len(gn_g["overall"])))
-        keep = _load_vad_mask(args.vad_dir, stem, args.vad_mode,
-                              target_len=T)
+        if rdgg is not None:
+            if stem not in rdgg:
+                skipped_no_speaker += 1; continue   # stem not in the R-DGG row set
+            _k = rdgg[stem].astype(bool)
+            keep = np.pad(_k, (0, max(0, T - len(_k))))[:T]   # align to classic length (±1-frame slack)
+        else:
+            keep = _load_vad_mask(args.vad_dir, stem, args.vad_mode,
+                                  target_len=T)
         n_kept = int(keep.sum()) if keep is not None else T
         row = {"stem": stem, "n_frames": T, "n_kept": n_kept}
         per_g = rpcc_per_group(sp_g, gt_g, gn_g, keep_mask=keep)

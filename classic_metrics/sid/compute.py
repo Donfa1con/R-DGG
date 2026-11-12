@@ -94,6 +94,7 @@ def _pool_group(features_dir: Path, source: str, group: str,
                 vad_dir: "Path | None" = None, vad_mode: str = "none",
                 target_fps: "float | None" = None,
                 stems: "set[str] | None" = None,
+                rdgg: "dict | None" = None,
                 ) -> np.ndarray:
     """Concatenate `<group>` slice across every npz in the dir → (N, D).
 
@@ -119,7 +120,13 @@ def _pool_group(features_dir: Path, source: str, group: str,
         except Exception as e:
             print(f"  [skip] {p.name}: {type(e).__name__}: {e}")
             continue
-        if vad_dir is not None and vad_mode != "none":
+        if rdgg is not None:
+            if p.stem not in rdgg:
+                n_dropped += 1
+                continue
+            _k = rdgg[p.stem].astype(bool)
+            arr = arr[np.pad(_k, (0, max(0, len(arr) - len(_k))))[:len(arr)]]   # align (±1-frame slack)
+        elif vad_dir is not None and vad_mode != "none":
             mask = _load_vad_mask(vad_dir, p.stem, vad_mode, target_len=len(arr))
             if mask is None:
                 # Stem has no VAD cache → drop entire stem to avoid biasing
@@ -168,6 +175,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--vad_dir", type=Path, default=None,
                    help="VAD npz cache (audio is shared between GT and "
                         "model, so the same dir applies to both sides)")
+    p.add_argument("--rdgg_mask", type=Path, default=None,
+                   help="npz of per-stem R-DGG keep masks (keyed by stem); overrides --vad.")
     p.add_argument("--vad_mode", choices=("none", "silence", "speech"),
                    default="none")
     p.add_argument("--target_fps", type=float, default=25.0,
@@ -199,6 +208,7 @@ def default_out(pred_features_dir: Path, source: str,
 
 def main() -> None:
     args = parse_args()
+    rdgg = dict(np.load(args.rdgg_mask)) if args.rdgg_mask else None
     out_path = args.out or default_out(args.pred_features, args.feature_source,
                                        vad_mode=args.vad_mode)
     label = args.label or args.pred_features.parent.name
@@ -228,11 +238,11 @@ def main() -> None:
               f"from {args.stems}")
     gt_groups = {g: _pool_group(args.gt_features, args.feature_source, g,
                                 vad_dir=args.vad_dir, vad_mode=args.vad_mode,
-                                target_fps=args.target_fps, stems=stems)
+                                target_fps=args.target_fps, stems=stems, rdgg=rdgg)
                  for g in GROUPS[args.feature_source]}
     pred_groups = {g: _pool_group(args.pred_features, args.feature_source, g,
                                   vad_dir=args.vad_dir, vad_mode=args.vad_mode,
-                                  target_fps=args.target_fps, stems=stems)
+                                  target_fps=args.target_fps, stems=stems, rdgg=rdgg)
                    for g in GROUPS[args.feature_source]}
     n_gt = gt_groups["overall"].shape[0]
     n_pr = pred_groups["overall"].shape[0]

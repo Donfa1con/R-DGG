@@ -128,6 +128,7 @@ def pfd_per_video(gt_speaker_dir: Path, gt_listener_dir: Path,
                   reactive_segments: bool = False,
                   target_fps: "float | None" = None,
                   min_frames: int = 2,
+                  rdgg: "dict | None" = None,
                   ) -> "tuple[dict[str, list], int, int, int]":
     """Per-video Fréchet distance (original DIM). For every listener stem
     present in BOTH the GT and pred listener dirs with a resolvable GT
@@ -180,7 +181,14 @@ def pfd_per_video(gt_speaker_dir: Path, gt_listener_dir: Path,
             n_skipped += 1; continue
 
         keep = None
-        if use_vad:
+        if rdgg is not None:
+            if stem not in rdgg:
+                n_skipped += 1; continue
+            _k = rdgg[stem].astype(bool)
+            keep = np.pad(_k, (0, max(0, T - len(_k))))[:T]   # align to classic length (±1-frame slack)
+            if int(keep.sum()) < min_frames:
+                n_skipped += 1; continue
+        elif use_vad:
             if reactive_segments:
                 keep = reactive_segments_mask(
                     vad_dir / f"{stem}.npz",
@@ -294,6 +302,8 @@ def parse_args() -> argparse.Namespace:
                         "(e.g. 'reactive'). If not set and any VAD mask "
                         "is non-default, defaults to "
                         "'<spk_mode>_spk_<ls_mode>_ls'.")
+    p.add_argument("--rdgg_mask", type=Path, default=None,
+                   help="npz of per-stem R-DGG keep masks (keyed by listener stem); overrides --vad/reactive.")
     return p.parse_args()
 
 
@@ -343,7 +353,8 @@ def main() -> None:
         mask_listener=args.mask_listener,
         reactive_segments=args.reactive_segments,
         target_fps=args.target_fps,
-        min_frames=args.min_frames)
+        min_frames=args.min_frames,
+        rdgg=(dict(np.load(args.rdgg_mask)) if args.rdgg_mask else None))
 
     print(f"\nmatched videos: {n_pairs}, skipped: {n_skipped}")
 

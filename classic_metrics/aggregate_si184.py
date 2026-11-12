@@ -50,7 +50,7 @@ MODEL_LABELS = [
 ]
 
 SRCS = ["emoca", "lp"]
-VARIANTS = ["full", "listening"]
+VARIANTS = ["full", "listening", "rdgg"]   # rdgg = the exact R-DGG rows (item 13)
 
 # region groups per source: (overall + primary region + exp)
 REGIONS = {
@@ -64,7 +64,7 @@ PRIMARY = {"emoca": "pose", "lp": "rot"}
 # CSV helpers
 # ----------------------------------------------------------------------------
 def _csv_path(corpus, model, metric, src, variant):
-    suffix = "_listening" if variant == "listening" else ""
+    suffix = {"listening": "_listening", "rdgg": "_rdgg"}.get(variant, "")
     fname = f"{metric}_{src}{suffix}__{SPLIT}.csv"
     return os.path.join(corpus, model, "_metrics", fname)
 

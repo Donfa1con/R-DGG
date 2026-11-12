@@ -134,6 +134,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--overwrite", action="store_true")
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--vad_dir", type=Path, default=None)
+    p.add_argument("--rdgg_mask", type=Path, default=None,
+                   help="npz of per-stem R-DGG keep masks (keyed by stem); overrides --vad.")
     p.add_argument("--vad_mode", choices=("none", "silence", "speech"),
                    default="none")
     p.add_argument("--target_fps", type=float, default=25.0,
@@ -148,6 +150,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    rdgg = dict(np.load(args.rdgg_mask)) if args.rdgg_mask else None
     out_path = args.out or default_out(args.features_dir,
                                        args.feature_source,
                                        vad_mode=args.vad_mode)
@@ -194,7 +197,13 @@ def main() -> None:
             continue
         T = groups["overall"].shape[0]
         mask = None
-        if use_vad:
+        if rdgg is not None:
+            if p.stem not in rdgg:
+                n_dropped_vad += 1
+                continue
+            _k = rdgg[p.stem].astype(bool)
+            mask = np.pad(_k, (0, max(0, T - len(_k))))[:T]   # align to classic length (±1-frame slack)
+        elif use_vad:
             mask = load_vad_mask(args.vad_dir, p.stem, args.vad_mode,
                                  target_len=T)
             if mask is None:
