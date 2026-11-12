@@ -35,3 +35,4 @@ _metrics/
 
 # paper-ready result tables ARE committed (override the *.csv rule above)
 !results/tables/*.csv
+results/ablation_report.html
